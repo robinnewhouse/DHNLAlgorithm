@@ -28,10 +28,9 @@ using namespace std;
 // this is needed to distribute the algorithm to the workers
 ClassImp(DHNLAlgorithm)
 
-DHNLAlgorithm :: DHNLAlgorithm () :
+DHNLAlgorithm::DHNLAlgorithm() :
         m_cutflowHist(nullptr),
-        m_cutflowHistW(nullptr)
-{
+        m_cutflowHistW(nullptr) {
 // Here you put any code for the base initialization of variables,
 // e.g. initialize all pointers to 0.  This is also where you
 // declare all properties for your algorithm.  Note that things like
@@ -40,9 +39,7 @@ DHNLAlgorithm :: DHNLAlgorithm () :
 }
 
 
-
-EL::StatusCode DHNLAlgorithm :: initialize ()
-{
+EL::StatusCode DHNLAlgorithm::initialize() {
     // Here you do everything that needs to be done at the very
     // beginning on each worker node, e.g. create histograms and output
     // trees.  This method gets called before any input files are
@@ -51,9 +48,7 @@ EL::StatusCode DHNLAlgorithm :: initialize ()
 }
 
 
-
-EL::StatusCode DHNLAlgorithm :: execute ()
-{
+EL::StatusCode DHNLAlgorithm::execute() {
     // Here you do everything that needs to be done on every single
     // events, e.g. read input variables, apply cuts, and fill
     // histograms and trees.  This is where most of your actual analysis
@@ -63,18 +58,17 @@ EL::StatusCode DHNLAlgorithm :: execute ()
 
     // retrieve the eventInfo object from the event store
     const xAOD::EventInfo *eventInfo = nullptr;
-    ANA_CHECK (evtStore()->retrieve (eventInfo, "EventInfo"));
+    ANA_CHECK (evtStore()->retrieve(eventInfo, "EventInfo"));
 
     // print out run and event number from retrieved object
-    ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    ANA_MSG_INFO (
+            "in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     return EL::StatusCode::SUCCESS;
 }
 
 
-
-EL::StatusCode DHNLAlgorithm :: finalize ()
-{
+EL::StatusCode DHNLAlgorithm::finalize() {
     // This method is the mirror image of initialize(), meaning it gets
     // called after the last event has been processed on the worker node
     // and allows you to finish up any objects you created in

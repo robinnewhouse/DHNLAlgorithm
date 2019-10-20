@@ -27,8 +27,7 @@
 
 #include <sstream>
 
-class DHNLAlgorithm : public xAH::Algorithm
-{
+class DHNLAlgorithm : public xAH::Algorithm {
 
     // put your configuration variables here as public variables.
     // that way they can be set directly from CINT and python.
@@ -36,19 +35,21 @@ public:
 
     std::string m_inMuContainerName;    // input Muon container name
 
-    virtual EL::StatusCode initialize () override;
-    virtual EL::StatusCode execute () override;
-    EL::StatusCode finalize () override;
 
 private:
 
-    TH1D* m_cutflowHist;    //!
-    TH1D* m_cutflowHistW;   //!
+    TH1D *m_cutflowHist;    //!
+    TH1D *m_cutflowHistW;   //!
 
 public:
     // this is a standard constructor
-    DHNLAlgorithm ();
+    DHNLAlgorithm();
 
+    EL::StatusCode initialize() override;
+
+    EL::StatusCode execute() override;
+
+    EL::StatusCode finalize() override;
     // this is needed to distribute the algorithm to the workers
 ClassDef(DHNLAlgorithm, 1);
 };

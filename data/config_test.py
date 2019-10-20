@@ -380,40 +380,40 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 #
 # c.algorithm("DHNL", DHNLDict )
 #
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bLLPNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# Hto4bLLPNtupleDict = {
-#     "m_name"                         : "Hto4bLLPNtuple",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inJetContainerName"           : "AntiKt4EMTopoJets",
-#     "m_inputAlgo"                    : "",#"SignalJets_Algo",
-#     "m_allJetContainerName"          : "AntiKt4EMTopoJets",
-#     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-#     "m_inMuContainerName"            : "Muons",
-#     "m_inElContainerName"            : "Electrons",
-#     "m_inMETContainerName"           : "MET",
-#     "m_inMETTrkContainerName"        : "METTrk",
-#     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-#     "m_secondaryVertexBranchName"    : "secVtx",
-#     "m_truthVertexContainerName"     : "TruthVertices",
-#     "m_truthVertexBranchName"        : "truthVtx",
-#     #----------------------- Output ----------------------------#
-#     "m_eventDetailStr"               : "truth pileup", #shapeEM
-#     "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
-#     "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-#     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
-#     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF quality energyLoss", #trigger
-#     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-#     "m_metDetailStr"                 : "metClus",
-#     "m_metTrkDetailStr"              : "metTrk",
-#     #"m_trackDetailStr"               : "fitpars",
-#     "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
-#     "m_truthVertexDetailStr"         : "isMatched",
-#     #----------------------- Other ----------------------------#
-#     "m_useMCPileupCheck"        : False,
-#     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-#     "m_msgLevel"                : "Info",
-# }
-#
-# c.algorithm("Hto4bLLPNtuple", Hto4bLLPNtupleDict )
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+DHNLNtupleDict = {
+    "m_name"                         : "DHNLNtuple",
+    #----------------------- Container Flow ----------------------------#
+    # "m_inJetContainerName"           : "AntiKt4EMTopoJets",
+    # "m_inputAlgo"                    : "",#"SignalJets_Algo",
+    # "m_allJetContainerName"          : "AntiKt4EMTopoJets",
+    # "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
+    "m_inMuContainerName"            : "Muons",
+    # "m_inElContainerName"            : "Electrons",
+    # "m_inMETContainerName"           : "MET",
+    # "m_inMETTrkContainerName"        : "METTrk",
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    # "m_secondaryVertexBranchName"    : "secVtx",
+    # "m_truthVertexContainerName"     : "TruthVertices",
+    # "m_truthVertexBranchName"        : "truthVtx",
+    #----------------------- Output ----------------------------#
+    # "m_eventDetailStr"               : "truth pileup", #shapeEM
+    # "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
+    # "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
+    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF quality energyLoss", #trigger
+    # "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
+    # "m_metDetailStr"                 : "metClus",
+    # "m_metTrkDetailStr"              : "metTrk",
+    # # "m_trackDetailStr"               : "fitpars",
+    # "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
+    # "m_truthVertexDetailStr"         : "isMatched",
+    #----------------------- Other ----------------------------#
+    "m_useMCPileupCheck"        : False,
+    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
+    "m_msgLevel"                : "Debug",
+}
+
+c.algorithm("DHNLNtuple", DHNLNtupleDict )
