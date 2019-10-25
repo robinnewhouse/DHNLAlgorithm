@@ -143,204 +143,204 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 # }
 #
 # c.algorithm("JetSelector", JetSelectorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# MuonCalibratorDict = {
-#     "m_name"                      : "MuonCalibrate",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "Muons",
-#     "m_outContainerName"          : "Muons_Calibrate",
-#     #----------------------- Systematics ----------------------------#
-#     "m_systName"                  : "",
-#     "m_systVal"                   : 0,
-#     #----------------------- Other ----------------------------#
-#     "m_forceDataCalib"            : False,
-#     "m_sort"                      : True,
-#     "m_msgLevel"                  : "Info"
-# }
-#
-# c.algorithm("MuonCalibrator", MuonCalibratorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# MuonSelectorDict = {
-#     "m_name"                      : "MuonSelect",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "Muons_Calibrate",
-#     "m_outContainerName"          : "Muons_Signal",
-#     "m_createSelectedContainer"   : True,
-#     #----------------------- Systematics ----------------------------#
-#     "m_systName"                  : "",        ## Data
-#     "m_systVal"                   : 0,
-#     #----------------------- configurable cuts ----------------------------#
-#     "m_muonQualityStr"            : "VeryLoose",
-#     "m_pass_max"                  : -1,
-#     "m_pass_min"                  : -1,
-#     "m_pT_max"                    : 1e8,
-#     "m_pT_min"                    : 1,
-#     "m_eta_max"                   : 1e8,
-#     "m_d0_max"                    : 1e8,
-#     "m_d0sig_max"                 : 1e8,
-#     "m_z0sintheta_max"            : 1e8,
-#     #----------------------- isolation stuff ----------------------------#
-#     "m_MinIsoWPCut"               : "",
-#     #----------------------- trigger matching stuff ----------------------------#
-#     "m_singleMuTrigChains"        : "",
-#     #"m_minDeltaR"                 : 0.1,
-#     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                  : "Info",
-#     "m_IsoWPList"                 : "LooseTrackOnly,Loose,Gradient,GradientLoose",
-# }
-#
-# c.algorithm("MuonSelector", MuonSelectorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# ElectronCalibratorDict = {
-#     "m_name"                      : "ElectronCalibrate",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "Electrons",
-#     "m_outContainerName"          : "Electrons_Calibrate",
-#     #----------------------- Systematics ----------------------------#
-#     "m_systName"                  : "Nominal",            ## For data
-#     "m_systVal"                   : 0,                    ## For data
-#     "m_esModel"                   : "es2016PRE",
-#     "m_decorrelationModel"        : "1NP_v1",
-#     #----------------------- Other ----------------------------#
-#     "m_sort"                      : True,
-#     "m_msgLevel"                  : "Info"
-# }
-#
-# c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# ElectronSelectorDict = {
-#     "m_name"                      : "ElectronSelect",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "Electrons_Calibrate",
-#     "m_outContainerName"          : "Electrons_Signal",
-#     "m_createSelectedContainer"   : True,
-#     #----------------------- PID ------------- ----------------------------#
-#     "m_doLHPIDcut"                : True,
-#     "m_LHOperatingPoint"          : "Medium",
-#     #----------------------- configurable cuts ----------------------------#
-#     "m_pass_max"                  : -1,
-#     "m_pass_min"                  : -1,
-#     "m_pT_max"                    : 1e8,
-#     "m_pT_min"                    : 1,
-#     "m_eta_max"                   : 1e8,
-#     "m_d0_max"                    : 1e8,
-#     "m_d0sig_max"                 : 1e8,
-#     "m_z0sintheta_max"            : 1e8,
-#     #----------------------- isolation stuff ----------------------------#
-#     "m_MinIsoWPCut"               : "",
-#     #----------------------- trigger matching stuff ----------------------------#
-#     "m_singleElTrigChains"        : "",
-#     #----------------------- Other ----------------------------#
-#     "m_IsoWPList"                 : "Loose",
-#     "m_msgLevel"                  : "Info"
-# }
-#
-# c.algorithm("ElectronSelector", ElectronSelectorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# METTrkConstructorDict = {
-#     "m_name"                      : "MetTrkConstruct",
-#     "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
-#     "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
-#     "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
-#     "m_outputContainer"           : "METTrk",
-#     "m_outputAlgoSystNames"       : "METTrk_Syst",
-#     "m_writeSystToMetadata"       : False,
-#     "m_setAFII"                   : True,
-#     "m_calculateSignificance"     : True,
-#     "m_doPhotonCuts"              : True,
-#     "m_doElectronCuts"            : True,
-#     "m_addSoftClusterTerms"       : False,
-#     "m_rebuildUsingTracksInJets"  : True,
-#     "m_inputElectrons"            : "Electrons",
-#     "m_inputMuons"                : "Muons",
-#     #"m_inputTaus"                 : "TauJets",
-#     "m_inputJets"                 : "AntiKt4EMTopoJets",
-#     "m_runNominal"                : True,
-#     #"m_eleSystematics"            : "ElectronSelector_Syst",
-#     #"m_muonSystematics"           : "MuonSelector_Syst",
-#     #"m_tauSystematics"            : "TauSelector_Syst",
-#     #"m_jetSystematics"            : "JetSelector_Syst",
-#     "m_doJVTCut"                  : True,
-#     "m_dofJVTCut"                 : False,
-#     "m_calculateSignificance"     : False,
-#     "m_msgLevel"                  : "Info"
-# }
-#
-# c.algorithm("METConstructor", METTrkConstructorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# MetConstructorDict = {
-#     "m_name"                      : "MetConstruct",
-#     "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
-#     "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
-#     "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
-#     "m_outputContainer"           : "MET",
-#     "m_outputAlgoSystNames"       : "MET_Syst",
-#     "m_writeSystToMetadata"       : False,
-#     "m_setAFII"                   : True,
-#     "m_calculateSignificance"     : True,
-#     "m_doPhotonCuts"              : True,
-#     "m_doElectronCuts"            : True,
-#     "m_addSoftClusterTerms"       : False,
-#     "m_rebuildUsingTracksInJets"  : False,
-#     "m_inputElectrons"            : "Electrons",
-#     "m_inputMuons"                : "Muons",
-#     #"m_inputTaus"                 : "TauJets",
-#     "m_inputJets"                 : "AntiKt4EMTopoJets",
-#     "m_runNominal"                : True,
-#     #"m_eleSystematics"            : "ElectronSelector_Syst",
-#     #"m_muonSystematics"           : "MuonSelector_Syst",
-#     #"m_tauSystematics"            : "TauSelector_Syst",
-#     #"m_jetSystematics"            : "JetSelector_Syst",
-#     "m_doJVTCut"                  : True,
-#     "m_dofJVTCut"                 : False,
-#     "m_calculateSignificance"     : False,
-#     "m_msgLevel"                  : "Info"
-# }
-#
-# c.algorithm("METConstructor", MetConstructorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# SecondaryVertexSelectorDict = {
-#     "m_name"                 : "SecVtxSel",
-#     "m_mapInFile"            : "../deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
-#     "m_mapOutFile"           : "../deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
-#     #---------------------- Selections ---------------------------#
-#     "m_do_trackTrimming"     : True,
-#     "m_do_matMapVeto"        : True,
-#     "prop_chi2Cut"           : 5.0,
-#     "prop_d0_wrtSVCut"       : 0.8,
-#     "prop_z0_wrtSVCut"       : 1.2,
-#     "prop_errd0_wrtSVCut"    : 999999,
-#     "prop_errz0_wrtSVCut"    : 999999,
-#     "prop_d0signif_wrtSVCut" : 5.0,
-#     "prop_z0signif_wrtSVCut" : 5.0,
-#     "prop_chi2_toSVCut"      : 5.0,
-#     #------------------------ Other ------------------------------#
-#     "m_msgLevel"             : "Info",
-# }
-#
-# c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-#
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MuonCalibratorDict = {
+    "m_name"                      : "MuonCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Muons",
+    "m_outContainerName"          : "Muons_Calibrate",
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "",
+    "m_systVal"                   : 0,
+    #----------------------- Other ----------------------------#
+    "m_forceDataCalib"            : False,
+    "m_sort"                      : True,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("MuonCalibrator", MuonCalibratorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MuonSelectorDict = {
+    "m_name"                      : "MuonSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Muons_Calibrate",
+    "m_outContainerName"          : "Muons_Signal",
+    "m_createSelectedContainer"   : True,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "",        ## Data
+    "m_systVal"                   : 0,
+    #----------------------- configurable cuts ----------------------------#
+    "m_muonQualityStr"            : "VeryLoose",
+    "m_pass_max"                  : -1,
+    "m_pass_min"                  : -1,
+    "m_pT_max"                    : 1e8,
+    "m_pT_min"                    : 1,
+    "m_eta_max"                   : 1e8,
+    "m_d0_max"                    : 1e8,
+    "m_d0sig_max"                 : 1e8,
+    "m_z0sintheta_max"            : 1e8,
+    #----------------------- isolation stuff ----------------------------#
+    "m_MinIsoWPCut"               : "",
+    #----------------------- trigger matching stuff ----------------------------#
+    "m_singleMuTrigChains"        : "",
+    #"m_minDeltaR"                 : 0.1,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+    "m_IsoWPList"                 : "LooseTrackOnly,Loose,Gradient,GradientLoose",
+}
+
+c.algorithm("MuonSelector", MuonSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+ElectronCalibratorDict = {
+    "m_name"                      : "ElectronCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Electrons",
+    "m_outContainerName"          : "Electrons_Calibrate",
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "Nominal",            ## For data
+    "m_systVal"                   : 0,                    ## For data
+    "m_esModel"                   : "es2016PRE",
+    "m_decorrelationModel"        : "1NP_v1",
+    #----------------------- Other ----------------------------#
+    "m_sort"                      : True,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+ElectronSelectorDict = {
+    "m_name"                      : "ElectronSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Electrons_Calibrate",
+    "m_outContainerName"          : "Electrons_Signal",
+    "m_createSelectedContainer"   : True,
+    #----------------------- PID ------------- ----------------------------#
+    "m_doLHPIDcut"                : True,
+    "m_LHOperatingPoint"          : "Medium",
+    #----------------------- configurable cuts ----------------------------#
+    "m_pass_max"                  : -1,
+    "m_pass_min"                  : -1,
+    "m_pT_max"                    : 1e8,
+    "m_pT_min"                    : 1,
+    "m_eta_max"                   : 1e8,
+    "m_d0_max"                    : 1e8,
+    "m_d0sig_max"                 : 1e8,
+    "m_z0sintheta_max"            : 1e8,
+    #----------------------- isolation stuff ----------------------------#
+    "m_MinIsoWPCut"               : "",
+    #----------------------- trigger matching stuff ----------------------------#
+    "m_singleElTrigChains"        : "",
+    #----------------------- Other ----------------------------#
+    "m_IsoWPList"                 : "Loose",
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("ElectronSelector", ElectronSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+METTrkConstructorDict = {
+    "m_name"                      : "MetTrkConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "METTrk",
+    "m_outputAlgoSystNames"       : "METTrk_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_calculateSignificance"     : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : True,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", METTrkConstructorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MetConstructorDict = {
+    "m_name"                      : "MetConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "MET",
+    "m_outputAlgoSystNames"       : "MET_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_calculateSignificance"     : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : False,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", MetConstructorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+SecondaryVertexSelectorDict = {
+    "m_name"                 : "SecVtxSel",
+    "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
+    "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
+    #---------------------- Selections ---------------------------#
+    "m_do_trackTrimming"     : True,
+    "m_do_matMapVeto"        : True,
+    "prop_chi2Cut"           : 5.0,
+    "prop_d0_wrtSVCut"       : 0.8,
+    "prop_z0_wrtSVCut"       : 1.2,
+    "prop_errd0_wrtSVCut"    : 999999,
+    "prop_errz0_wrtSVCut"    : 999999,
+    "prop_d0signif_wrtSVCut" : 5.0,
+    "prop_z0signif_wrtSVCut" : 5.0,
+    "prop_chi2_toSVCut"      : 5.0,
+    #------------------------ Other ------------------------------#
+    "m_msgLevel"             : "Info",
+}
+
+c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
+
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -352,7 +352,7 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 # # Vertex Matching
 # if args.is_MC:
 #     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
-#
+
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # ##%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bLLPAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -377,39 +377,39 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 #     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
 #     "m_msgLevel"                : "Info",
 # }
-#
+
 # c.algorithm("DHNL", DHNLDict )
-#
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtuple",
     #----------------------- Container Flow ----------------------------#
-    # "m_inJetContainerName"           : "AntiKt4EMTopoJets",
-    # "m_inputAlgo"                    : "",#"SignalJets_Algo",
-    # "m_allJetContainerName"          : "AntiKt4EMTopoJets",
-    # "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons",
-    # "m_inElContainerName"            : "Electrons",
-    # "m_inMETContainerName"           : "MET",
-    # "m_inMETTrkContainerName"        : "METTrk",
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    # "m_secondaryVertexBranchName"    : "secVtx",
-    # "m_truthVertexContainerName"     : "TruthVertices",
-    # "m_truthVertexBranchName"        : "truthVtx",
+    "m_inJetContainerName"           : "AntiKt4EMTopoJets",
+    "m_inputAlgo"                    : "",#"SignalJets_Algo",
+    "m_allJetContainerName"          : "AntiKt4EMTopoJets",
+    "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
+    "m_inMuContainerName"            : "Muons_Signal",
+    "m_inElContainerName"            : "Electrons_Signal",
+    "m_inMETContainerName"           : "MET",
+    "m_inMETTrkContainerName"        : "METTrk",
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    "m_secondaryVertexBranchName"    : "secVtx",
+    "m_truthVertexContainerName"     : "TruthVertices",
+    "m_truthVertexBranchName"        : "truthVtx",
     #----------------------- Output ----------------------------#
-    # "m_eventDetailStr"               : "truth pileup", #shapeEM
-    # "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
-    # "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
+    "m_eventDetailStr"               : "truth pileup", #shapeEM
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
+    "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF quality energyLoss", #trigger
-    # "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    # "m_metDetailStr"                 : "metClus",
-    # "m_metTrkDetailStr"              : "metTrk",
-    # # "m_trackDetailStr"               : "fitpars",
-    # "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
-    # "m_truthVertexDetailStr"         : "isMatched",
+    "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
+    "m_metDetailStr"                 : "metClus",
+    "m_metTrkDetailStr"              : "metTrk",
+    # "m_trackDetailStr"               : "fitpars",
+    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
+    "m_truthVertexDetailStr"         : "isMatched",
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",

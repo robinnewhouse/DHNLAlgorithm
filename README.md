@@ -11,13 +11,15 @@ For installation instructions, see the "Getting Started" section below.
 Make sure you have a directory structure that works for a modern CMake setup.
 
 ```
-mkdir WorkArea; cd WorkArea; 
+mkdir DHNL; cd DHNL; 
 mkdir build; 
 mkdir source; 
 mkdir run; 
 cd source;
 setupATLAS;
-asetup AnalysisBase,21.2.75,here;
+asetup AnalysisBase,21.2.95,here;
+# you can use the following for slc6:
+# asetup AnalysisBase,21.2.75,here;
 ```
 
 Get `DHNLAlgorithm` with:
@@ -29,14 +31,13 @@ git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-201
 
 To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`, run
 ```
-cd deps/DVAnalysisBase;
-source util/dependencyHack.sh;
+source DHNLAlgorithm/deps/DVAnalysisBase/util/dependencyHack.sh;
 ```
 
 And compile
 
 ```
-cd ../../../../build/; 
+cd ../build/; 
 cmake ../source/;
 make; 
 ```
@@ -50,6 +51,7 @@ source x*-*gcc*-opt/setup.sh  # (wildcards since os and gcc versions may differ)
 ### Future Sessions w/ Same Install
 
 ```
+asetup;
 cd build/; 
 source x*-*gcc*-opt/setup.sh 
 ```
