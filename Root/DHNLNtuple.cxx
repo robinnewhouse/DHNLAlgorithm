@@ -181,7 +181,7 @@ EL::StatusCode DHNLNtuple::execute() {
 //        DHNLFunctions::passCut(m_cutflowHist, m_cutflowHistW, m_iCutflow, m_mcEventWeight); //TriggerEfficiency
 
 
-    std::string systName;
+    std::string systName; // This is a placeholder to be modified when we start doing the analysis with systematics
     if (m_myTrees.find(systName) == m_myTrees.end()) { AddTree(systName); } // Get tree or make a new one
 
     ANA_MSG_DEBUG("execute() : Get Containers");
@@ -206,6 +206,7 @@ EL::StatusCode DHNLNtuple::execute() {
     if (m_useMCPileupCheck && m_isMC) {
         ANA_CHECK (HelperFunctions::retrieve(truthJets, m_MCPileupCheckContainer, m_event, m_store));
     }
+    if (truthJets) { m_myTrees[systName]->FillJets(truthJets); }
 
     const xAOD::MissingETContainer *Met(nullptr);
     ANA_CHECK (HelperFunctions::retrieve(Met, m_inMETContainerName, m_event, m_store));
@@ -226,7 +227,7 @@ EL::StatusCode DHNLNtuple::execute() {
     const xAOD::JetContainer *allJets = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
     if (allJets) m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
-//    if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
+    if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
 
     const xAOD::JetContainer *signalJets = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));

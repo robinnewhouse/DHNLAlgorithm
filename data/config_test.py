@@ -33,7 +33,7 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_e140_lhloose_nod0 || HLT_e60_lhmedium_nod0 || HLT_e26_lhtight_nod0_ivarloose",
+    "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_mu22_mu8noL1 || HLT_2mu14 || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_mu6_dRl1_mu20_msonly_iloosems_mu6noL1_dRl1_msonly || HLT_j30_muvtx || HLT_j30_muvtx_noiso ",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"	        : False,
@@ -44,105 +44,110 @@ basicEventSelectionDict = {
 }
 
 c.algorithm("BasicEventSelection", basicEventSelectionDict)
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# ##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# Hto4bLLPFilterDict = {
-#     "m_name"                    : "Hto4bLLPFilter",
-#     #----------------------- Container Flow ----------------------------#
-#
-#     "m_allJetContainerName"     : "AntiKt4EMTopoJets",
-#     "m_inMuContainerName"       : "Muons",
-#     "m_inElContainerName"       : "Electrons",
-#     #----------------------- Selections ----------------------------#
-#
-#     "m_TrackMinPt"              : 400,
-#     "m_TrackZ0Max"              : 0.3,
-#     "m_TrackD0Max"              : 0.5,
-#     "m_jetPtCut"                : 20,
-#     "m_AlphaMaxCut"             : 0.03,
-#     "m_CHFCut"                  : 0.3,
-#     "m_electronPtCut"           : 27000,
-#     "m_muonPtCut"               : 25000,
-#     #----------------------- Other ----------------------------#
-#
-#     "m_msgLevel"                : "Info",
-# }
 
-# c.algorithm("Hto4bLLPFilter", Hto4bLLPFilterDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# JetCalibratorDict = {
-#     "m_name"                      : "JetCalibrate",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "AntiKt4EMTopoJets",
-#     "m_jetAlgo"                   : "AntiKt4EMTopo",
-#     "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
-#     "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
-#     "m_sort"                      : True,
-#     "m_redoJVT"                   : False,
-#     #----------------------- Systematics ----------------------------#
-#     "m_systName"                  : "Nominal",            ## For data
-#     "m_systVal"                   : 0,                    ## For data
-#     #----------------------- Calibration ----------------------------#
-#     "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
-#     "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
-#     "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
-#     "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
-#     "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
-#     #----------------------- JES Uncertainty ----------------------------#
-#     #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
-#     #"m_uncertMCType"               : "MC16",
-#     "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
-#     "m_uncertMCType"           : "MC16",
-#     #----------------------- JER Uncertainty ----------------------------#
-#     #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
-#     #"m_JERFullSys"                : False,
-#     #"m_JERApplyNominal"           : False,
-#     #----------------------- Cleaning ----------------------------#
-#     "m_jetCleanCutLevel"          : "LooseBad",
-#     "m_jetCleanUgly"              : False,
-#     "m_saveAllCleanDecisions"     : True,
-#     "m_cleanParent"               : False,
-#     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                  : "Info",
-# }
-#
-# c.algorithm("JetCalibrator",  JetCalibratorDict )
-#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# JetSelectorDict = {
-#     "m_name"                      : "JetSelect",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
-#     "m_outContainerName"          : "SignalJets",
-#     #"m_truthJetContainer"         : "",
-#     "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
-#     "m_outputAlgo"                : "SignalJets_Algo",
-#     "m_decorateSelectedObjects"   : True,
-#     "m_createSelectedContainer"   : True,
-#     #----------------------- Selections ----------------------------#
-#     "m_cleanJets"                 : False,
-#     "m_pass_min"                  : -1,
-#     "m_pT_min"                    : 20,
-#     "m_eta_max"                   : 1e8,
-#     #----------------------- JVT ----------------------------#
-#     "m_doJVT"                     : False,
-#     "m_pt_max_JVT"                : 60e3,
-#     "m_eta_max_JVT"               : 2.4,
-#     "m_JVTCut"                    : 0.59,
-#     #----------------------- B-tagging ----------------------------#
-#     "m_doBTagCut"                 : False,
-#     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                  : "Info",
-# }
-#
-# c.algorithm("JetSelector", JetSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+DHNLFilterDict = {
+    "m_name"                    : "DHNLFilter",
+    #----------------------- Container Flow ----------------------------#
+
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets",
+    "m_inMuContainerName"       : "Muons",
+    "m_inElContainerName"       : "Electrons",
+    "m_vertexContainerName"     : "PrimaryVertices",
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+
+    #----------------------- Selections ----------------------------#
+
+    "m_TrackMinPt"              : 400,
+    "m_TrackZ0Max"              : 0.3,
+    "m_TrackD0Max"              : 0.5,
+    "m_jetPtCut"                : 20,
+    "m_AlphaMaxCut"             : 0.03,
+    "m_CHFCut"                  : 0.3,
+    "m_electronPtCut"           : 27000,
+    "m_muonPtCut"               : 25000,
+    #----------------------- Other ----------------------------#
+
+    "m_msgLevel"                : "Debug",
+}
+
+c.algorithm("DHNLFilter", DHNLFilterDict )
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetCalibratorDict = {
+    "m_name"                      : "JetCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets",
+    "m_jetAlgo"                   : "AntiKt4EMTopo",
+    "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
+    "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_sort"                      : True,
+    "m_redoJVT"                   : False,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "Nominal",            ## For data
+    "m_systVal"                   : 0,                    ## For data
+    #----------------------- Calibration ----------------------------#
+    "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
+    "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
+    "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
+    "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
+    "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
+    #----------------------- JES Uncertainty ----------------------------#
+    #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    #"m_uncertMCType"               : "MC16",
+    "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    "m_uncertMCType"           : "MC16",
+    #----------------------- JER Uncertainty ----------------------------#
+    #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
+    #"m_JERFullSys"                : False,
+    #"m_JERApplyNominal"           : False,
+    #----------------------- Cleaning ----------------------------#
+    "m_jetCleanCutLevel"          : "LooseBad",
+    "m_jetCleanUgly"              : False,
+    "m_saveAllCleanDecisions"     : True,
+    "m_cleanParent"               : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetCalibrator",  JetCalibratorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetSelectorDict = {
+    "m_name"                      : "JetSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
+    "m_outContainerName"          : "SignalJets",
+    #"m_truthJetContainer"         : "",
+    "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_outputAlgo"                : "SignalJets_Algo",
+    "m_decorateSelectedObjects"   : True,
+    "m_createSelectedContainer"   : True,
+    #----------------------- Selections ----------------------------#
+    "m_cleanJets"                 : False,
+    "m_pass_min"                  : -1,
+    "m_pT_min"                    : 20,
+    "m_eta_max"                   : 1e8,
+    #----------------------- JVT ----------------------------#
+    "m_doJVT"                     : False,
+    "m_pt_max_JVT"                : 60e3,
+    "m_eta_max_JVT"               : 2.4,
+    "m_JVTCut"                    : 0.59,
+    #----------------------- B-tagging ----------------------------#
+    "m_doBTagCut"                 : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetSelector", JetSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -353,11 +358,13 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 # if args.is_MC:
 #     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
+
+
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# ##%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bLLPAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# ##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # DHNLDict = {
-#     "m_name"                    : "Hto4bLLPAlgo",
+#     "m_name"                    : "DHNLAlgo",
 #     #----------------------- Container Flow ----------------------------#
 #     "m_inJetContainerName"      : "SignalJets",
 #     "m_inputAlgo"               : "SignalJets_Algo",
@@ -384,9 +391,9 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 DHNLNtupleDict = {
-    "m_name"                         : "DHNLNtuple",
+    "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"           : "AntiKt4EMTopoJets",
+    "m_inJetContainerName"           : "SignalJets",
     "m_inputAlgo"                    : "",#"SignalJets_Algo",
     "m_allJetContainerName"          : "AntiKt4EMTopoJets",
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",

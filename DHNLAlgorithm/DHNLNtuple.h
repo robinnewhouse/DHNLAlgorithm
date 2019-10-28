@@ -102,19 +102,19 @@ public:
     // these are the functions not inherited from Algorithm
     virtual EL::StatusCode configure();
 
-    bool fillTree(const xAOD::EventInfo *eventInfo,
-                  const xAOD::JetContainer *signalJets,
-                  const xAOD::JetContainer *truthJets,
-                  const xAOD::JetContainer *allJets,
-                  const xAOD::MuonContainer *allMuons,
-                  const xAOD::ElectronContainer *allElectrons,
-                  const xAOD::VertexContainer *vertices,
-                  const xAOD::TrackParticleContainer *tracks,
-                  const xAOD::TruthParticleContainer *TruthPart,
-                  const xAOD::MissingETContainer *Met,
-                  const xAOD::MissingETContainer *MetTrk,
-                  bool count,
-                  std::string systName = "");
+//    bool fillTree(const xAOD::EventInfo *eventInfo,
+//                  const xAOD::JetContainer *signalJets,
+//                  const xAOD::JetContainer *truthJets,
+//                  const xAOD::JetContainer *allJets,
+//                  const xAOD::MuonContainer *allMuons,
+//                  const xAOD::ElectronContainer *allElectrons,
+//                  const xAOD::VertexContainer *vertices,
+//                  const xAOD::TrackParticleContainer *tracks,
+//                  const xAOD::TruthParticleContainer *TruthPart,
+//                  const xAOD::MissingETContainer *Met,
+//                  const xAOD::MissingETContainer *MetTrk,
+//                  bool count,
+//                  std::string systName = "");
 
     // this is needed to distribute the algorithm to the workers
 ClassDef(DHNLNtuple, 1);
