@@ -33,8 +33,7 @@ static float GeV = 1000.;
 // this is needed to distribute the algorithm to the workers
 ClassImp(DHNLFilter)
 
-DHNLFilter :: DHNLFilter ()
-{
+DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
 // Here you put any code for the base initialization of variables,
 // e.g. initialize all pointers to 0.  Note that you should only put
 // the most basic initialization here, since this method will be
@@ -59,17 +58,14 @@ DHNLFilter :: DHNLFilter ()
 }
 
 
-
-EL::StatusCode  DHNLFilter :: configure ()
-{
+EL::StatusCode DHNLFilter::configure() {
     ANA_MSG_INFO("configure() : Configuring DHNLFilter Interface.");
 
     return EL::StatusCode::SUCCESS;
 }
 
 
-EL::StatusCode DHNLFilter :: setupJob (EL::Job& job)
-{
+EL::StatusCode DHNLFilter::setupJob(EL::Job &job) {
     // Here you put code that sets up the job on the submission object
     // so that it is ready to work with your algorithm, e.g. you can
     // request the D3PDReader service or add output files.  Any code you
@@ -78,14 +74,13 @@ EL::StatusCode DHNLFilter :: setupJob (EL::Job& job)
     // activated/deactivated when you add/remove the algorithm from your
     // job, which may or may not be of value to you.
     job.useXAOD();
-    xAOD::Init( "DHNLFilter" ).ignore(); // call before opening first file
+    xAOD::Init("DHNLFilter").ignore(); // call before opening first file
 
     return EL::StatusCode::SUCCESS;
 }
 
 
-EL::StatusCode DHNLFilter :: histInitialize ()
-{
+EL::StatusCode DHNLFilter::histInitialize() {
     // Here you do everything that needs to be done at the very                                                                                                                        
     // beginning on each worker node, e.g. create histograms and output                                                                                                                
     // trees.  This method gets called before any input files are                                                                                                                      
@@ -96,24 +91,20 @@ EL::StatusCode DHNLFilter :: histInitialize ()
 }
 
 
-
-EL::StatusCode DHNLFilter :: fileExecute ()
-{
+EL::StatusCode DHNLFilter::fileExecute() {
     // Here you do everything that needs to be done exactly once for every                                                                                                             
     // single file, e.g. collect a list of all lumi-blocks processed                                                                                                                   
     return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode DHNLFilter :: changeInput (bool /*firstFile*/)
-{
+EL::StatusCode DHNLFilter::changeInput(bool /*firstFile*/) {
     // Here you do everything you need to do when we change input files,                                                                                                               
     // e.g. resetting branch addresses on trees.  If you are using                                                                                                                     
     // D3PDReader or a similar service this method is not needed.                                                                                                                      
     return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode DHNLFilter :: initialize ()
-{
+EL::StatusCode DHNLFilter::initialize() {
     // Here you do everything that you need to do after the first input
     // file has been connected and before the first event is processed,
     // e.g. create additional histograms based on which variables are
@@ -125,13 +116,13 @@ EL::StatusCode DHNLFilter :: initialize ()
 
     m_event = wk()->xaodEvent();
     m_store = wk()->xaodStore();
+    m_eventCounter = -1;
 
 
     return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode DHNLFilter :: execute ()
-{
+EL::StatusCode DHNLFilter::execute() {
     // Here you do everything that needs to be done on every single
     // events, e.g. read input variables, apply cuts, and fill
     // histograms and trees.  This is where most of your actual analysis
@@ -139,16 +130,57 @@ EL::StatusCode DHNLFilter :: execute ()
     //cout<<"Hto4b execute"<<endl;
 
     ANA_MSG_DEBUG("execute(): Applying selection");
+
+    ++m_eventCounter;
+
+
+    ANA_MSG_DEBUG("execute() : Get Containers");
+    const xAOD::EventInfo *eventInfo(nullptr);
+    ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
+
+//    const xAOD::VertexContainer* vertices = 0;
+//    ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+
+    const xAOD::MuonContainer *allMuons = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
+
+
+    eventInfo->auxdecor<int>("passesFilter") = muonMuonFilter(allMuons);
+
     return EL::StatusCode::SUCCESS;
 
 }
 
+bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
 
+    int passesFilter = 0;
 
+    for (const xAOD::Muon *muon1 : *allMuons) {
+        ANA_MSG_DEBUG("Applying prompt muon filter cuts");
+        if (not(muon1->pt() / GeV > 28)) continue; // pt cut
+        if (not(muon1->eta() < 2.5)) continue; // eta cut
+        if (not(muon1->muonType() == xAOD::Muon::Combined)) continue;
+        if (not(muon1->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 0.05)) continue;
+        ANA_MSG_DEBUG("Prompt muon passed filter cuts");
 
+        for (const xAOD::Muon *muon2 : *allMuons) {
+            ANA_MSG_DEBUG("Applying displaced muon filter cuts");
+            if (muon1 == muon2) continue; // don't compare the same muon
+            if (not(muon2->pt() / GeV > 5)) continue; // pt cut
+            if (not(muon2->eta() < 2.5)) continue; // eta cut
+            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged )) continue;
+            if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 1.0)) continue;
+            ANA_MSG_DEBUG("Displaced muon passed filter cuts");
 
-EL::StatusCode DHNLFilter :: postExecute ()
-{
+            passesFilter = 1;
+        }
+    }
+    if (passesFilter) ANA_MSG_DEBUG("Event passes muon-muon filter"); 
+    else ANA_MSG_DEBUG("Event fails muon-muon filter");
+    return passesFilter;
+}
+
+EL::StatusCode DHNLFilter::postExecute() {
     // Here you do everything that needs to be done after the main event                                                                                                               
     // processing.  This is typically very rare, particularly in user                                                                                                                  
     // code.  It is mainly used in implementing the NTupleSvc.                                                                                                                         
@@ -156,10 +188,7 @@ EL::StatusCode DHNLFilter :: postExecute ()
 }
 
 
-
-
-EL::StatusCode DHNLFilter :: finalize ()
-{
+EL::StatusCode DHNLFilter::finalize() {
     // This method is the mirror image of initialize(), meaning it gets
     // called after the last event has been processed on the worker node
     // and allows you to finish up any objects you created in
@@ -173,8 +202,7 @@ EL::StatusCode DHNLFilter :: finalize ()
     return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode DHNLFilter :: histFinalize ()
-{
+EL::StatusCode DHNLFilter::histFinalize() {
     // This method is the mirror image of histInitialize(), meaning it                                                                                                                 
     // gets called after the last event has been processed on the worker                                                                                                               
     // node and allows you to finish up any objects you created in                                                                                                                     
