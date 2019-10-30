@@ -144,9 +144,9 @@ EL::StatusCode DHNLFilter::execute() {
     const xAOD::MuonContainer *allMuons = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
 
-
     eventInfo->auxdecor<int>("passesFilter") = muonMuonFilter(allMuons);
 
+    ANA_MSG_DEBUG("execute() : stored in auxdecor 'passesFilter'");
     return EL::StatusCode::SUCCESS;
 
 }
@@ -155,28 +155,32 @@ bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
 
     int passesFilter = 0;
 
+    ANA_MSG_DEBUG("Applying prompt muon filter cuts");
     for (const xAOD::Muon *muon1 : *allMuons) {
-        ANA_MSG_DEBUG("Applying prompt muon filter cuts");
         if (not(muon1->pt() / GeV > 28)) continue; // pt cut
         if (not(muon1->eta() < 2.5)) continue; // eta cut
         if (not(muon1->muonType() == xAOD::Muon::Combined)) continue;
         if (not(muon1->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 0.05)) continue;
         ANA_MSG_DEBUG("Prompt muon passed filter cuts");
 
+        ANA_MSG_DEBUG("Applying displaced muon filter cuts");
         for (const xAOD::Muon *muon2 : *allMuons) {
-            ANA_MSG_DEBUG("Applying displaced muon filter cuts");
             if (muon1 == muon2) continue; // don't compare the same muon
             if (not(muon2->pt() / GeV > 5)) continue; // pt cut
             if (not(muon2->eta() < 2.5)) continue; // eta cut
-            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged )) continue;
+            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
             if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 1.0)) continue;
             ANA_MSG_DEBUG("Displaced muon passed filter cuts");
 
             passesFilter = 1;
+            break;
         }
+        break;
     }
-    if (passesFilter) ANA_MSG_DEBUG("Event passes muon-muon filter"); 
-    else ANA_MSG_DEBUG("Event fails muon-muon filter");
+    if (passesFilter)
+        ANA_MSG_DEBUG("Event passes muon-muon filter");
+    else
+        ANA_MSG_DEBUG("Event fails muon-muon filter");
     return passesFilter;
 }
 

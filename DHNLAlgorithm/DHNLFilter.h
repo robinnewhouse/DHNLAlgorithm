@@ -41,7 +41,7 @@ public:
 
 private:
     int m_eventCounter;     //!
-    asg::AnaToolHandle<CP::IMuonSelectionTool> m_muonSelectionTool_handle{"CP::MuonSelectionTool/MuonSelectionTool", this};
+//    asg::AnaToolHandle<CP::IMuonSelectionTool> m_muonSelectionTool_handle{"CP::MuonSelectionTool/MuonSelectionTool", this};
 
     bool muonMuonFilter(const xAOD::MuonContainer *allMuons);
 

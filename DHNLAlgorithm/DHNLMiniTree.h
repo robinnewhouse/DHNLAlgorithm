@@ -12,6 +12,7 @@ class DHNLMiniTree : public HelpTreeBase {
 private:
     bool m_firstEvent;
 
+    int m_passesFilter;
     float m_weight;
 
 public:
@@ -19,17 +20,27 @@ public:
 
     ~DHNLMiniTree() override;
 
-    void AddEventUser(std::string detailStr = "") ;
+    void AddEventUser(std::string detailStr = "") override;
 
-    void AddTruthVerts   ( const std::string detailStr = "",             const std::string truthVtxName = "truthVtx" );
-    void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts, const std::string truthVtxName = "truthVtx" );
-    void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,            const std::string truthVtxName = "truthVtx" );
-    void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"                                               );
+    void FillEventUser(const xAOD::EventInfo *eventInfo) override;
 
-    void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
-    void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx" );
-    void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx" );
-    void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                        );
+    void ClearEventUser();
+
+    void AddTruthVerts(const std::string detailStr = "", const std::string truthVtxName = "truthVtx");
+
+    void FillTruthVerts(const xAOD::TruthVertexContainer *truthVerts, const std::string truthVtxName = "truthVtx");
+
+    void FillTruthVertex(const xAOD::TruthVertex *truthVtx, const std::string truthVtxName = "truthVtx");
+
+    void ClearTruthVerts(const std::string truthVtxName = "truthVtx");
+
+    void AddSecondaryVerts(const std::string detailStr = "", const std::string secVtxName = "secVtx");
+
+    void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx");
+
+    void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx");
+
+    void ClearSecondaryVerts(const std::string secVtxName = "secVtx");
 
 protected:
     std::map<std::string, DVs::TruthVertexContainer *> m_truthVerts;
