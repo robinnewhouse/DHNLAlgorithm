@@ -170,6 +170,27 @@ bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
             if (not(muon2->eta() < 2.5)) continue; // eta cut
             if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
             if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 1.0)) continue;
+
+
+            // > 0.1 mm for “good” Combined muon
+            // “good”: MS-ID matching chi2/DOF < 5.
+            // Is this interpreted corectly? // Robin
+            if (muon2->muonType() == xAOD::Muon::Combined) {
+                // Get chi2/dof for d0 decision
+                float d0 = muon2->primaryTrackParticle()->d0();
+                float chi2 = -1.0f;
+                int dof = -1;
+                if (!muon2->parameter(chi2, xAOD::Muon::msInnerMatchChi2)) continue;
+                if (!muon2->parameter(dof, xAOD::Muon::msInnerMatchDOF)) continue;
+                if (dof == 0) dof = 1;
+
+                float quality = chi2 / static_cast<float>(dof);
+                if (quality < 5.0)
+                    if (not(fabs(d0) > 0.1)) continue;
+            }
+            // I am interpreting this as if muon is StandAlone or SegmentTagged, don't submit it to the same requirements
+            // This is how it appears to be done in the old framework
+
             ANA_MSG_DEBUG("Displaced muon passed filter cuts");
 
             passesFilter = 1;
