@@ -47,7 +47,7 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hto4bFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
@@ -57,7 +57,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
 
@@ -70,8 +70,7 @@ DHNLFilterDict = {
     "m_electronPtCut"           : 27000,
     "m_muonPtCut"               : 25000,
     #----------------------- Other ----------------------------#
-
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
@@ -197,7 +196,8 @@ MuonSelectorDict = {
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
-    "m_IsoWPList"                 : "LooseTrackOnly,Loose,Gradient,GradientLoose",
+    "m_removeEventBadMuon"        : False,
+    "m_IsoWPList"                 : "FixedCutHighPtTrackOnly",
 }
 
 c.algorithm("MuonSelector", MuonSelectorDict )
@@ -248,7 +248,7 @@ ElectronSelectorDict = {
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleElTrigChains"        : "",
     #----------------------- Other ----------------------------#
-    "m_IsoWPList"                 : "Loose",
+    "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
 }
 
@@ -420,7 +420,7 @@ DHNLNtupleDict = {
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )

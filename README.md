@@ -17,7 +17,7 @@ mkdir source;
 mkdir run; 
 cd source;
 setupATLAS;
-asetup AnalysisBase,21.2.95,here;
+asetup AnalysisBase,21.2.90,here;
 # you can use the following for slc6:
 # asetup AnalysisBase,21.2.75,here;
 ```
