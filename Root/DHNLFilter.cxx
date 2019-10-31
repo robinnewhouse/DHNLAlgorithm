@@ -171,7 +171,6 @@ bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
             if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
             if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 1.0)) continue;
 
-
             // > 0.1 mm for “good” Combined muon
             // “good”: MS-ID matching chi2/DOF < 5.
             // Is this interpreted corectly? // Robin
@@ -198,7 +197,7 @@ bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
         }
         break;
     }
-    if (passesFilter)
+    if (passesFilter > 0)
         ANA_MSG_DEBUG("Event passes muon-muon filter");
     else
         ANA_MSG_DEBUG("Event fails muon-muon filter");

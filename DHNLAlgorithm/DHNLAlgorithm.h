@@ -33,8 +33,24 @@ class DHNLAlgorithm : public xAH::Algorithm {
     // that way they can be set directly from CINT and python.
 public:
 
+    //configuration variables
+    std::string m_inJetContainerName;   // input Jet container name
+    std::string m_inputAlgo;          // input algo for when running systs
+    std::string m_allJetContainerName;// input container name
+    std::string m_allJetInputAlgo;    // input algo for when running systs
+    std::string m_inMETContainerName;  // input MET container name
+    std::string m_inMETTrkContainerName;  // input METTrk container name
     std::string m_inMuContainerName;    // input Muon container name
-
+    std::string m_inElContainerName;    // input Electron container name
+    bool m_isMC;                      // Is MC
+    bool m_useCutFlow;                // true will write out cutflow histograms
+    std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
+    bool m_useMCPileupCheck;          // determined by name of MCPileupCheckContainer
+    float m_leadingJetPtCut;          // Leading jet Pt cut
+    float m_subleadingJetPtCut;          // Leading jet Pt cut
+    uint m_jetMultiplicity;          // Leading jet Pt cut
+    bool m_truthLevelOnly;            // truthLevelOnly info
+    float m_metCut;
 
 private:
 

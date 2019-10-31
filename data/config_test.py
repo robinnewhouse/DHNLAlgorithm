@@ -346,46 +346,63 @@ SecondaryVertexSelectorDict = {
 
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# Dict_VertexMatcher = {
-#     "m_name"                           : "VertexMatch",
-#     "m_msgLevel"                       : "Info",
-#     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-# }
-# # Vertex Matching
-# if args.is_MC:
-#     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+Dict_VertexMatcher = {
+    "m_name"                           : "VertexMatch",
+    "m_msgLevel"                       : "Info",
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    #------------------------ Other ------------------------------#
+    "m_msgLevel"             : "Info",
+}
+# Vertex Matching
+if args.is_MC:
+    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# ##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% TruthSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# DHNLDict = {
-#     "m_name"                    : "DHNLAlgo",
+# TruthSelectorDict = {
+#     "m_name"                      : "TruthSelect",
 #     #----------------------- Container Flow ----------------------------#
-#     "m_inJetContainerName"      : "SignalJets",
-#     "m_inputAlgo"               : "SignalJets_Algo",
-#     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
-#     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-#     "m_inMuContainerName"       : "Muons_Signal",
-#     "m_inElContainerName"       : "Electrons_Signal",
-#     "m_inMETContainerName"      : "MET",
-#     "m_inMETTrkContainerName"   : "METTrk",
-#     #----------------------- Selections ----------------------------#
-#     "m_leadingJetPtCut"         : 20,
-#     "m_subleadingJetPtCut"      : 20,
-#     "m_jetMultiplicity"         : 2,
-#     "m_useMCPileupCheck"        : False,
-#     "m_metCut"                  : 20000,
-#     #----------------------- Other ----------------------------#
-#     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-#     "m_msgLevel"                : "Info",
+#     "m_inContainerName"           : "Muons_Signal",
+#     "m_outContainerName"          : "Muons_Truth",
+#     #------------------------ Other ------------------------------#
+#     "m_msgLevel"             : "Debug",
 # }
+#
+# if args.is_MC:
+#     c.algorithm("TruthSelector", TruthSelectorDict )
 
-# c.algorithm("DHNL", DHNLDict )
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+DHNLDict = {
+    "m_name"                    : "DHNLAlgo",
+    #----------------------- Container Flow ----------------------------#
+    "m_inJetContainerName"      : "SignalJets",
+    "m_inputAlgo"               : "SignalJets_Algo",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
+    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_inMuContainerName"       : "Muons_Signal",
+    "m_inElContainerName"       : "Electrons_Signal",
+    "m_inMETContainerName"      : "MET",
+    "m_inMETTrkContainerName"   : "METTrk",
+    #----------------------- Selections ----------------------------#
+    "m_leadingJetPtCut"         : 20,
+    "m_subleadingJetPtCut"      : 20,
+    "m_jetMultiplicity"         : 2,
+    "m_useMCPileupCheck"        : False,
+    "m_metCut"                  : 20000,
+    #----------------------- Other ----------------------------#
+    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
+    "m_msgLevel"                : "Debug",
+}
+
+c.algorithm("DHNLAlgorithm", DHNLDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
