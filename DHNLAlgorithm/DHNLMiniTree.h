@@ -13,6 +13,14 @@ private:
     bool m_firstEvent;
 
     int m_passesFilter;
+    std::vector<std::vector<int>> m_secVtxTrackParticleIndex;
+    std::vector<std::vector<int>> m_secVtxMuonIndex;
+    std::vector<std::vector<double>> m_secVtxMuonPt;
+    std::vector<std::vector<int>> m_secVtxElectronIndex;
+    std::vector<int> m_muon_index;
+    std::vector<int> m_muon_type;
+    std::vector<int> m_electron_index;
+
     float m_weight;
 
 public:
@@ -24,7 +32,19 @@ public:
 
     void FillEventUser(const xAOD::EventInfo *eventInfo) override;
 
-    void ClearEventUser();
+    void ClearEventUser() override;
+
+    void AddMuonsUser(std::string detailStr = "", std::string muonName = "muon") override;
+
+    void FillMuonsUser(const xAOD::Muon *, std::string muonName = "muon") override;
+
+    void ClearMuonsUser( std::string muonName = "muon") override;
+
+    void AddElectronsUser(std::string detailStr = "", std::string electronName = "electron") override;
+
+    void FillElectronsUser(const xAOD::Electron *, std::string electronName = "electron") override;
+
+    void ClearElectronsUser( std::string electronName = "electron") override;
 
     void AddTruthVerts(const std::string detailStr = "", const std::string truthVtxName = "truthVtx");
 
@@ -45,6 +65,7 @@ public:
 protected:
     std::map<std::string, DVs::TruthVertexContainer *> m_truthVerts;
     std::map<std::string, DVs::SecondaryVertexContainer *> m_secVerts;
+
 };
 
 

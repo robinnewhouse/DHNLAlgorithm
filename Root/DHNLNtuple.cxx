@@ -201,6 +201,7 @@ EL::StatusCode DHNLNtuple::execute() {
 
     const xAOD::TruthParticleContainer *TruthPart = nullptr;
     if (m_isMC) {ANA_CHECK (HelperFunctions::retrieve(TruthPart, "TruthParticles", m_event, m_store)); }
+    if (TruthPart) { m_myTrees[systName]->FillTruth(m_inMuContainerName, TruthPart); }
 
     const xAOD::JetContainer *truthJets = nullptr;
     if (m_useMCPileupCheck && m_isMC) {
@@ -267,6 +268,7 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddMET(m_metDetailStr);
     miniTree->AddMET("trkMET", m_metTrkDetailStr);
     miniTree->AddTrackParts("track", m_trackDetailStr);
+    miniTree->AddTruthParts(m_inMuContainerName, "truth");
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);

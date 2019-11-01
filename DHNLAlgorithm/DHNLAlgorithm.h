@@ -18,7 +18,7 @@
 #include "xAODEgamma/ElectronContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 #include <xAODAnaHelpers/JetHists.h>
-//#include "Hto4bLLPAlgorithm/Hto4bLLPMiniTree.h"
+//#include "DHNLAlgorithm/DHNLMiniTree.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODTruth/TruthParticleContainer.h"
 
@@ -68,6 +68,10 @@ public:
     EL::StatusCode finalize() override;
     // this is needed to distribute the algorithm to the workers
 ClassDef(DHNLAlgorithm, 1);
+
+    const xAOD::Muon *matchTrackToMuon(const xAOD::TrackParticle *track, const xAOD::MuonContainer *inMuons);
+
+    const xAOD::Electron *matchTrackToElectron(const xAOD::TrackParticle *track, const xAOD::ElectronContainer *inElectrons);
 };
 
 

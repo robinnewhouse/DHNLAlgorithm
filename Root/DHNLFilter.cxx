@@ -127,7 +127,7 @@ EL::StatusCode DHNLFilter::execute() {
     // events, e.g. read input variables, apply cuts, and fill
     // histograms and trees.  This is where most of your actual analysis
     // code will go.
-    //cout<<"Hto4b execute"<<endl;
+    //cout<<"DHNL execute"<<endl;
 
     ANA_MSG_DEBUG("execute(): Applying selection");
 
