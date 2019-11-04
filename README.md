@@ -18,7 +18,7 @@ mkdir run;
 cd source;
 setupATLAS;
 asetup AnalysisBase,21.2.90,here;
-# you can use the following for slc6:
+# # alternatively you can use the following for slc6:
 # asetup AnalysisBase,21.2.75,here;
 ```
 
@@ -27,6 +27,14 @@ Get `DHNLAlgorithm` with:
 ```
 lsetup git; 
 git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git;
+```
+
+Now manually change the commit for the xAODAnaHelpers dependency to match update AnalysisBase.
+```
+...
+cd DHNLAlgorithm/deps/DVAnalysisBase/deps/xAODAnaHelpers/
+git checkout fdb7531
+cd ../../../../../
 ```
 
 To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`, run
@@ -39,7 +47,7 @@ And compile
 ```
 cd ../build/; 
 cmake ../source/;
-make; 
+make -j; 
 ```
 
 Then make sure you setup the new environment:
@@ -51,8 +59,9 @@ source x*-*gcc*-opt/setup.sh  # (wildcards since os and gcc versions may differ)
 ### Future Sessions w/ Same Install
 
 ```
+cd InstallArea/source/;
 asetup;
-cd build/; 
+cd ../build/; 
 source x*-*gcc*-opt/setup.sh 
 ```
 ### Running
