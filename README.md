@@ -31,7 +31,6 @@ git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-201
 
 Now manually change the commit for the xAODAnaHelpers dependency to match update AnalysisBase.
 ```
-...
 cd DHNLAlgorithm/deps/DVAnalysisBase/deps/xAODAnaHelpers/
 git checkout fdb7531
 cd ../../../../../
@@ -39,15 +38,17 @@ cd ../../../../../
 
 To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`, run
 ```
-source DHNLAlgorithm/deps/DVAnalysisBase/util/dependencyHack.sh;
+cd DHNLAlgorithm/deps/DVAnalysisBase/
+source util/dependencyHack.sh
+cd ../../../
 ```
 
 And compile
 
 ```
-cd ../build/; 
-cmake ../source/;
-make -j; 
+cd ../build/
+cmake ../source/
+make -j
 ```
 
 Then make sure you setup the new environment:
@@ -59,9 +60,9 @@ source x*-*gcc*-opt/setup.sh  # (wildcards since os and gcc versions may differ)
 ### Future Sessions w/ Same Install
 
 ```
-cd InstallArea/source/;
-asetup;
-cd ../build/; 
+cd InstallArea/source/
+asetup
+cd ../build
 source x*-*gcc*-opt/setup.sh 
 ```
 ### Running
@@ -72,4 +73,19 @@ Go to your run directory
 cd ../run/
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun direct
 ```
+
+### Pileup Reweighting
+
+When running on a new Monte Carlo sample you may see an error message from xAODAnaHelpers that says something like
+
+```
+...
+CP::TPileupReweighting... ERROR   Unrecognised channelNumber 311620 for periodNumber 284500
+...
+```
+This is likely due to missing pileup reweighting (PRW) files.
+To fix this, use rucio to find the `NTUP_PILEUP` file that matches your dataset.
+Reference the file location in the `PRWList` field of your configuration file.
+More information about this can be found at the [Extended Pileup Reweighting](https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting) TWiki page.
+These PRW files may need to be generated for your dataset.
 

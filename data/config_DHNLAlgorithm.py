@@ -353,8 +353,6 @@ Dict_VertexMatcher = {
     "m_name"                           : "VertexMatch",
     "m_msgLevel"                       : "Info",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -401,7 +399,7 @@ DHNLDict = {
     "m_metCut"                  : 20000,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Info",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
