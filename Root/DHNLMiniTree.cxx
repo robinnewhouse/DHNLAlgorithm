@@ -28,17 +28,6 @@ void DHNLMiniTree::AddEventUser(const std::string detailStr) {
 
     m_tree->Branch("passesFilter", &m_passesFilter);
 
-
-    m_tree->Branch("secVtxTrackParticleIndex", &m_secVtxTrackParticleIndex);
-    m_tree->Branch("secVtxMuonIndex", &m_secVtxMuonIndex);
-    m_tree->Branch("secVtxMuonPt", &m_secVtxMuonPt);
-    m_tree->Branch("secVtxElectronIndex", &m_secVtxElectronIndex);
-
-
-//    m_tree->Branch("passesElecFilter", &m_passesElecFilter);
-//    m_tree->Branch("passesMuonFilter", &m_passesMuonFilter);
-//    m_tree->Branch("Met", &m_Met);
-
     // weights
 //    m_tree->Branch("weight", &m_weight, "weight/F");
 //    m_tree->Branch("weight_xs", &m_weight_xs, "weight_xs/F");
@@ -61,16 +50,7 @@ void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
     // Event level info
     if (eventInfo->isAvailable<int>("passesFilter"))
         m_passesFilter = eventInfo->auxdecor<int>("passesFilter");
-
-    // Displaced Vertex Info // Temporary, moving this to a more logical place
-    if (eventInfo->isAvailable<std::vector<std::vector<int>>>("secVtxTrackParticleIndex"))
-        m_secVtxTrackParticleIndex = eventInfo->auxdecor<std::vector<std::vector<int>>>("secVtxTrackParticleIndex");
-    if (eventInfo->isAvailable<std::vector<std::vector<int>>>("secVtxMuonIndex"))
-        m_secVtxMuonIndex = eventInfo->auxdecor<std::vector<std::vector<int>>>("secVtxMuonIndex");
-    if (eventInfo->isAvailable<std::vector<std::vector<int>>>("secVtxElectronIndex"))
-        m_secVtxElectronIndex = eventInfo->auxdecor<std::vector<std::vector<int>>>("secVtxElectronIndex");
 }
-
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string muonName) {
     if (muon->isAvailable<int>("index"))

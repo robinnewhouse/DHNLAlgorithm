@@ -28,13 +28,8 @@ Get `DHNLAlgorithm` with:
 lsetup git; 
 git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git;
 ```
+Please contact me if you have repository access issues at this step.
 
-Now manually change the commit for the xAODAnaHelpers dependency to match update AnalysisBase.
-```
-cd DHNLAlgorithm/deps/DVAnalysisBase/deps/xAODAnaHelpers/
-git checkout fdb7531
-cd ../../../../../
-```
 
 To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`, run
 ```
