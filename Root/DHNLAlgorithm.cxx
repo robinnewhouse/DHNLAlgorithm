@@ -74,9 +74,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
     // histograms and trees.  This is where most of your actual analysis
     // code will go.
 
-    ANA_MSG_INFO ("in execute");
-
-
     m_event = wk()->xaodEvent();
     m_store = wk()->xaodStore();
 
@@ -85,7 +82,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     ANA_CHECK (evtStore()->retrieve(eventInfo, "EventInfo"));
 
     // print out run and event number from retrieved object
-    ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Store lepton information //////////////////////
 
