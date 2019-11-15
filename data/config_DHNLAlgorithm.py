@@ -1,15 +1,43 @@
 from xAODAnaHelpers import Config
+import os
 
 c = Config()
 
-GRLList      = ['$TestArea/DHNLAlgorithm/data/GRL/physics_25ns_Triggerno17e33prim.xml' ]
-PRWList      = [
-    '$TestArea/DHNLAlgorithm/data/PRW/mc16_13TeV.311660.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_20G_lt10dd_el.merge.NTUP_PILEUP.e7422_e5984_a875_r10740_r10706_p3384_p3385/NTUP_PILEUP.18061252._000001.pool.root.1',
+# Good Run Lists
+GRLList = [
+    '$TestArea/DHNLAlgorithm/data/GRL/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '$TestArea/DHNLAlgorithm/data/GRL/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '$TestArea/DHNLAlgorithm/data/GRL/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '$TestArea/DHNLAlgorithm/data/GRL/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
-lumicalcList = ['$TestArea/DHNLAlgorithm/data/lumi/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root',
-                '$TestArea/DHNLAlgorithm/data/lumi/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root']
-#lumicalcList = ['$TestArea/DHNLAlgorithm/data/lumi/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-001.root',
-#                '$TestArea/DHNLAlgorithm/data/lumi/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root']
+
+# Pileup Reweighting
+# The sample you're running over must have the PRW file available.
+# If you are getting errors such as "Unrecognised channelNumber 311660 for periodNumber 300000" this is the place to start.
+# Load the PRW File locations from an external file. Comment any lines you don't want with '#'.
+PRWFiles = os.environ['TestArea']+'/DHNLAlgorithm/data/PRW/PRWFiles.txt'
+with open(PRWFiles) as f:
+    PRWList = [line.rstrip() for line in f] # read lines
+    PRWList = [line for line in PRWList if line]  # remove empty lines
+    PRWList = [line for line in PRWList if not line.startswith("#")]  # remove comments
+
+# Lumicalc Files
+# Must be careful about which lines are commented and which are active.
+# Note: if you want to use all lumicalc files without deactivating any,
+# then the PRW files for ALL MC CAMPAIGNS must be loaded in the PRWList.
+# If this isn't done the pileup reweighting tool will crash the algorithm.
+# Note 2: These files are fairly large (~20 MB so they will not be kept
+# in the git repository for now). You may need to copy them from cvmfs
+# and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
+lumicalcList = [
+    # mc16a (r-tag r10740)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root',
+    # mc16d (r-tag r10739)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',
+    # mc16e (r-tag r10790)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
+]
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
@@ -353,6 +381,8 @@ Dict_VertexMatcher = {
     "m_name"                           : "VertexMatch",
     "m_msgLevel"                       : "Info",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    "m_inMuContainerName"            : "Muons_Calibrate",
+    "m_inElContainerName"            : "Electrons_Calibrate",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -399,7 +429,7 @@ DHNLDict = {
     "m_metCut"                  : 20000,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -407,6 +437,9 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# All possible switches for storing information can be found in
+# DHNLAlgorithm/deps/DVAnalysisBase/deps/xAODAnaHelpers/Root/HelperClasses.cxx
+# DHNLAlgorithm/deps/DVAnalysisBase/Root/DVHelperClasses.cxx
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
@@ -429,10 +462,10 @@ DHNLNtupleDict = {
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_metDetailStr"                 : "metClus",
-    "m_metTrkDetailStr"              : "metTrk",
+    "m_metDetailStr"                 : "metClus sigClus",
+    "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
+    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched vertices. "close": distance matched vertices.
     "m_truthVertexDetailStr"         : "isMatched",
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
