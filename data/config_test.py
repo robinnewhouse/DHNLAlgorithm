@@ -89,16 +89,16 @@ DHNLFilterDict = {
 
     #----------------------- Selections ----------------------------#
 
-    "m_TrackMinPt"              : 400,
-    "m_TrackZ0Max"              : 0.3,
-    "m_TrackD0Max"              : 0.5,
-    "m_jetPtCut"                : 20,
-    "m_AlphaMaxCut"             : 0.03,
-    "m_CHFCut"                  : 0.3,
-    "m_electronPtCut"           : 27000,
-    "m_muonPtCut"               : 25000,
+    # "m_TrackMinPt"              : 400,
+    # "m_TrackZ0Max"              : 0.3,
+    # "m_TrackD0Max"              : 0.5,
+    # "m_jetPtCut"                : 20,
+    # "m_AlphaMaxCut"             : 0.03,
+    # "m_CHFCut"                  : 0.3,
+    # "m_electronPtCut"           : 27000,
+    # "m_muonPtCut"               : 25000,
     #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Info",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
@@ -437,6 +437,9 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# All possible switches for storing information can be found in
+# DHNLAlgorithm/deps/DVAnalysisBase/deps/xAODAnaHelpers/Root/HelperClasses.cxx
+# DHNLAlgorithm/deps/DVAnalysisBase/Root/DVHelperClasses.cxx
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
@@ -462,8 +465,8 @@ DHNLNtupleDict = {
     "m_metDetailStr"                 : "metClus",
     "m_metTrkDetailStr"              : "metTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
-    "m_truthVertexDetailStr"         : "isMatched",
+    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",

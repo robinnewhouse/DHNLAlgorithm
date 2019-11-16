@@ -465,8 +465,8 @@ DHNLNtupleDict = {
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched vertices. "close": distance matched vertices.
-    "m_truthVertexDetailStr"         : "isMatched",
+    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",

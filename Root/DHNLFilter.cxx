@@ -44,8 +44,45 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
     ANA_MSG_INFO("DHNLFilter() : Calling constructor");
 
 //    m_allJetContainerName      = "";
-//    m_inMuContainerName        = "";
-//    m_inElContainerName        = "";
+    m_inMuContainerName = "Muons";
+    m_inElContainerName = "Electrons";
+
+    // Muons
+    // Prompt muons
+    m_mu1PtMin = 28.0*GeV;
+    m_mu1AbsEtaMax = 2.5;
+    m_mu1Types = {xAOD::Muon::Combined};
+    m_mu1IsoType = xAOD::Iso::ptcone30;
+    m_mu1IsoCutIsRel = true; // "Cut is on relative isolation"
+    m_mu1IsoCut = 0.05;
+    // Displaced muons
+    m_mu2PtMin = 5.0*GeV;
+    m_mu2AbsEtaMax = 2.5;
+    m_mu2Types = {xAOD::Muon::Combined, xAOD::Muon::MuonStandAlone, xAOD::Muon::SegmentTagged};
+    m_mu2IsoType = xAOD::Iso::ptcone30;
+    m_mu2IsoCutIsRel = true; // "Cut is on relative isolation"
+    m_mu2IsoCut = 1.;
+    m_mu2d0Min = 0.1; // "Unit is mm"
+
+    // Electrons
+    // Prompt electrons
+    m_el1PtMin = 28.0*GeV;
+    m_el1AbsEtaMax = 2.5;
+    m_el1IDKey = "LHLoose";
+    m_el1IsoType = xAOD::Iso::ptcone30;
+    m_el1IsoCutIsRel = true; // "Cut is on relative isolation"
+    m_el1IsoCut = 0.05;
+    // Displaced electrons
+    m_el2PtMin = 5.0*GeV;
+    m_el2AbsEtaMax = 2.5;
+    m_el2IsoType = xAOD::Iso::ptcone30;
+    m_el2IsoCutIsRel = true; // "Cut is on relative isolation"
+    m_el2IsoCut = 1.;
+    m_el2d0Min = 1.0; // "Unit is mm"
+
+    m_dPhiMin = 0.0; // "Unit is radian"
+
+
 //    m_msgLevel                 = MSG::INFO;
 //    m_TrackMinPt               = 0;
 //    m_TrackZ0Max               = 0;
@@ -133,76 +170,451 @@ EL::StatusCode DHNLFilter::execute() {
 
     ++m_eventCounter;
 
+    bool passesFilter = applyFilter();
+    ANA_MSG_DEBUG("execute() : passesFilter:  " << passesFilter);
+
+    return EL::StatusCode::SUCCESS;
+
+}
+
+// The filter itself
+// adapted from https://gitlab.cern.ch/atlas/athena/blob/21.0/PhysicsAnalysis/SUSYPhys/LongLivedParticleDPDMaker/src/HnlSkimmingTool.cxx
+bool DHNLFilter::applyFilter() const {
+    bool acceptEventMuMu = false;
+    bool acceptEventElMu = false;
+    bool acceptEventElEl = false;
+    bool acceptEventMuEl = false;
+
+//    // Trigger check
+//    bool passedTrigger = true;
+//    if (m_triggers.size() > 0) {
+//        passedTrigger = false;
+//        for (const std::string &trigger : m_triggers) {
+//            bool decision = m_trigDecisionTool->isPassed(trigger);
+//            if (decision) {
+//                passedTrigger = true;
+//                break;
+//            }
+//        }
+//    }
+//    if (not passedTrigger) return acceptEvent;
 
     ANA_MSG_DEBUG("execute() : Get Containers");
     const xAOD::EventInfo *eventInfo(nullptr);
     ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
 
-//    const xAOD::VertexContainer* vertices = 0;
-//    ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+    const xAOD::MuonContainer *muons = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(muons, m_inMuContainerName, m_event, m_store));
 
-    const xAOD::MuonContainer *allMuons = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
+    const xAOD::ElectronContainer *electrons = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(electrons, m_inElContainerName, m_event, m_store));
 
-    eventInfo->auxdecor<int>("passesFilter") = muonMuonFilter(allMuons);
+    // Prompt leptons
+    std::vector<const xAOD::Muon *> promptMuonCandidates;
+    std::vector<const xAOD::Electron *> promptElectronCandidates;
+    getPromptMuonCandidates(muons, promptMuonCandidates);
+//    if (promptMuonCandidates.empty()) return acceptEvent;
+    getPromptElectronCandidates(electrons, promptElectronCandidates);
+//    if (promptElectronCandidates.empty()) return acceptEvent;
 
-    ANA_MSG_DEBUG("execute() : stored in auxdecor 'passesFilter'");
-    return EL::StatusCode::SUCCESS;
+    // Displaced leptons
+    std::vector<const xAOD::Muon *> displacedMuonCandidates;
+    std::vector<const xAOD::Electron *> displacedElectronCandidates;
+    getDisplacedMuonCandidates(muons, displacedMuonCandidates);
+//    if (displacedMuonCandidates.empty()) return acceptEvent;
+    getDisplacedElectronCandidates(electrons, displacedElectronCandidates);
+//    if (displacedElectronCandidates.empty()) return acceptEvent;
 
-}
+    // Final check: at least one pair of a prompt lepton candidate and
+    // a displaced lepton candidate, which is different from the prompt lepton candidate
 
-bool DHNLFilter::muonMuonFilter(const xAOD::MuonContainer *allMuons) {
-
-    int passesFilter = 0;
-
-    ANA_MSG_DEBUG("Applying prompt muon filter cuts");
-    for (const xAOD::Muon *muon1 : *allMuons) {
-        if (not(muon1->pt() / GeV > 28)) continue; // pt cut
-        if (not(muon1->eta() < 2.5)) continue; // eta cut
-        if (not(muon1->muonType() == xAOD::Muon::Combined)) continue;
-        if (not(muon1->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 0.05)) continue;
-        ANA_MSG_DEBUG("Prompt muon passed filter cuts");
-
-        ANA_MSG_DEBUG("Applying displaced muon filter cuts");
-        for (const xAOD::Muon *muon2 : *allMuons) {
-            if (muon1 == muon2) continue; // don't compare the same muon
-            if (not(muon2->pt() / GeV > 5)) continue; // pt cut
-            if (not(muon2->eta() < 2.5)) continue; // eta cut
-            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
-            if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 1.0)) continue;
-
-            // > 0.1 mm for “good” Combined muon
-            // “good”: MS-ID matching chi2/DOF < 5.
-            // Is this interpreted corectly? // Robin
-            if (muon2->muonType() == xAOD::Muon::Combined) {
-                // Get chi2/dof for d0 decision
-                float d0 = muon2->primaryTrackParticle()->d0();
-                float chi2 = -1.0f;
-                int dof = -1;
-                if (!muon2->parameter(chi2, xAOD::Muon::msInnerMatchChi2)) continue;
-                if (!muon2->parameter(dof, xAOD::Muon::msInnerMatchDOF)) continue;
-                if (dof == 0) dof = 1;
-
-                float quality = chi2 / static_cast<float>(dof);
-                if (quality < 5.0)
-                    if (not(fabs(d0) > 0.1)) continue;
+    // mu-mu
+    for (const xAOD::Muon *promptMuonCandidate : promptMuonCandidates) {
+        for (const xAOD::Muon *displacedMuonCandidate : displacedMuonCandidates) {
+            if (promptMuonCandidate != displacedMuonCandidate) {
+                double dPhi = promptMuonCandidate->phi() - displacedMuonCandidate->phi();
+                while (dPhi >= +M_PI) dPhi -= 2. * M_PI;
+                while (dPhi <= -M_PI) dPhi += 2. * M_PI;
+                dPhi = std::abs(dPhi);
+                if (dPhi >= m_dPhiMin) {
+                    acceptEventMuMu = true;
+                    ANA_MSG_DEBUG("applyFilter() : event passes Mu Mu Filter");
+                    break;
+                }
             }
-            // I am interpreting this as if muon is StandAlone or SegmentTagged, don't submit it to the same requirements
-            // This is how it appears to be done in the old framework
-
-            ANA_MSG_DEBUG("Displaced muon passed filter cuts");
-
-            passesFilter = 1;
-            break;
         }
-        break;
+        if (acceptEventMuMu) break; // no need for more checks
     }
-    if (passesFilter > 0)
-        ANA_MSG_DEBUG("Event passes muon-muon filter");
-    else
-        ANA_MSG_DEBUG("Event fails muon-muon filter");
-    return passesFilter;
+
+    // mu-e
+    for (const xAOD::Muon *promptMuonCandidate : promptMuonCandidates) {
+        for (const xAOD::Electron *displacedElectronCandidate : displacedElectronCandidates) {
+            double dPhi = promptMuonCandidate->phi() - displacedElectronCandidate->phi();
+            while (dPhi >= +M_PI) dPhi -= 2. * M_PI;
+            while (dPhi <= -M_PI) dPhi += 2. * M_PI;
+            dPhi = std::abs(dPhi);
+            if (dPhi >= m_dPhiMin) {
+                acceptEventMuEl = true;
+                ANA_MSG_DEBUG("applyFilter() : event passes Mu El Filter");
+                break;
+            }
+        }
+        if (acceptEventMuEl) break; // no need for more checks
+    }
+
+    // e-mu
+    for (const xAOD::Electron *promptElectronCandidate : promptElectronCandidates) {
+        for (const xAOD::Muon *displacedMuonCandidate : displacedMuonCandidates) {
+            double dPhi = promptElectronCandidate->phi() - displacedMuonCandidate->phi();
+            while (dPhi >= +M_PI) dPhi -= 2. * M_PI;
+            while (dPhi <= -M_PI) dPhi += 2. * M_PI;
+            dPhi = std::abs(dPhi);
+            if (dPhi >= m_dPhiMin) {
+                acceptEventElMu = true;
+                ANA_MSG_DEBUG("applyFilter() : event passes El Mu Filter");
+                break;
+            }
+        }
+        if (acceptEventElMu) break; // no need for more checks
+    }
+
+    // e-e
+    for (const xAOD::Electron *promptElectronCandidate : promptElectronCandidates) {
+        for (const xAOD::Electron *displacedElectronCandidate : displacedElectronCandidates) {
+            if (promptElectronCandidate != displacedElectronCandidate) {
+                double dPhi = promptElectronCandidate->phi() - displacedElectronCandidate->phi();
+                while (dPhi >= +M_PI) dPhi -= 2. * M_PI;
+                while (dPhi <= -M_PI) dPhi += 2. * M_PI;
+                dPhi = std::abs(dPhi);
+                if (dPhi >= m_dPhiMin) {
+                    acceptEventElEl = true;
+                    ANA_MSG_DEBUG("applyFilter() : event passes El El Filter");
+                    break;
+                }
+            }
+        }
+        if (acceptEventElEl) break; // no need for more checks
+    }
+
+    // Store decision for each filter
+    eventInfo->auxdecor<bool>("passesHnlMuMuFilter") = acceptEventMuMu;
+    eventInfo->auxdecor<bool>("passesHnlElMuFilter") = acceptEventElMu;
+    eventInfo->auxdecor<bool>("passesHnlElElFilter") = acceptEventElEl;
+    eventInfo->auxdecor<bool>("passesHnlMuElFilter") = acceptEventMuEl;
+    ANA_MSG_DEBUG("applyFilter() : filter decisions stored");
+
+    return acceptEventMuMu || acceptEventElMu || acceptEventElEl || acceptEventMuEl;
 }
+
+void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
+                                         std::vector<const xAOD::Muon *> &promptMuonCandidates) const {
+    for (const xAOD::Muon *muon : *muons) {
+        // pT cut
+        if (not(muon->pt() > m_mu1PtMin)) continue;
+
+        // eta cut
+        if (not(std::abs(muon->eta()) < m_mu1AbsEtaMax)) continue;
+
+        // type cut
+        bool passTypeCut = true;
+        if (m_mu1Types.size() > 0) {
+            passTypeCut = false;
+            int type = muon->muonType();
+            for (const int &allowedType : m_mu1Types) {
+                if (allowedType == type) {
+                    passTypeCut = true;
+                    break;
+                }
+            }
+        }
+        if (not passTypeCut) continue;
+
+        // isolation cut
+        bool isIso = false;
+        float isoValue = 0.;
+        const xAOD::Iso::IsolationType isoType = static_cast<xAOD::Iso::IsolationType>(m_mu1IsoType);
+        if (not m_mu1IsoCutIsRel) {
+            if (muon->isolation(isoValue, isoType) and (isoValue < m_mu1IsoCut)) isIso = true;
+        } else {
+            if (muon->isolation(isoValue, isoType) and (isoValue / muon->pt() < m_mu1IsoCut)) isIso = true;
+        }
+        if (not isIso) continue;
+
+        promptMuonCandidates.push_back(muon);
+    }
+}
+
+void DHNLFilter::getDisplacedMuonCandidates(const xAOD::MuonContainer *muons, std::vector<const xAOD::Muon *> &displacedMuonCandidates) const {
+    for (const xAOD::Muon *muon : *muons) {
+        // pT cut
+        if (not(muon->pt() > m_mu2PtMin)) continue;
+
+        // eta cut
+        if (not(std::abs(muon->eta()) < m_mu2AbsEtaMax)) continue;
+
+        // type cut
+        bool passTypeCut = true;
+        int type = muon->muonType();
+        if (m_mu2Types.size() > 0) {
+            passTypeCut = false;
+            for (const int &allowedType : m_mu2Types) {
+                if (type == allowedType) {
+                    passTypeCut = true;
+                    break;
+                }
+            }
+        }
+        if (not passTypeCut) continue;
+
+        // isolation cut
+        bool isIso = false;
+        float isoValue = 0.;
+        const xAOD::Iso::IsolationType isoType = static_cast<xAOD::Iso::IsolationType>(m_mu2IsoType);
+        if (not m_mu2IsoCutIsRel) {
+            if (muon->isolation(isoValue, isoType) and (isoValue < m_mu2IsoCut)) isIso = true;
+        } else {
+            if (muon->isolation(isoValue, isoType) and isoValue / muon->pt() < m_mu2IsoCut) isIso = true;
+        }
+        if (not isIso) continue;
+
+        // d0 cut
+        bool passD0cut = true;
+        if (type == xAOD::Muon::Combined) { // d0 cut is for combined muons only
+            passD0cut = false;
+            if (isGood(*muon)) { // if muon has a good chi2/dof
+                if (std::abs(muon->primaryTrackParticle()->d0()) > m_mu2d0Min) passD0cut = true;
+            } else {
+                passD0cut = true;
+            }
+        }
+        if (not passD0cut) continue;
+
+        displacedMuonCandidates.push_back(muon);
+    }
+}
+
+void DHNLFilter::getPromptElectronCandidates(const xAOD::ElectronContainer *electrons,
+                                             std::vector<const xAOD::Electron *> &promptElectronCandidates) const {
+    for (const xAOD::Electron *electron : *electrons) {
+        // pT cut
+        if (not(electron->pt() > m_el1PtMin)) continue;
+
+        // eta cut
+        if (not(std::abs(electron->eta()) < m_el1AbsEtaMax)) continue;
+
+        // eID cut
+        bool passEID = false;
+        if (not electron->passSelection(passEID, m_el1IDKey)) continue;
+        if (not passEID) continue;
+
+        // isolation cut
+        bool isIso = false;
+        float isoValue = 0.;
+        const xAOD::Iso::IsolationType isoType = static_cast<xAOD::Iso::IsolationType>(m_el1IsoType);
+        if (not m_el1IsoCutIsRel) {
+            if (electron->isolation(isoValue, isoType) and (isoValue < m_el1IsoCut)) isIso = true;
+        } else {
+            if (electron->isolation(isoValue, isoType) and (isoValue / electron->pt() < m_el1IsoCut)) isIso = true;
+        }
+        if (not isIso) continue;
+
+        promptElectronCandidates.push_back(electron);
+    }
+}
+
+void DHNLFilter::getDisplacedElectronCandidates(const xAOD::ElectronContainer *electrons,
+                                                std::vector<const xAOD::Electron *> &displacedElectronCandidates) const {
+    for (const xAOD::Electron *electron : *electrons) {
+        // pT cut
+        if (not(electron->pt() > m_el2PtMin)) continue;
+
+        // eta cut
+        if (not(std::abs(electron->eta()) < m_el2AbsEtaMax)) continue;
+
+        // isolation cut
+        bool isIso = false;
+        float isoValue = 0.;
+        const xAOD::Iso::IsolationType isoType = static_cast<xAOD::Iso::IsolationType>(m_el2IsoType);
+        if (not m_el2IsoCutIsRel) {
+            if (electron->isolation(isoValue, isoType) and (isoValue < m_el2IsoCut)) isIso = true;
+        } else {
+            if (electron->isolation(isoValue, isoType) and isoValue / electron->pt() < m_el2IsoCut) isIso = true;
+        }
+        if (not isIso) continue;
+
+        // d0 cut
+        bool passD0cut = false;
+        if (std::abs(electron->trackParticle()->d0()) > m_el2d0Min) passD0cut = true;
+        if (not passD0cut) continue;
+
+        displacedElectronCandidates.push_back(electron);
+    }
+}
+
+// Check for the chi2 cut
+bool DHNLFilter::isGood(const xAOD::Muon &mu) const {
+    if (mu.muonType() != xAOD::Muon::Combined) return false;
+
+    float chi2 = 0.;
+    if (not mu.parameter(chi2, xAOD::Muon::msInnerMatchChi2)) return false;
+
+    int dof = 1;
+    if (not mu.parameter(dof, xAOD::Muon::msInnerMatchDOF)) return false;
+    if (dof == 0) dof = 1;
+
+    return ((chi2 / static_cast<float>(dof)) < 5.);
+}
+
+//// TODO: make these cuts configurable parameters
+//bool DHNLFilter::HnlMuMuFilter(const xAOD::MuonContainer *allMuons) {
+//
+//    int passesFilter = 0;
+//
+//    ANA_MSG_DEBUG("Applying prompt muon filter cuts");
+//    for (const xAOD::Muon *muon1 : *allMuons) {
+//        if (not(muon1->pt() / GeV > 28)) continue; // pt cut
+//        if (not(muon1->eta() < 2.5)) continue; // eta cut
+//        if (not(muon1->muonType() == xAOD::Muon::Combined)) continue;
+//        if (not(muon1->isolation(xAOD::Iso::ptcone30) / muon1->pt() < 0.05)) continue;
+//        ANA_MSG_DEBUG("Prompt muon passed filter cuts");
+//
+//        ANA_MSG_DEBUG("Applying displaced muon filter cuts");
+//        for (const xAOD::Muon *muon2 : *allMuons) {
+//            if (muon1 == muon2) continue; // don't compare the same muon
+//            if (not(muon2->pt() / GeV > 5)) continue; // pt cut
+//            if (not(muon2->eta() < 2.5)) continue; // eta cut
+//            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
+//            if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon2->pt() < 1.0)) continue;
+//
+//            // > 0.1 mm for “good” Combined muon
+//            // “good”: MS-ID matching chi2/DOF < 5.
+//            // Is this interpreted corectly? // Robin
+//            if (muon2->muonType() == xAOD::Muon::Combined) {
+//                // Get chi2/dof for d0 decision
+//                float d0 = muon2->primaryTrackParticle()->d0();
+//                float chi2 = -1.0f;
+//                int dof = -1;
+//                if (!muon2->parameter(chi2, xAOD::Muon::msInnerMatchChi2)) continue;
+//                if (!muon2->parameter(dof, xAOD::Muon::msInnerMatchDOF)) continue;
+//                if (dof == 0) dof = 1;
+//
+//                float quality = chi2 / static_cast<float>(dof);
+//                if (quality < 5.0)
+//                    if (not(fabs(d0) > 0.1)) continue;
+//            }
+//            // I am interpreting this as if muon is StandAlone or SegmentTagged, don't submit it to the same requirements
+//            // This is how it appears to be done in the old framework
+//            ANA_MSG_DEBUG("Displaced muon type: " << muon2->muonType());
+//
+//            ANA_MSG_DEBUG("Displaced muon passed filter cuts");
+//
+//            passesFilter = 1;
+//            break;
+//        }
+//        break;
+//    }
+//    if (passesFilter > 0)
+//        ANA_MSG_DEBUG("Event passes muon-muon filter");
+//    else
+//        ANA_MSG_DEBUG("Event fails muon-muon filter");
+//    return passesFilter;
+//}
+//
+//bool DHNLFilter::HnlElMuFilter(const xAOD::MuonContainer *allMuons, const xAOD::ElectronContainer *allElectrons) {
+//
+//    int passesFilter = 0;
+//
+//    ANA_MSG_DEBUG("Applying prompt electron filter cuts");
+//    for (const xAOD::Electron *electron1 : *allElectrons) {
+//        if (not(electron1->pt() / GeV > 28)) continue; // pt cut
+//        if (not(electron1->eta() < 2.5)) continue; // eta cut
+//        static SG::AuxElement::ConstAccessor<char> LHDecision("DFCommonElectronsLHLoose");
+//        const char &passSelID = LHDecision(*electron1);
+//        ANA_MSG_DEBUG("passSelID" << passSelID);
+//        if (not passSelID) continue; // Loose electron LH cut
+//        if (not(electron1->isolation(xAOD::Iso::ptcone30) / electron1->pt() < 0.05)) continue;
+//        ANA_MSG_DEBUG("Prompt electron passed filter cuts");
+//
+//        ANA_MSG_DEBUG("Applying displaced electron filter cuts");
+//        for (const xAOD::Muon *muon2 : *allMuons) {
+////            if (muon1 == muon2) continue; // don't compare the same muon
+//            if (not(muon2->pt() / GeV > 5)) continue; // pt cut
+//            if (not(muon2->eta() < 2.5)) continue; // eta cut
+//            if (not(muon2->muonType() == xAOD::Muon::Combined || muon2->muonType() == xAOD::Muon::MuonStandAlone || muon2->muonType() == xAOD::Muon::SegmentTagged)) continue;
+//            if (not(muon2->isolation(xAOD::Iso::ptcone30) / muon2->pt() < 1.0)) continue;
+//
+//            // > 0.1 mm for “good” Combined muon
+//            // “good”: MS-ID matching chi2/DOF < 5.
+//            // Is this interpreted corectly? // Robin
+//            if (muon2->muonType() == xAOD::Muon::Combined) {
+//                // Get chi2/dof for d0 decision
+//                float d0 = muon2->primaryTrackParticle()->d0();
+//                float chi2 = -1.0f;
+//                int dof = -1;
+//                if (!muon2->parameter(chi2, xAOD::Muon::msInnerMatchChi2)) continue;
+//                if (!muon2->parameter(dof, xAOD::Muon::msInnerMatchDOF)) continue;
+//                if (dof == 0) dof = 1;
+//
+//                float quality = chi2 / static_cast<float>(dof);
+//                if (quality < 5.0)
+//                    if (not(fabs(d0) > 0.1)) continue;
+//            }
+//            // I am interpreting this as if muon is StandAlone or SegmentTagged, don't submit it to the same requirements
+//            // This is how it appears to be done in the old framework
+//            ANA_MSG_DEBUG("Displaced muon type: " << muon2->muonType());
+//
+//            ANA_MSG_DEBUG("Displaced muon passed filter cuts");
+//
+//            passesFilter = 1;
+//            break;
+//        }
+//        break;
+//    }
+//    if (passesFilter > 0)
+//        ANA_MSG_DEBUG("Event passes electron-muon filter");
+//    else
+//        ANA_MSG_DEBUG("Event fails electron-muon filter");
+//    return passesFilter;
+//}
+//
+//bool DHNLFilter::HnlElElFilter(const xAOD::ElectronContainer *allElectrons) {
+//
+//    int passesFilter = 0;
+//
+//    ANA_MSG_DEBUG("Applying prompt electron filter cuts");
+//    for (const xAOD::Electron *electron1 : *allElectrons) {
+//        if (not(electron1->pt() / GeV > 28)) continue; // pt cut
+//        if (not(electron1->eta() < 2.5)) continue; // eta cut
+//        static SG::AuxElement::ConstAccessor<char> LHDecision("DFCommonElectronsLHLoose");
+//        const char &passSelID = LHDecision(*electron1);
+//        ANA_MSG_DEBUG("passSelID" << passSelID);
+//        if (not passSelID) continue; // Loose electron LH cut
+//        if (not(electron1->isolation(xAOD::Iso::ptcone30) / electron1->pt() < 0.05)) continue;
+//        ANA_MSG_DEBUG("Prompt electron passed filter cuts");
+//
+//        ANA_MSG_DEBUG("Applying displaced electron filter cuts");
+//        for (const xAOD::Electron *electron2 : *allElectrons) {
+//            if (electron1 == electron2) continue; // don't compare the same electron
+//            if (not(electron2->pt() / GeV > 5)) continue; // pt cut
+//            if (not(electron2->eta() < 2.5)) continue; // eta cut
+//            // TODO: Do I do no Electron ID cut here? like LHLoose?
+//            if (not(electron2->isolation(xAOD::Iso::ptcone30) / electron2->pt() < 1.0)) continue; //isolation cut
+//            if (not(fabs(electron2->trackParticle()->d0()) > 1.0)) continue; // d0 cut
+//
+//            ANA_MSG_DEBUG("Displaced electron passed filter cuts");
+//
+//            passesFilter = 1;
+//            break;
+//        }
+//        break;
+//    }
+//    if (passesFilter > 0)
+//        ANA_MSG_DEBUG("Event passes electron-electron filter");
+//    else
+//        ANA_MSG_DEBUG("Event fails electron-electron filter");
+//    return passesFilter;
+//}
+
 
 EL::StatusCode DHNLFilter::postExecute() {
     // Here you do everything that needs to be done after the main event                                                                                                               

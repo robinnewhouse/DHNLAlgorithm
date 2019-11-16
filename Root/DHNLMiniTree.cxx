@@ -26,7 +26,10 @@ void DHNLMiniTree::AddEventUser(const std::string detailStr) {
     // weights
     m_tree->Branch("weight", &m_weight, "weight/F");
 
-    m_tree->Branch("passesFilter", &m_passesFilter);
+    m_tree->Branch("passesHnlMuMuFilter", &m_passesHnlMuMuFilter);
+    m_tree->Branch("passesHnlElMuFilter", &m_passesHnlElMuFilter);
+    m_tree->Branch("passesHnlElElFilter", &m_passesHnlElElFilter);
+    m_tree->Branch("passesHnlMuElFilter", &m_passesHnlMuElFilter);
 
     // weights
 //    m_tree->Branch("weight", &m_weight, "weight/F");
@@ -48,8 +51,14 @@ void DHNLMiniTree::AddElectronsUser(std::string detailStr, std::string electronN
 /////////////////// Assign values to defined event variables here ////////////////////////
 void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
     // Event level info
-    if (eventInfo->isAvailable<int>("passesFilter"))
-        m_passesFilter = eventInfo->auxdecor<int>("passesFilter");
+    if (eventInfo->isAvailable<bool>("passesHnlMuMuFilter"))
+        m_passesHnlMuMuFilter = eventInfo->auxdecor<bool>("passesHnlMuMuFilter");
+    if (eventInfo->isAvailable<bool>("passesHnlElMuFilter"))
+        m_passesHnlElMuFilter = eventInfo->auxdecor<bool>("passesHnlElMuFilter");
+    if (eventInfo->isAvailable<bool>("passesHnlElElFilter"))
+        m_passesHnlElElFilter = eventInfo->auxdecor<bool>("passesHnlElElFilter");
+    if (eventInfo->isAvailable<bool>("passesHnlMuElFilter"))
+        m_passesHnlMuElFilter = eventInfo->auxdecor<bool>("passesHnlMuElFilter");
 }
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string muonName) {
@@ -67,7 +76,10 @@ void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::
 
 //////////////////// Clear any defined vectors here ////////////////////////////
 void DHNLMiniTree::ClearEventUser() {
-    m_passesFilter = -999;
+    m_passesHnlMuMuFilter = false;
+    m_passesHnlElMuFilter = false;
+    m_passesHnlElElFilter = false;
+    m_passesHnlMuElFilter = false;
     m_secVtxTrackParticleIndex.clear();
     m_secVtxMuonIndex.clear();
     m_secVtxElectronIndex.clear();

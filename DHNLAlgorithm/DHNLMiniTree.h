@@ -12,7 +12,11 @@ class DHNLMiniTree : public HelpTreeBase {
 private:
     bool m_firstEvent;
 
-    int m_passesFilter;
+    bool m_passesHnlMuMuFilter;
+    bool m_passesHnlElMuFilter;
+    bool m_passesHnlElElFilter;
+    bool m_passesHnlMuElFilter;
+
     std::vector<std::vector<int>> m_secVtxTrackParticleIndex;
     std::vector<std::vector<int>> m_secVtxMuonIndex;
     std::vector<std::vector<double>> m_secVtxMuonPt;
@@ -38,13 +42,13 @@ public:
 
     void FillMuonsUser(const xAOD::Muon *, std::string muonName = "muon") override;
 
-    void ClearMuonsUser( std::string muonName = "muon") override;
+    void ClearMuonsUser(std::string muonName = "muon") override;
 
     void AddElectronsUser(std::string detailStr = "", std::string electronName = "electron") override;
 
     void FillElectronsUser(const xAOD::Electron *, std::string electronName = "electron") override;
 
-    void ClearElectronsUser( std::string electronName = "electron") override;
+    void ClearElectronsUser(std::string electronName = "electron") override;
 
     void AddTruthVerts(const std::string detailStr = "", const std::string truthVtxName = "truthVtx");
 
