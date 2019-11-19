@@ -30,6 +30,7 @@ void DHNLMiniTree::AddEventUser(const std::string detailStr) {
     m_tree->Branch("passesHnlElMuFilter", &m_passesHnlElMuFilter);
     m_tree->Branch("passesHnlElElFilter", &m_passesHnlElElFilter);
     m_tree->Branch("passesHnlMuElFilter", &m_passesHnlMuElFilter);
+    m_tree->Branch("passesVH4bFilter", &m_passesVH4bFilter);
 
     // weights
 //    m_tree->Branch("weight", &m_weight, "weight/F");
@@ -59,6 +60,9 @@ void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
         m_passesHnlElElFilter = eventInfo->auxdecor<bool>("passesHnlElElFilter");
     if (eventInfo->isAvailable<bool>("passesHnlMuElFilter"))
         m_passesHnlMuElFilter = eventInfo->auxdecor<bool>("passesHnlMuElFilter");
+
+    if (eventInfo->isAvailable<bool>("passesVH4bFilter"))
+        m_passesVH4bFilter = eventInfo->auxdecor<bool>("passesVH4bFilter");
 }
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string muonName) {
@@ -80,6 +84,7 @@ void DHNLMiniTree::ClearEventUser() {
     m_passesHnlElMuFilter = false;
     m_passesHnlElElFilter = false;
     m_passesHnlMuElFilter = false;
+    m_passesVH4bFilter = false;
     m_secVtxTrackParticleIndex.clear();
     m_secVtxMuonIndex.clear();
     m_secVtxElectronIndex.clear();

@@ -49,16 +49,16 @@ make -j
 Then make sure you setup the new environment:
 
 ```
-source x*-*gcc*-opt/setup.sh  # (wildcards since os and gcc versions may differ)
+source */setup.sh  # (wildcards since os and gcc versions may differ)
 ```
 
 ### Future Sessions w/ Same Install
 
 ```
-cd InstallArea/source/
+cd [Analysis Directory]/DHNLAlgorithm/source/
 asetup
-cd ../build
-source x*-*gcc*-opt/setup.sh 
+cd ../build/
+source */setup.sh 
 ```
 ### Running
 

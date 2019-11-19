@@ -16,6 +16,7 @@ private:
     bool m_passesHnlElMuFilter;
     bool m_passesHnlElElFilter;
     bool m_passesHnlMuElFilter;
+    bool m_passesVH4bFilter;
 
     std::vector<std::vector<int>> m_secVtxTrackParticleIndex;
     std::vector<std::vector<int>> m_secVtxMuonIndex;

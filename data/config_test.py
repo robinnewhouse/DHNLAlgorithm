@@ -89,16 +89,12 @@ DHNLFilterDict = {
 
     #----------------------- Selections ----------------------------#
 
-    # "m_TrackMinPt"              : 400,
-    # "m_TrackZ0Max"              : 0.3,
-    # "m_TrackD0Max"              : 0.5,
-    # "m_jetPtCut"                : 20,
+    # All selections are stored in default parameters in filter.
+    # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
-    # "m_CHFCut"                  : 0.3,
-    # "m_electronPtCut"           : 27000,
-    # "m_muonPtCut"               : 25000,
+
     #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
