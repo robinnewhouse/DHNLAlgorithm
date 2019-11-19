@@ -66,10 +66,10 @@ Go to your run directory
 
 ```
 cd ../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun direct
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun direct
 ```
 
-### Pileup Reweighting
+### WARNING: Pileup Reweighting
 
 When running on a new Monte Carlo sample you may see an error message from xAODAnaHelpers that says something like
 
@@ -83,4 +83,8 @@ To fix this, use rucio to find the `NTUP_PILEUP` file that matches your dataset.
 Reference the file location in the `PRWList` field of your configuration file.
 More information about this can be found at the [Extended Pileup Reweighting](https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting) TWiki page.
 These PRW files may need to be generated for your dataset.
+
+#### Gritty details
+Even if you run on only a sample from a single MC campaign (e.g. mc16a) you must refer to the pileup reweighting files for ALL mc campaigns.
+Currently that would mean mc16a,d,e. Alternatively you may remove the lumicalc files associated with the missing campaigns.
 
