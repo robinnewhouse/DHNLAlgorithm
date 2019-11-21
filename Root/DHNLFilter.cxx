@@ -248,7 +248,6 @@ bool DHNLFilter::applyFilter() const {
         }
         if (acceptEventMuMu) break; // no need for more checks
     }
-    ANA_MSG_INFO("event " << m_eventCounter << " passMuMu " << acceptEventMuMu);
 
     // mu-e
     for (const xAOD::Muon *promptMuonCandidate : promptMuonCandidates) {
