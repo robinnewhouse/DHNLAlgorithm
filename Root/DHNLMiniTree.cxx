@@ -43,10 +43,14 @@ void DHNLMiniTree::AddEventUser(const std::string detailStr) {
 void DHNLMiniTree::AddMuonsUser(std::string detailStr, std::string muonName) {
     m_tree->Branch("muon_index", &m_muon_index);
     m_tree->Branch("muon_type", &m_muon_type);
+    m_tree->Branch("muon_passesPromptCuts", &m_muon_passesPromptCuts);
+    m_tree->Branch("muon_passesDisplacedCuts", &m_muon_passesDisplacedCuts);
 }
 
 void DHNLMiniTree::AddElectronsUser(std::string detailStr, std::string electronName) {
     m_tree->Branch("electron_index", &m_electron_index);
+    m_tree->Branch("electron_passesPromptCuts", &m_electron_passesPromptCuts);
+    m_tree->Branch("electron_passesDisplacedCuts", &m_electron_passesDisplacedCuts);
 }
 
 /////////////////// Assign values to defined event variables here ////////////////////////
@@ -70,11 +74,19 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string muonN
         m_muon_index.push_back(muon->auxdecor<int>("index"));
     if (muon->isAvailable<int>("type"))
         m_muon_type.push_back(muon->auxdecor<int>("type"));
+    if (muon->isAvailable<bool>("passesPromptCuts"))
+        m_muon_passesPromptCuts.push_back(muon->auxdecor<bool>("passesPromptCuts"));
+    if (muon->isAvailable<bool>("passesDisplacedCuts"))
+        m_muon_passesDisplacedCuts.push_back(muon->auxdecor<bool>("passesDisplacedCuts"));
 }
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string electronName) {
     if (electron->isAvailable<int>("index"))
         m_electron_index.push_back(electron->auxdecor<int>("index"));
+    if (electron->isAvailable<bool>("passesPromptCuts"))
+        m_electron_passesPromptCuts.push_back(electron->auxdecor<bool>("passesPromptCuts"));
+    if (electron->isAvailable<bool>("passesDisplacedCuts"))
+        m_electron_passesDisplacedCuts.push_back(electron->auxdecor<bool>("passesDisplacedCuts"));
 }
 
 
@@ -93,10 +105,14 @@ void DHNLMiniTree::ClearEventUser() {
 void DHNLMiniTree::ClearMuonsUser(std::string muonName) {
     m_muon_index.clear();
     m_muon_type.clear();
+    m_muon_passesPromptCuts.clear();
+    m_muon_passesDisplacedCuts.clear();
 }
 
 void DHNLMiniTree::ClearElectronsUser(std::string electronName) {
     m_electron_index.clear();
+    m_electron_passesPromptCuts.clear();
+    m_electron_passesDisplacedCuts.clear();
 }
 
 

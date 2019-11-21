@@ -24,7 +24,11 @@ private:
     std::vector<std::vector<int>> m_secVtxElectronIndex;
     std::vector<int> m_muon_index;
     std::vector<int> m_muon_type;
+    std::vector<bool> m_muon_passesPromptCuts;
+    std::vector<bool> m_muon_passesDisplacedCuts;
     std::vector<int> m_electron_index;
+    std::vector<bool> m_electron_passesPromptCuts;
+    std::vector<bool> m_electron_passesDisplacedCuts;
 
     float m_weight;
 

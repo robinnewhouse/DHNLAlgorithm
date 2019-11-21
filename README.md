@@ -18,8 +18,6 @@ mkdir run;
 cd source;
 setupATLAS;
 asetup AnalysisBase,21.2.90,here;
-# # alternatively you can use the following for slc6:
-# asetup AnalysisBase,21.2.75,here;
 ```
 
 Get `DHNLAlgorithm` with:

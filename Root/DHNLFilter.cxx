@@ -58,10 +58,10 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
     // Displaced muons
     m_mu2PtMin = 5.0 * GeV;
     m_mu2AbsEtaMax = 2.5;
-    m_mu2Types = {xAOD::Muon::Combined, xAOD::Muon::MuonStandAlone, xAOD::Muon::SegmentTagged};
+    m_mu2Types = {xAOD::Muon::Combined, xAOD::Muon::MuonStandAlone};
     m_mu2IsoType = xAOD::Iso::ptcone30;
     m_mu2IsoCutIsRel = true; // "Cut is on relative isolation"
-    m_mu2IsoCut = 1.;
+    m_mu2IsoCut = 9999.;
     m_mu2d0Min = 0.1; // "Unit is mm"
 
     // Electrons
@@ -77,7 +77,7 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
     m_el2AbsEtaMax = 2.5;
     m_el2IsoType = xAOD::Iso::ptcone30;
     m_el2IsoCutIsRel = true; // "Cut is on relative isolation"
-    m_el2IsoCut = 1.;
+    m_el2IsoCut = 9999.;
     m_el2d0Min = 1.0; // "Unit is mm"
 
     m_dPhiMin = 0.0; // "Unit is radian"
@@ -248,6 +248,7 @@ bool DHNLFilter::applyFilter() const {
         }
         if (acceptEventMuMu) break; // no need for more checks
     }
+    ANA_MSG_INFO("event " << m_eventCounter << " passMuMu " << acceptEventMuMu);
 
     // mu-e
     for (const xAOD::Muon *promptMuonCandidate : promptMuonCandidates) {
@@ -332,6 +333,11 @@ void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
         }
         if (not passTypeCut) continue;
 
+        // ignore LRT muons as these are reconstructed after the DRAW filter is run. Only applies to combined muons.
+        if (muon->muonType() == xAOD::Muon::Combined)
+            if (muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0))
+                continue;
+
         // isolation cut
         bool isIso = false;
         float isoValue = 0.;
@@ -343,6 +349,7 @@ void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
         }
         if (not isIso) continue;
 
+        muon->auxdecor<bool>("passesPromptCuts") = true;
         promptMuonCandidates.push_back(muon);
     }
 }
@@ -369,6 +376,11 @@ void DHNLFilter::getDisplacedMuonCandidates(const xAOD::MuonContainer *muons, st
         }
         if (not passTypeCut) continue;
 
+//        // ignore LRT muons as these are reconstructed after the DRAW filter is run. Only applies to combined muons.
+//        if (type == xAOD::Muon::Combined)
+//            if (muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0))
+//                continue;
+
         // isolation cut
         bool isIso = false;
         float isoValue = 0.;
@@ -392,6 +404,7 @@ void DHNLFilter::getDisplacedMuonCandidates(const xAOD::MuonContainer *muons, st
         }
         if (not passD0cut) continue;
 
+        muon->auxdecor<bool>("passesDisplacedCuts") = true;
         displacedMuonCandidates.push_back(muon);
     }
 }
@@ -421,6 +434,7 @@ void DHNLFilter::getPromptElectronCandidates(const xAOD::ElectronContainer *elec
         }
         if (not isIso) continue;
 
+        electron->auxdecor<bool>("passesPromptCuts") = true;
         promptElectronCandidates.push_back(electron);
     }
 }
@@ -450,6 +464,7 @@ void DHNLFilter::getDisplacedElectronCandidates(const xAOD::ElectronContainer *e
         if (std::abs(electron->trackParticle()->d0()) > m_el2d0Min) passD0cut = true;
         if (not passD0cut) continue;
 
+        electron->auxdecor<bool>("passesDisplacedCuts") = true;
         displacedElectronCandidates.push_back(electron);
     }
 }
@@ -482,8 +497,6 @@ bool DHNLFilter::applyVH4bFilter() {
     const xAOD::ElectronContainer *allElectrons = 0;
     ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
     ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
-
-    bool pass(false);
 
     const xAOD::JetContainer *allJets = 0;
     ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
@@ -627,30 +640,6 @@ bool DHNLFilter::applyVH4bFilter() {
 
     return passesFilter;
 }
-
-//DHNLFilter::Particles DHNLFilter::btagAssociatedTracks(const xAOD::Jet* jet, int jetIndex){
-//
-//    const xAOD::BTagging *bjet(nullptr);
-//    bjet = jet->btagging();
-//
-//    TrackLinks assocTracks = bjet->auxdata<TrackLinks>("BTagTrackToJetAssociator");
-//    Particles selectedTracks;
-//
-//    for (unsigned int iT = 0; iT < assocTracks.size(); iT++) {
-//        if (!assocTracks.at(iT).isValid()) continue;
-//        else {
-//            const xAOD::TrackParticle *tmpTrk = *(assocTracks.at(iT));
-//            tmpTrk->auxdecor< int >("isAssoc") = 1;
-//            tmpTrk->auxdecor< int >("jetIndex") = jetIndex;
-//            selectedTracks.push_back(tmpTrk);
-//        }
-//    }
-//
-//
-//    Particles tracks(selectedTracks.begin(), selectedTracks.end());
-//    return tracks;
-//}
-
 
 void DHNLFilter::newJetContainers(const xAOD::JetContainer *input, const xAOD::ElectronContainer *electrons) {
 
