@@ -332,10 +332,10 @@ void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
         }
         if (not passTypeCut) continue;
 
-        // ignore LRT muons as these are reconstructed after the DRAW filter is run. Only applies to combined muons.
-        if (muon->muonType() == xAOD::Muon::Combined)
-            if (muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0))
-                continue;
+//        // ignore LRT muons as these are reconstructed after the DRAW filter is run. Only applies to combined muons.
+//        if (muon->muonType() == xAOD::Muon::Combined)
+//            if (muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0))
+//                continue;
 
         // isolation cut
         bool isIso = false;

@@ -20,15 +20,23 @@ private:
 
     std::vector<std::vector<int>> m_secVtxTrackParticleIndex;
     std::vector<std::vector<int>> m_secVtxMuonIndex;
-    std::vector<std::vector<double>> m_secVtxMuonPt;
     std::vector<std::vector<int>> m_secVtxElectronIndex;
     std::vector<int> m_muon_index;
     std::vector<int> m_muon_type;
     std::vector<bool> m_muon_passesPromptCuts;
     std::vector<bool> m_muon_passesDisplacedCuts;
+    std::vector<double> m_muon_px;
+    std::vector<double> m_muon_py;
+    std::vector<double> m_muon_pz;
+    std::vector<double> m_muon_ptC30;
+
     std::vector<int> m_electron_index;
     std::vector<bool> m_electron_passesPromptCuts;
     std::vector<bool> m_electron_passesDisplacedCuts;
+    std::vector<double> m_electron_px;
+    std::vector<double> m_electron_py;
+    std::vector<double> m_electron_pz;
+    std::vector<double> m_electron_ptC30;
 
     float m_weight;
 

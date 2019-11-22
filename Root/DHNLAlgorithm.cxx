@@ -26,6 +26,8 @@
 
 using namespace std;
 
+static float GeV = 1000.;
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(DHNLAlgorithm)
 
@@ -95,10 +97,18 @@ EL::StatusCode DHNLAlgorithm::execute() {
     for (const xAOD::Muon *muon : *inMuons) {
         muon->auxdecor<int>("index") = muon->index();
         muon->auxdecor<int>("type") = muon->muonType();
+        muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
+        muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
+        muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+//        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
     }
 
     for (const xAOD::Electron *electron : *inElectrons) {
         electron->auxdecor<int>("index") = electron->index();
+        electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
+        electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
+        electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+//        electron->auxdecor<float>("ptC30") = electron->isolation(xAOD::Iso::ptcone30);
     }
 
     //////////////////// Store primary vertex information //////////////////////
@@ -118,7 +128,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
     eventInfo->auxdecor<float>("PV_x") = primaryVertex->x();
     eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
     eventInfo->auxdecor<float>("PV_z") = primaryVertex->z();
-
 
 
     return EL::StatusCode::SUCCESS;
