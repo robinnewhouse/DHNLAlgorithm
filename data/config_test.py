@@ -26,8 +26,8 @@ with open(PRWFiles) as f:
 # Note: if you want to use all lumicalc files without deactivating any,
 # then the PRW files for ALL MC CAMPAIGNS must be loaded in the PRWList.
 # If this isn't done the pileup reweighting tool will crash the algorithm.
-# Note 2: These files are fairly large (~20 MB so they will not be kept
-# in the git repository for now). You may need to copy them from cvmfs
+# Note 2: These files are fairly large (~20 MB) so they will not be kept
+# in the git repository for now. You may need to copy them from cvmfs
 # and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
 lumicalcList = [
     # mc16a (r-tag r10740)
@@ -461,7 +461,7 @@ DHNLNtupleDict = {
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
