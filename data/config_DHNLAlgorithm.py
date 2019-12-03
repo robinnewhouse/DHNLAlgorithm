@@ -377,8 +377,8 @@ Dict_VertexMatcher = {
     "m_name"                           : "VertexMatch",
     "m_msgLevel"                       : "Info",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -413,8 +413,8 @@ DHNLDict = {
     "m_inputAlgo"               : "SignalJets_Algo",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_inMuContainerName"       : "Muons",
+    "m_inElContainerName"       : "Electrons",
     "m_inMETContainerName"      : "MET",
     "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
@@ -443,8 +443,8 @@ DHNLNtupleDict = {
     "m_inputAlgo"                    : "",#"SignalJets_Algo",
     "m_allJetContainerName"          : "AntiKt4EMTopoJets",
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
