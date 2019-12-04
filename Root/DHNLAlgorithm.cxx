@@ -101,6 +101,16 @@ EL::StatusCode DHNLAlgorithm::execute() {
         muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
         muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
+
+        float chi2;
+        muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2);
+        muon->auxdecor<float>("chi2") = chi2;
+
+        int msInnerMatchDOF;
+        muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF);
+        muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
+
+        muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
     }
 
     for (const xAOD::Electron *electron : *inElectrons) {
