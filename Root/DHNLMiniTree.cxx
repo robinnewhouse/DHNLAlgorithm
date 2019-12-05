@@ -212,10 +212,10 @@ void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, con
         this->FillSecondaryVertex(secVtx, secVtxName);
 }
 
-void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName) {
+void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName,  bool suppressFilter) { // Added suppressFilter -Dominique
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
-    thisSecVtx->FillSecondaryVertex(secVtx, treeName, true);
+    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter);
 }
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {

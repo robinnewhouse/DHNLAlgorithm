@@ -75,7 +75,7 @@ public:
 
     void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx");
 
-    void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx");
+    void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx", bool suppressFilter= true); // added supressFilter -Dominique 
 
     void ClearSecondaryVerts(const std::string secVtxName = "secVtx");
 
