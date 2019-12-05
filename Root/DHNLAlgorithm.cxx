@@ -103,11 +103,13 @@ EL::StatusCode DHNLAlgorithm::execute() {
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
 
         float chi2;
-        muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2);
+        if (not muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2))
+            chi2 = -1;
         muon->auxdecor<float>("chi2") = chi2;
 
         int msInnerMatchDOF;
-        muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF);
+        if (not muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF))
+            msInnerMatchDOF = -1;
         muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
 
         muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
