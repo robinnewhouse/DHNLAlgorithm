@@ -48,6 +48,9 @@ void DHNLMiniTree::AddMuonsUser(std::string detailStr, std::string muonName) {
     m_tree->Branch("muon_px", &m_muon_px);
     m_tree->Branch("muon_py", &m_muon_py);
     m_tree->Branch("muon_pz", &m_muon_pz);
+    m_tree->Branch("muon_chi2", &m_muon_chi2);
+    m_tree->Branch("muon_msInnerMatchDOF", &m_muon_msInnerMatchDOF);
+    m_tree->Branch("muon_isLRT", &m_muon_isLRT);
 //    m_tree->Branch("muon_ptC30", &m_muon_ptC30);
 }
 
@@ -103,6 +106,16 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string muonN
 
 //    if (muon->isAvailable<float>("ptC30"))
 //        m_muon_ptC30.push_back(muon->auxdecor<float>("ptC30"));
+
+    if (muon->isAvailable<float>("chi2"))
+        m_muon_chi2.push_back(muon->auxdecor<float>("chi2"));
+
+    if (muon->isAvailable<int>("msDOF"))
+        m_muon_msInnerMatchDOF.push_back(muon->auxdecor<int>("msDOF"));
+
+    if (muon->isAvailable<bool>("isLRT"))
+        m_muon_isLRT.push_back(muon->auxdecor<bool>("isLRT"));
+
 }
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string electronName) {
@@ -152,6 +165,9 @@ void DHNLMiniTree::ClearMuonsUser(std::string muonName) {
     m_muon_px.clear();
     m_muon_py.clear();
     m_muon_pz.clear();
+    m_muon_chi2.clear();
+    m_muon_msInnerMatchDOF.clear();
+    m_muon_isLRT.clear();
 //    m_muon_ptC30.clear();
 }
 

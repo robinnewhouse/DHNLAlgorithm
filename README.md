@@ -67,6 +67,19 @@ cd ../run/
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun direct
 ```
 
+The output ntuple will be stored in the  directory `testRun/data-tree/`.
+
+## Additional Notes
+### Migration from NTupleMaker
+This code is meant to replace and extend the old [NTupleMaker](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/NTupleMaker) framework while still keeping all required variables present in the output ntuple.
+Inevitably the name and format of many of the outputs have been changed. 
+
+To make migration easier, a spreadsheet specifying those changes has been compiled and can be found here: [NTupleMaker to DHNLAlgorithm migration](https://docs.google.com/spreadsheets/d/1NZWwB-mfnVOWJ3HE4mIrcJmJi1nd_CEQ9nqb26g3mtM/edit?usp=sharing) 
+
+### Analysis
+
+To perform event selection and analysis on these generated ntuples please see the code repository: [DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis)
+
 ### WARNING: Pileup Reweighting
 
 When running on a new Monte Carlo sample you may see an error message from xAODAnaHelpers that says something like

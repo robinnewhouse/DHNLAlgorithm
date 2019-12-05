@@ -457,8 +457,8 @@ DHNLNtupleDict = {
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "",
     "m_jetDetailStrSyst"             : "",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF PID", #trigger
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID", #trigger
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "",
     "m_metTrkDetailStr"              : "",

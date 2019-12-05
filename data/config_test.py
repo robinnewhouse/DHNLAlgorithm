@@ -377,8 +377,8 @@ Dict_VertexMatcher = {
     "m_name"                           : "VertexMatch",
     "m_msgLevel"                       : "Info",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -451,11 +451,12 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
+    "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
     "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID", #trigger
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton", #trigger
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "metClus sigClus",
@@ -463,6 +464,7 @@ DHNLNtupleDict = {
     # "m_trackDetailStr"               : "fitpars",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
+    "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",

@@ -51,6 +51,7 @@ public:
     std::string m_inElContainerName;    // input Electron container name
     std::string m_truthVertexContainerName;
     std::string m_secondaryVertexContainerName;
+    std::string m_inTruthParticleContainerName;
 
     std::string m_eventDetailStr;     // event info add to tree
     std::string m_trigDetailStr;      // trigger info add to tree
@@ -66,6 +67,7 @@ public:
     std::string m_trackDetailStr;      // trigger info add to tree
     std::string m_truthVertexDetailStr;
     std::string m_secondaryVertexDetailStr;
+    std::string m_truthParticleDetailString;
 
     std::string m_secondaryVertexBranchName;
     std::string m_truthVertexBranchName;
