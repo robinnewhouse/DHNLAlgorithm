@@ -94,7 +94,7 @@ DHNLFilterDict = {
     # "m_AlphaMaxCut"             : 0.03,
 
     #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
