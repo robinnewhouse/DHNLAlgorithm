@@ -201,11 +201,11 @@ EL::StatusCode DHNLNtuple::execute() {
 
     const xAOD::TrackParticleContainer *tracks = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks("track", tracks); }
+    if (tracks) { m_myTrees[systName]->FillTracks(tracks); }
 
-    const xAOD::TruthParticleContainer *TruthPart = nullptr;
-    if (m_isMC) {ANA_CHECK (HelperFunctions::retrieve(TruthPart, m_inTruthParticleContainerName, m_event, m_store)); }
-    if (TruthPart) { m_myTrees[systName]->FillTruth("truth", TruthPart); }
+    const xAOD::TruthParticleContainer *TruthParts = nullptr;
+    if (m_isMC) {ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store)); }
+    if (TruthParts) { m_myTrees[systName]->FillTruth(TruthParts, "xAH_truth"); }
 
     const xAOD::JetContainer *truthJets = nullptr;
     if (m_useMCPileupCheck && m_isMC) {
@@ -272,9 +272,9 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddEvent(m_eventDetailStr);
     miniTree->AddTrigger(m_trigDetailStr);
     miniTree->AddMET(m_metDetailStr);
-    miniTree->AddMET("trkMET", m_metTrkDetailStr);
-    miniTree->AddTrackParts("track", m_trackDetailStr);
-    miniTree->AddTruthParts("truth", m_truthParticleDetailString);
+    miniTree->AddMET(m_metTrkDetailStr, "trkMET");
+    miniTree->AddTrackParts(m_trackDetailStr);
+    miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);

@@ -78,6 +78,9 @@ public:
     float m_electronPtCut;
     float m_muonPtCut;
 
+    /// @brief Force AFII flag in calculation, in case metadata is broken
+    bool m_setAFII = false;
+
 private:
     int m_eventCounter;     //!
 //    asg::AnaToolHandle<CP::IMuonSelectionTool> m_muonSelectionTool_handle{"CP::MuonSelectionTool/MuonSelectionTool", this};

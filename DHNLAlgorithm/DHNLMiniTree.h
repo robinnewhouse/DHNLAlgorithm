@@ -48,23 +48,23 @@ public:
 
     ~DHNLMiniTree() override;
 
-    void AddEventUser(std::string detailStr = "") override;
+    void AddEventUser(const std::string &detailStr) override;
 
     void FillEventUser(const xAOD::EventInfo *eventInfo) override;
 
     void ClearEventUser() override;
 
-    void AddMuonsUser(std::string detailStr = "", std::string muonName = "muon") override;
+    void AddMuonsUser(const std::string &detailStr, const std::string &muonName) override;
 
-    void FillMuonsUser(const xAOD::Muon *, std::string muonName = "muon") override;
+    void FillMuonsUser(const xAOD::Muon *, const std::string &muonName) override;
 
-    void ClearMuonsUser(std::string muonName = "muon") override;
+    void ClearMuonsUser(const std::string &muonName) override;
 
-    void AddElectronsUser(std::string detailStr = "", std::string electronName = "electron") override;
+    void AddElectronsUser(const std::string &detailStr, const std::string &elecName) override;
 
-    void FillElectronsUser(const xAOD::Electron *, std::string electronName = "electron") override;
+    void FillElectronsUser(const xAOD::Electron *, const std::string &electronName) override;
 
-    void ClearElectronsUser(std::string electronName = "electron") override;
+    void ClearElectronsUser(const std::string &electronName) override;
 
     void AddTruthVerts(const std::string detailStr = "", const std::string truthVtxName = "truthVtx");
 
