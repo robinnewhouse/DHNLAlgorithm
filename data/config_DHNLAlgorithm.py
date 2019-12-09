@@ -61,7 +61,7 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_mu22_mu8noL1 || HLT_2mu14 || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_mu6_dRl1_mu20_msonly_iloosems_mu6noL1_dRl1_msonly || HLT_j30_muvtx || HLT_j30_muvtx_noiso ",
+    "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso ",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"	        : False,
@@ -377,8 +377,8 @@ Dict_VertexMatcher = {
     "m_name"                           : "VertexMatch",
     "m_msgLevel"                       : "Info",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -413,8 +413,8 @@ DHNLDict = {
     "m_inputAlgo"               : "SignalJets_Algo",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_inMuContainerName"       : "Muons",
+    "m_inElContainerName"       : "Electrons",
     "m_inMETContainerName"      : "MET",
     "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
@@ -443,26 +443,28 @@ DHNLNtupleDict = {
     "m_inputAlgo"                    : "",#"SignalJets_Algo",
     "m_allJetContainerName"          : "AntiKt4EMTopoJets",
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
+    "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
     "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID", #trigger
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton", #trigger
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
+    "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
