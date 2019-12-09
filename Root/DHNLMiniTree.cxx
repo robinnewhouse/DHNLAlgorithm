@@ -5,8 +5,6 @@
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
         HelpTreeBase(event, tree, file, 1e3) {
     Info("DHNLMiniTree", "Creating output TTree");
@@ -43,26 +41,28 @@ void DHNLMiniTree::AddEventUser(const std::string &detailStr) {
 }
 
 void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string &muonName) {
-    m_tree->Branch((muonName + "index").c_str(), &m_muon_index);
-    m_tree->Branch((muonName + "type").c_str(), &m_muon_type);
-    m_tree->Branch((muonName + "passesPromptCuts").c_str(), &m_muon_passesPromptCuts);
-    m_tree->Branch((muonName + "passesDisplacedCuts").c_str(), &m_muon_passesDisplacedCuts);
-    m_tree->Branch((muonName + "px").c_str(), &m_muon_px);
-    m_tree->Branch((muonName + "py").c_str(), &m_muon_py);
-    m_tree->Branch((muonName + "pz").c_str(), &m_muon_pz);
-    m_tree->Branch((muonName + "chi2").c_str(), &m_muon_chi2);
-    m_tree->Branch((muonName + "msInnerMatchDOF").c_str(), &m_muon_msInnerMatchDOF);
-    m_tree->Branch((muonName + "isLRT").c_str(), &m_muon_isLRT);
+    std::string name = muonName + "_";
+    m_tree->Branch((name + "index").c_str(), &m_muon_index);
+    m_tree->Branch((name + "type").c_str(), &m_muon_type);
+    m_tree->Branch((name + "passesPromptCuts").c_str(), &m_muon_passesPromptCuts);
+    m_tree->Branch((name + "passesDisplacedCuts").c_str(), &m_muon_passesDisplacedCuts);
+    m_tree->Branch((name + "px").c_str(), &m_muon_px);
+    m_tree->Branch((name + "py").c_str(), &m_muon_py);
+    m_tree->Branch((name + "pz").c_str(), &m_muon_pz);
+    m_tree->Branch((name + "chi2").c_str(), &m_muon_chi2);
+    m_tree->Branch((name + "msInnerMatchDOF").c_str(), &m_muon_msInnerMatchDOF);
+    m_tree->Branch((name + "isLRT").c_str(), &m_muon_isLRT);
 //    m_tree->Branch("muon_ptC30", &m_muon_ptC30);
 }
 
 void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::string &elecName) {
-    m_tree->Branch((elecName + "index").c_str(), &m_electron_index);
-    m_tree->Branch((elecName + "passesPromptCuts").c_str(), &m_electron_passesPromptCuts);
-    m_tree->Branch((elecName + "passesDisplacedCuts").c_str(), &m_electron_passesDisplacedCuts);
-    m_tree->Branch((elecName + "px").c_str(), &m_electron_px);
-    m_tree->Branch((elecName + "py").c_str(), &m_electron_py);
-    m_tree->Branch((elecName + "pz").c_str(), &m_electron_pz);
+    std::string name = elecName + "_";
+    m_tree->Branch((name + "index").c_str(), &m_electron_index);
+    m_tree->Branch((name + "passesPromptCuts").c_str(), &m_electron_passesPromptCuts);
+    m_tree->Branch((name + "passesDisplacedCuts").c_str(), &m_electron_passesDisplacedCuts);
+    m_tree->Branch((name + "px").c_str(), &m_electron_px);
+    m_tree->Branch((name + "py").c_str(), &m_electron_py);
+    m_tree->Branch((name + "pz").c_str(), &m_electron_pz);
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
 }
 
@@ -240,5 +240,3 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->clear();
 }
-
-#pragma clang diagnostic pop
