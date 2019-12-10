@@ -64,7 +64,8 @@ Go to your run directory
 
 ```
 cd ../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun direct
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
+# the --force option will overwrite your output directory
 ```
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
