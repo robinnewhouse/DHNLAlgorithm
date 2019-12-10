@@ -94,6 +94,15 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::ElectronContainer *inElectrons = nullptr;
     ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
 
+    // Copy over the aux data containing filter pass information
+    // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
+    // Be careful with these hardcoded collection names.
+    const xAOD::MuonContainer *inMuonsUncalibrated = nullptr;
+    ANA_CHECK(HelperFunctions::retrieve(inMuonsUncalibrated, "Muons", m_event, m_store, msg()));
+
+    const xAOD::ElectronContainer *inElectronsUncalibrated = nullptr;
+    ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
+
     for (const xAOD::Muon *muon : *inMuons) {
         muon->auxdecor<int>("index") = muon->index();
         muon->auxdecor<int>("type") = muon->muonType();
@@ -101,6 +110,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
         muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
         muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
+        if (not(m_inMuContainerName == "Muons")) {
+            muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
+            muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");
+        }
 
         float chi2;
         if (not muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2))
@@ -113,6 +126,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
         muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
 
         muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
+
     }
 
     for (const xAOD::Electron *electron : *inElectrons) {
@@ -121,6 +135,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
         electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
         electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
 //        electron->auxdecor<float>("ptC30") = electron->isolation(xAOD::Iso::ptcone30);
+        if (not(m_inElContainerName == "Electrons")) {
+            electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
+            electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
+        }
     }
 
     //////////////////// Store primary vertex information //////////////////////

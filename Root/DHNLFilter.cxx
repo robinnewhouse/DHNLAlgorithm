@@ -14,6 +14,7 @@
 #include <xAODTruth/TruthVertex.h>
 #include "xAODTracking/TrackParticle.h"
 #include "xAODTracking/TrackParticlexAODHelpers.h"
+#include "xAODMetaData/FileMetaData.h"
 
 #include "TFile.h"
 #include "TEnv.h"

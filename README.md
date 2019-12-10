@@ -64,7 +64,8 @@ Go to your run directory
 
 ```
 cd ../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun direct
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
+# the --force option will overwrite your output directory
 ```
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
@@ -80,9 +81,26 @@ To make migration easier, a spreadsheet specifying those changes has been compil
 
 To perform event selection and analysis on these generated ntuples please see the code repository: [DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis)
 
+### Updating repository
+
+`DHNLAlgorithm` depends on submodules which may need to be updated for the framework to build and execute.
+When updating a repository, a recursive update must be run.
+Because `FactoryTools` contains a duplicate of `xAODAnaHelpers`, a fix must be run when updating modules.
+Please use the following commands to properly update all modules:
+```
+git pull --recurse-submodules
+git submodule update --recursive
+cd deps/DVAnalysisBase/
+source util/dependencyHack.sh
+cd ../../
+```
+
+
 ### WARNING: Pileup Reweighting
 
 When running on a new Monte Carlo sample you may see an error message from xAODAnaHelpers that says something like
+
+
 
 ```
 ...
