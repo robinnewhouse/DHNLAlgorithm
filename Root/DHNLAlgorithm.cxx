@@ -155,10 +155,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
         eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
     }
     const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
-    eventInfo->auxdecor<float>("PV_x") = primaryVertex->x();
-    eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
-    eventInfo->auxdecor<float>("PV_z") = primaryVertex->z();
-
+    if (primaryVertex) {
+        eventInfo->auxdecor<float>("PV_x") = primaryVertex->x();
+        eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
+        eventInfo->auxdecor<float>("PV_z") = primaryVertex->z();
+    }
 
     return EL::StatusCode::SUCCESS;
 }

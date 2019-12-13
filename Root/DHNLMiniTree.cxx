@@ -83,6 +83,8 @@ void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
 }
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muonName) {
+    if (m_debug) std::cout << muonName;
+
     if (muon->isAvailable<int>("index"))
         m_muon_index.push_back(muon->auxdecor<int>("index"));
 
