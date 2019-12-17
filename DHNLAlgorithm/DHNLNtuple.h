@@ -72,6 +72,7 @@ public:
     std::string m_secondaryVertexBranchName;
     std::string m_truthVertexBranchName;
     std::string m_AugumentationVersionString;
+    bool m_suppressTrackFilter;
 
 private:
     int m_eventCounter;     //!

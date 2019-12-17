@@ -450,6 +450,7 @@ DHNLNtupleDict = {
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_AugumentationVersionString"   : "",
+    "m_suppressTrackFilter"          : True,
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",

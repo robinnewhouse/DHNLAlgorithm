@@ -76,7 +76,7 @@ public:
 
     void AddSecondaryVerts(const std::string detailStr = "", const std::string secVtxName = "secVtx");
 
-    void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx",const std::string AugmentationVersionString = "");
+    void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx",bool suppressFilter= true,const std::string AugmentationVersionString = "");
 
     void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx", bool suppressFilter= true, const std::string AugmentationVersionString = "");
 
