@@ -71,6 +71,7 @@ public:
 
     std::string m_secondaryVertexBranchName;
     std::string m_truthVertexBranchName;
+    std::string m_AugumentationVersionString;
 
 private:
     int m_eventCounter;     //!

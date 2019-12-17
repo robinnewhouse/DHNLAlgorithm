@@ -225,17 +225,17 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     thisSecVtx->setBranches(m_tree);
 }
 
-void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName) {
+void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName, const std::string AugmentationVersionString) {
     this->ClearSecondaryVerts(secVtxName);
 
     for (const auto &secVtx : *secVerts)
-        this->FillSecondaryVertex(secVtx, secVtxName);
+        this->FillSecondaryVertex(secVtx, secVtxName,AugmentationVersionString);
 }
 
-void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName) {
+void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName, const std::string AugmentationVersionString) {
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
-    thisSecVtx->FillSecondaryVertex(secVtx, treeName, true);
+    thisSecVtx->FillSecondaryVertex(secVtx, treeName, true,AugmentationVersionString);
 }
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
