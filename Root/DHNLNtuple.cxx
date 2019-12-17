@@ -68,6 +68,7 @@ DHNLNtuple::DHNLNtuple() :
     m_secondaryVertexDetailStr = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
+    m_AugumentationVersionString = "";
 
 }
 
@@ -244,7 +245,7 @@ EL::StatusCode DHNLNtuple::execute() {
     if (not m_secondaryVertexContainerName.empty()) { // Useful for running framework on AODs which have no secondary vertex container
         const xAOD::VertexContainer *inSecVerts = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg()));
-        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName);
+        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_AugumentationVersionString);
     }
 
 

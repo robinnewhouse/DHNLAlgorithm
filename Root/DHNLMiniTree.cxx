@@ -83,6 +83,8 @@ void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
 }
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muonName) {
+    if (m_debug) std::cout << muonName;
+
     if (muon->isAvailable<int>("index"))
         m_muon_index.push_back(muon->auxdecor<int>("index"));
 
@@ -223,17 +225,24 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     thisSecVtx->setBranches(m_tree);
 }
 
-void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName) {
+void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName, const std::string AugmentationVersionString) {
     this->ClearSecondaryVerts(secVtxName);
 
     for (const auto &secVtx : *secVerts)
-        this->FillSecondaryVertex(secVtx, secVtxName);
+        this->FillSecondaryVertex(secVtx, secVtxName,true, AugmentationVersionString);
 }
 
-void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName,  bool suppressFilter) { // Added suppressFilter -Dominique
+// <<<<<<< HEAD
+// void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName,  bool suppressFilter) { // Added suppressFilter -Dominique
+//     std::string treeName = m_tree->GetName();
+//     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
+//     thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter);
+// =======
+void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName, bool suppressFilter, const std::string AugmentationVersionString) {
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
-    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter);
+    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter,AugmentationVersionString);
+// >>>>>>> master
 }
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
