@@ -81,6 +81,36 @@ To make migration easier, a spreadsheet specifying those changes has been compil
 
 To perform event selection and analysis on these generated ntuples please see the code repository: [DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis)
 
+### VSI Leptons 
+
+When making an ntuple using the VSI Leptons vertex container, make sure you update the container name as described in the "Running on different vertex containers" section. Additionally you will need to change the following flag to match electrons since a different electron collection is passed to the vertexing algorithm when using the VSI Leptons vertex configuration. 
+
+```
+#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+"m_VSILepmatch"                    : True,
+
+```
+
+
+### Running on different vertex containers
+
+If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. To get the vertices and tracks from this new container change the following in the config_DHNL_Algorithm.py:
+
+```
+#%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
+"m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices__YourAugumentingVersionString",
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
+"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices__YourAugumentingVersionString",
+"m_AugumentationVersionString"   : "__YourAugumentingVersionString",
+
+```
+This will ensure that the vertex selection and matching is done using the new container and that the appropriate track variables are written out to the ntuple. 
+
 ### Updating repository
 
 `DHNLAlgorithm` depends on submodules which may need to be updated for the framework to build and execute.
