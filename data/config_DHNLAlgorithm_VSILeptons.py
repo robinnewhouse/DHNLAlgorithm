@@ -85,7 +85,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons",
 
     #----------------------- Selections ----------------------------#
 
@@ -353,7 +353,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_Leptons",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : True,
     "m_do_matMapVeto"        : True,
@@ -377,10 +377,10 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
     "m_msgLevel"                        : "Info",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices_Leptons",   # --> use selected vertices
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",
-     "m_VSILepmatch"                    : False,
+     "m_VSILepmatch"                    : True,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -449,8 +449,8 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_AugumentationVersionString"   : "", # no augumentation for standard VSI
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons", # --> use selected DVs
+    "m_AugumentationVersionString"   : "_Leptons", # augument track varibles when using VSI leptons 
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
