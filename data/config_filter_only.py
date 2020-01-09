@@ -453,7 +453,7 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
-    "m_inTruthParticleContainerName" : "MuonTruthParticles",
+    "m_inTruthParticleContainerName" : "TruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "",
