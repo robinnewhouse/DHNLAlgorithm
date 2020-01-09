@@ -99,8 +99,9 @@ EL::StatusCode DHNLNtuple::initialize() {
     }
 
     // m_truthLevelOnly is set in config so need to do this after configure is called
+    std::cout << "truth level only " << m_truthLevelOnly << endl;
     if (m_truthLevelOnly) { m_isMC = true; }
-    else { m_isMC = eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION); }
+    else { m_isMC = eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION); std::cout << m_isMC << endl; }
 
     if (m_useCutFlow) {
 
@@ -240,7 +241,7 @@ EL::StatusCode DHNLNtuple::execute() {
     ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
 
     const xAOD::TruthVertexContainer *inTruthVerts = nullptr;
-    ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store));
+    if (m_isMC) {ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store)); }
     if (inTruthVerts) m_myTrees[systName]->FillTruthVerts(inTruthVerts, m_truthVertexBranchName);
 
     if (not m_secondaryVertexContainerName.empty()) { // Useful for running framework on AODs which have no secondary vertex container
