@@ -20,6 +20,7 @@ DHNLMiniTree::~DHNLMiniTree() {
 
 //////////////////// Connect Defined variables to branches here /////////////////////////////
 void DHNLMiniTree::AddEventUser(const std::string &detailStr) {
+    (void) detailStr; // suppress warning
 
     // event variables
 
@@ -41,6 +42,8 @@ void DHNLMiniTree::AddEventUser(const std::string &detailStr) {
 }
 
 void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string &muonName) {
+    (void) detailStr; // suppress warning
+
     std::string name = muonName + "_";
     m_tree->Branch((name + "index").c_str(), &m_muon_index);
     m_tree->Branch((name + "type").c_str(), &m_muon_type);
@@ -52,10 +55,13 @@ void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string 
     m_tree->Branch((name + "chi2").c_str(), &m_muon_chi2);
     m_tree->Branch((name + "msInnerMatchDOF").c_str(), &m_muon_msInnerMatchDOF);
     m_tree->Branch((name + "isLRT").c_str(), &m_muon_isLRT);
-//    m_tree->Branch("muon_ptC30", &m_muon_ptC30);
+    m_tree->Branch((name + "myptcone30").c_str(), &m_muon_myptcone30);
+    m_tree->Branch((name + "myptcone30noLRT").c_str(), &m_muon_myptcone30noLRT);
 }
 
 void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::string &elecName) {
+    (void) detailStr; // suppress warning
+
     std::string name = elecName + "_";
     m_tree->Branch((name + "index").c_str(), &m_electron_index);
     m_tree->Branch((name + "passesPromptCuts").c_str(), &m_electron_passesPromptCuts);
@@ -83,6 +89,8 @@ void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
 }
 
 void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muonName) {
+    (void) muonName; // suppress warning
+
     if (m_debug) std::cout << muonName;
 
     if (muon->isAvailable<int>("index"))
@@ -108,8 +116,11 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
     if (muon->isAvailable<float>("pz"))
         m_muon_pz.push_back(muon->auxdecor<float>("pz"));
 
-//    if (muon->isAvailable<float>("ptC30"))
-//        m_muon_ptC30.push_back(muon->auxdecor<float>("ptC30"));
+    if (muon->isAvailable<float>("myptcone30"))
+        m_muon_myptcone30.push_back(muon->auxdecor<float>("myptcone30"));
+
+    if (muon->isAvailable<float>("myptcone30noLRT"))
+        m_muon_myptcone30noLRT.push_back(muon->auxdecor<float>("myptcone30noLRT"));
 
     if (muon->isAvailable<float>("chi2"))
         m_muon_chi2.push_back(muon->auxdecor<float>("chi2"));
@@ -123,6 +134,8 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
 }
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string &electronName) {
+    (void) electronName; // suppress warning
+
     if (electron->isAvailable<int>("index"))
         m_electron_index.push_back(electron->auxdecor<int>("index"));
 
@@ -162,6 +175,7 @@ void DHNLMiniTree::ClearEventUser() {
 }
 
 void DHNLMiniTree::ClearMuonsUser(const std::string &muonName) {
+    (void) muonName; // suppress warning
     m_muon_index.clear();
     m_muon_type.clear();
     m_muon_passesPromptCuts.clear();
@@ -172,10 +186,12 @@ void DHNLMiniTree::ClearMuonsUser(const std::string &muonName) {
     m_muon_chi2.clear();
     m_muon_msInnerMatchDOF.clear();
     m_muon_isLRT.clear();
-//    m_muon_ptC30.clear();
+    m_muon_myptcone30.clear();
+    m_muon_myptcone30noLRT.clear();
 }
 
 void DHNLMiniTree::ClearElectronsUser(const std::string &electronName) {
+    (void) electronName; // suppress warning
     m_electron_index.clear();
     m_electron_passesPromptCuts.clear();
     m_electron_passesDisplacedCuts.clear();

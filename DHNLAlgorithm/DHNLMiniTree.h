@@ -28,7 +28,8 @@ private:
     std::vector<double> m_muon_px;
     std::vector<double> m_muon_py;
     std::vector<double> m_muon_pz;
-    std::vector<double> m_muon_ptC30;
+    std::vector<double> m_muon_myptcone30;
+    std::vector<double> m_muon_myptcone30noLRT;
     std::vector<double> m_muon_chi2;
     std::vector<int> m_muon_msInnerMatchDOF;
     std::vector<bool> m_muon_isLRT;

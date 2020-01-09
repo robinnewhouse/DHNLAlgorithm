@@ -103,6 +103,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::ElectronContainer *inElectronsUncalibrated = nullptr;
     ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
 
+    const xAOD::TrackParticleContainer *tracks = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
+
     for (const xAOD::Muon *muon : *inMuons) {
         muon->auxdecor<int>("index") = muon->index();
         muon->auxdecor<int>("type") = muon->muonType();
@@ -126,6 +129,33 @@ EL::StatusCode DHNLAlgorithm::execute() {
         muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
 
         muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
+
+        // Calculate and estimated isolation by hand
+        float myptcone30 = 0;
+        float myptcone30noLRT = 0;
+        const xAOD::TrackParticle *muon_trk = muon->primaryTrackParticle();
+        for (const xAOD::TrackParticle *track : *tracks) {
+            // Snippet from
+            // https://acode-browser1.usatlas.bnl.gov/lxr/source/athena/Trigger/TrigAlgorithms/TrigMuonEF/src/TrigMuonEFTrackIsolationTool.cxx?v=21.0
+            // check if trk within cone
+            double dr = 0;
+            if (muon_trk) { //use ID track for dR if available
+                dr = track->p4().DeltaR(muon_trk->p4());
+            } else { //use the muon
+                dr = track->p4().DeltaR(muon->p4());
+            }
+            // If the current track is within a dR cone of 0.3 AND is not the same track as the muon primary track
+            if (dr < 0.3 and (track != muon_trk)) {
+                ANA_MSG_DEBUG("dr: " << dr << "  pt: " <<track->pt());
+                myptcone30 += track->pt();
+                // Calculate the isolation without using large-radius tracks
+                if (not track->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0)){
+                    myptcone30noLRT += track->pt();
+                }
+            }
+        }
+        muon->auxdecor<float>("myptcone30") = myptcone30;
+        muon->auxdecor<float>("myptcone30noLRT") = myptcone30noLRT;
 
     }
 

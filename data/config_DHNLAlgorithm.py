@@ -386,8 +386,8 @@ Dict_VertexMatcher = {
     "m_msgLevel"             : "Info",
 }
 # Vertex Matching
-if args.is_MC:
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
+# if args.is_MC:
+c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 
 
