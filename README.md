@@ -60,7 +60,7 @@ source */setup.sh
 ```
 ### Running
 
-Go to your run directory
+Go to your run directory.
 
 ```
 cd ../run/
@@ -70,13 +70,15 @@ xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
 
+N.B. The above run command is configured for VSI vertexing. For details about running using VSI Leptons vertexing see addtional notes below. 
+
 To run on data, simply remove the --isMC flag
 
 ```
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
 ```
 
-To run a job on the grid, use a command like the one below. Note: work on successfully submitting grid jobs is still ongoing.
+To run a job on the grid, use a command like the one below. Note: We are still working on getting the grid settings right. We have not yet be sucessful at running a job on the grid.
 
 ```
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054 --inputRucio prun --optGridMergeOutput 1 --optGridOutputSampleName user.dtrischu.data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054_HNLNtuple_01 --optGridNGBPerJob 4 
@@ -102,7 +104,13 @@ When making an ntuple using the VSI Leptons vertex container, make sure you upda
 "m_VSILepmatch"                    : True,
 
 ```
+To run with VSI Lepton vertexing configuration, go to your run directory:
 
+```
+cd ../run/
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
+# the --force option will overwrite your output directory
+```
 
 ### Running on different vertex containers
 
@@ -113,12 +121,12 @@ If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then t
 "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices__YourAugumentingVersionString",
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices__YourAugumentingVersionString",
-"m_AugumentationVersionString"   : "__YourAugumentingVersionString",
+"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
+"m_AugumentationVersionString"   : "_YourAugumentingVersionString",
 
 ```
 This will ensure that the vertex selection and matching is done using the new container and that the appropriate track variables are written out to the ntuple. 
