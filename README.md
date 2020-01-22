@@ -70,6 +70,18 @@ xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
 
+To run on data, simply remove the --isMC flag
+
+```
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
+```
+
+To run a job on the grid, use a command like the one below. Note: work on successfully submitting grid jobs is still ongoing.
+
+```
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054 --inputRucio prun --optGridMergeOutput 1 --optGridOutputSampleName user.dtrischu.data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054_HNLNtuple_01 --optGridNGBPerJob 4 
+```
+
 ## Additional Notes
 ### Migration from NTupleMaker
 This code is meant to replace and extend the old [NTupleMaker](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/NTupleMaker) framework while still keeping all required variables present in the output ntuple.
