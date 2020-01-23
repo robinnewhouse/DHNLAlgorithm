@@ -18,9 +18,6 @@ private:
     bool m_passesHnlMuElFilter;
     bool m_passesVH4bFilter;
 
-    std::vector<std::vector<int>> m_secVtxTrackParticleIndex;
-    std::vector<std::vector<int>> m_secVtxMuonIndex;
-    std::vector<std::vector<int>> m_secVtxElectronIndex;
     std::vector<int> m_muon_index;
     std::vector<int> m_muon_type;
     std::vector<bool> m_muon_passesPromptCuts;
