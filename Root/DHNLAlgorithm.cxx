@@ -164,7 +164,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
         electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
         electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
         electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
-//        electron->auxdecor<float>("ptC30") = electron->isolation(xAOD::Iso::ptcone30);
         if (not(m_inElContainerName == "Electrons")) {
             electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
             electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");

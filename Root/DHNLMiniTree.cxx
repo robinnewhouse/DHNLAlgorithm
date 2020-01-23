@@ -169,9 +169,6 @@ void DHNLMiniTree::ClearEventUser() {
     m_passesHnlElElFilter = false;
     m_passesHnlMuElFilter = false;
     m_passesVH4bFilter = false;
-    m_secVtxTrackParticleIndex.clear();
-    m_secVtxMuonIndex.clear();
-    m_secVtxElectronIndex.clear();
 }
 
 void DHNLMiniTree::ClearMuonsUser(const std::string &muonName) {
