@@ -99,9 +99,9 @@ EL::StatusCode DHNLNtuple::initialize() {
     }
 
     // m_truthLevelOnly is set in config so need to do this after configure is called
-    std::cout << "truth level only " << m_truthLevelOnly << endl;
-    if (m_truthLevelOnly) { m_isMC = true; }
-    else { m_isMC = eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION); std::cout << m_isMC << endl; }
+    if (m_truthLevelOnly) m_isMC = true;
+    else m_isMC = eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION);
+    ANA_MSG_INFO("initialize() : isMC: " << m_isMC);
 
     if (m_useCutFlow) {
 
@@ -247,7 +247,7 @@ EL::StatusCode DHNLNtuple::execute() {
     if (not m_secondaryVertexContainerName.empty()) { // Useful for running framework on AODs which have no secondary vertex container
         const xAOD::VertexContainer *inSecVerts = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg()));
-        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter,m_AugumentationVersionString);
+        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter, m_AugumentationVersionString);
     }
 
 

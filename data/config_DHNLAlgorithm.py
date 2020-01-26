@@ -377,8 +377,9 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_msgLevel"                        : "Info",
     "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    #------------------------ Lepton Matching ------------------------------#
+    "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",
      "m_VSILepmatch"                    : False,
@@ -461,8 +462,8 @@ DHNLNtupleDict = {
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
     "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ", #trigger
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
