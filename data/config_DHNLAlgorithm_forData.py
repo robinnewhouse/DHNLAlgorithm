@@ -61,14 +61,13 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
-    # "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose || HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_mu20_iloose_L1MU15 || HLT_mu40 || HLT_mu60_0eta105_msonly",
-    "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu40 || HLT_mu50 || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e60_lhmedium ||HLT_e60_medium || HLT_e120_lhloose || HLT_e140_lhloose_nod0 || HLT_e300_etcut",
+    "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
-    "m_applyCoreFlagsCut"         : False,
+    "m_applyCoreFlagsCut"	      : False,
     "m_vertexContainerName"       : "PrimaryVertices",
     "m_applyPrimaryVertexCut"     : False,
-    "m_PVNTrack"                    : 2,
+    "m_PVNTrack"		            : 2,
     "m_msgLevel"                  : "Info",
 }
 
@@ -377,9 +376,8 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
+    "m_msgLevel"                        : "Info",
     "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    #------------------------ Lepton Matching ------------------------------#
-    "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",
      "m_VSILepmatch"                    : False,
@@ -387,8 +385,8 @@ Dict_VertexMatcher = {
     "m_msgLevel"             : "Info",
 }
 # Vertex Matching
-# if args.is_MC:
-c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
+if args.is_MC:
+    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 
 
@@ -447,8 +445,8 @@ DHNLNtupleDict = {
     "m_inputAlgo"                    : "",#"SignalJets_Algo",
     "m_allJetContainerName"          : "AntiKt4EMTopoJets",
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons_Signal",
+    "m_inElContainerName"            : "Electrons_Signal",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
@@ -459,16 +457,16 @@ DHNLNtupleDict = {
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
-    "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
+    "m_eventDetailStr"               : "pileup", #shapeEM
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
     "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ",
+    "m_elDetailStr"                  : "kinematic clean energy flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ", #trigger
+    "m_muDetailStr"                  : "kinematic clean energy flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "tracks leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#

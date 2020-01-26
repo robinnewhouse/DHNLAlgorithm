@@ -61,7 +61,7 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
-    # "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose || HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_mu20_iloose_L1MU15 || HLT_mu40 || HLT_mu60_0eta105_msonly",
+    # "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose",
     "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu40 || HLT_mu50 || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e60_lhmedium ||HLT_e60_medium || HLT_e120_lhloose || HLT_e140_lhloose_nod0 || HLT_e300_etcut",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
@@ -86,7 +86,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons",
 
     #----------------------- Selections ----------------------------#
 
@@ -354,7 +354,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_Leptons",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : True,
     "m_do_matMapVeto"        : True,
@@ -377,12 +377,12 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices_Leptons",   # --> use selected vertices
     #------------------------ Lepton Matching ------------------------------#
     "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",
-     "m_VSILepmatch"                    : False,
+     "m_VSILepmatch"                    : True,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -451,9 +451,9 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_AugumentationVersionString"   : "", # no augumentation for standard VSI
-    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons", # --> use selected DVs
+    "m_AugumentationVersionString"   : "_Leptons", # augument track varibles when using VSI leptons
+    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
