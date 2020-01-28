@@ -72,6 +72,8 @@ ClassDef(DHNLAlgorithm, 1);
     const xAOD::Muon *matchTrackToMuon(const xAOD::TrackParticle *track, const xAOD::MuonContainer *inMuons);
 
     const xAOD::Electron *matchTrackToElectron(const xAOD::TrackParticle *track, const xAOD::ElectronContainer *inElectrons);
+
+    StatusCode calculateIsolation(const xAOD::TrackParticleContainer *tracks, const xAOD::Muon *muon) const;
 };
 
 
