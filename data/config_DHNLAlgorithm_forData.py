@@ -355,7 +355,7 @@ SecondaryVertexSelectorDict = {
     "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
     #---------------------- Selections ---------------------------#
-    "m_do_trackTrimming"     : True,
+    "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
     "prop_chi2Cut"           : 5.0,
     "prop_d0_wrtSVCut"       : 0.8,
@@ -376,7 +376,6 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_msgLevel"                        : "Info",
     "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",

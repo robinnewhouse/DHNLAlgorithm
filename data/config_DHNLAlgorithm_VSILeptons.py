@@ -356,7 +356,7 @@ SecondaryVertexSelectorDict = {
     "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_Leptons",
     #---------------------- Selections ---------------------------#
-    "m_do_trackTrimming"     : True,
+    "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
     "prop_chi2Cut"           : 5.0,
     "prop_d0_wrtSVCut"       : 0.8,

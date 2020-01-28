@@ -449,7 +449,9 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "", # --> use selected DVs
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    "m_AugumentationVersionString"   : "", # no augumentation for standard VSI
+    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering     "m_secondaryVertexBranchName"    : "secVtx",
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
@@ -458,8 +460,8 @@ DHNLNtupleDict = {
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_jetDetailStr"                 : "",
     "m_jetDetailStrSyst"             : "",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF PID", #trigger
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ", #trigger
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "",
     "m_metTrkDetailStr"              : "",
