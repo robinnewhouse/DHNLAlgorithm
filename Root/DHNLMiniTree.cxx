@@ -230,26 +230,26 @@ void DHNLMiniTree::ClearTruthVerts(const std::string truthVtxName) {
 
 //////////////////// SECONDARY VERTICES //////////////////////////////////////////
 
-void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::string secVtxName) {
+void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::string secVtxName, const std::string& AugmentationVersionString) {
     if (m_debug) Info("DHNLMiniTree::AddSecondaryVerts()", "adding secondary vertex variables");
 
-    m_secVerts[secVtxName] = new DVs::SecondaryVertexContainer(secVtxName, detailStr, m_units, m_isMC, false, false);
+    m_secVerts[secVtxName] = new DVs::SecondaryVertexContainer(secVtxName, detailStr, m_units, m_isMC, false, false, AugmentationVersionString);
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->setBranches(m_tree);
 }
 
-void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName, bool suppressFilter, const std::string AugmentationVersionString) {
+void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName, bool suppressFilter) {
     this->ClearSecondaryVerts(secVtxName);
 
     for (const auto &secVtx : *secVerts)
-        this->FillSecondaryVertex(secVtx, secVtxName, suppressFilter, AugmentationVersionString);
+        this->FillSecondaryVertex(secVtx, secVtxName, suppressFilter);
 }
 
 
-void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName, bool suppressFilter, const std::string AugmentationVersionString) {
+void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName, bool suppressFilter) {
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
-    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter, AugmentationVersionString);
+    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter);
 
 }
 
