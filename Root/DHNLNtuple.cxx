@@ -247,7 +247,7 @@ EL::StatusCode DHNLNtuple::execute() {
     if (not m_secondaryVertexContainerName.empty()) { // Useful for running framework on AODs which have no secondary vertex container
         const xAOD::VertexContainer *inSecVerts = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg()));
-        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter, m_AugumentationVersionString);
+        if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter);
     }
 
 
@@ -281,7 +281,7 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName, m_AugumentationVersionString);
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;

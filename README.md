@@ -161,7 +161,12 @@ This is likely due to missing pileup reweighting (PRW) files.
 To fix this, use rucio to find the `NTUP_PILEUP` file that matches your dataset.
 Reference the file location in the `PRWList` field of your configuration file.
 More information about this can be found at the [Extended Pileup Reweighting](https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting) TWiki page.
-These PRW files may need to be generated for your dataset.
+These PRW files may need to be generated for your dataset. 
+
+You can also turn off PRW in the BasicEventSelection section of the configuration file: `m_doPUreweighting = False`.
+But be warned, you will get errors about not having a random run number for the electron and muon calibrators.
+These errors will not crash the algorithm, but may give you incorrect calibrations.
+If someone would like to try to debug this in xAODAnaHelpers, I'm sure the fix would be appreciated. 
 
 #### Gritty details
 Even if you run on only a sample from a single MC campaign (e.g. mc16a) you must refer to the pileup reweighting files for ALL mc campaigns.

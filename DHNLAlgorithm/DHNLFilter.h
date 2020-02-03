@@ -150,6 +150,7 @@ public:
 
 ClassDef(DHNLFilter, 1);
 
+    bool attemptIsoRecovery(const xAOD::Muon *muon, float isoValue, float isoCut) const;
 };
 
 #endif //DHNL_DHNLFILTER_H

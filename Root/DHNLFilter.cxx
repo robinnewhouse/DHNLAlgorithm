@@ -44,7 +44,7 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
 
     ANA_MSG_INFO("DHNLFilter() : Calling constructor");
 
-    m_allJetContainerName      = "AntiKt4EMTopoJets";
+    m_allJetContainerName = "AntiKt4EMTopoJets";
     m_inMuContainerName = "Muons";
     m_inElContainerName = "Electrons";
 
@@ -346,6 +346,7 @@ void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
             if (muon->isolation(isoValue, isoType) and (isoValue < m_mu1IsoCut)) isIso = true;
         } else {
             if (muon->isolation(isoValue, isoType) and (isoValue / muon->pt() < m_mu1IsoCut)) isIso = true;
+            if (not isIso) isIso = attemptIsoRecovery(muon, isoValue, m_mu1IsoCut);
         }
         if (not isIso) continue;
 
@@ -814,4 +815,32 @@ EL::StatusCode DHNLFilter::histFinalize() {
     // they processed input events.  
 
     return EL::StatusCode::SUCCESS;
+}
+
+bool DHNLFilter::attemptIsoRecovery(const xAOD::Muon *muon, float isoValue, float isoCut) const {
+    const xAOD::TrackParticleContainer *tracks = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
+    const xAOD::TrackParticle *muon_idtrk = *(muon->inDetTrackParticleLink());
+
+    for (const xAOD::TrackParticle *track : *tracks) {
+        double dr = 0;
+        if (muon_idtrk) { //use ID track for dR if available
+            dr = track->p4().DeltaR(muon_idtrk->p4());
+        } else { //use the muon
+            dr = track->p4().DeltaR(muon->p4());
+        }
+
+        if (dr < 0.3) {
+            if (track->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0)) {
+                ANA_MSG_DEBUG("subtracting track pt " << track->pt() << " from isoValue" << isoValue);
+                isoValue -= track->pt();
+            }
+        }
+    }
+
+    float ptc30pt = isoValue / muon->pt();
+    if (ptc30pt < isoCut) {
+        ANA_MSG_DEBUG("isolation cut recovered subtracing LRT from isolation");
+        return true;
+    } else return false;
 }
