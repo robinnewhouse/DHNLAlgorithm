@@ -72,11 +72,11 @@ public:
 
     void ClearTruthVerts(const std::string truthVtxName = "truthVtx");
 
-    void AddSecondaryVerts(const std::string detailStr = "", const std::string secVtxName = "secVtx",const std::string AugmentationVersionString = ""); //const std::string AugmentationVersionString = ""
+    void AddSecondaryVerts(std::string detailStr = "", std::string secVtxName = "secVtx", const std::string& AugmentationVersionString = "");
 
-    void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx",bool suppressFilter= true);
+    void FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName = "secVtx", bool suppressFilter = true);
 
-    void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx", bool suppressFilter= true);
+    void FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName = "secVtx", bool suppressFilter = true);
 
     void ClearSecondaryVerts(const std::string secVtxName = "secVtx");
 

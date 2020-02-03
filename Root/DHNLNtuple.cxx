@@ -281,7 +281,7 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName,m_AugumentationVersionString); //m_AugumentationVersionString
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName, m_AugumentationVersionString);
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;
