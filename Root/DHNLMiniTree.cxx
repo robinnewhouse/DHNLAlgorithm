@@ -229,7 +229,6 @@ void DHNLMiniTree::ClearTruthVerts(const std::string truthVtxName) {
 
 
 //////////////////// SECONDARY VERTICES //////////////////////////////////////////
-
 void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::string secVtxName, const std::string& AugmentationVersionString) {
     if (m_debug) Info("DHNLMiniTree::AddSecondaryVerts()", "adding secondary vertex variables");
 
@@ -237,6 +236,7 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->setBranches(m_tree);
 }
+
 
 void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, const std::string secVtxName, bool suppressFilter) {
     this->ClearSecondaryVerts(secVtxName);

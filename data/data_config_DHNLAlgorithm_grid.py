@@ -5,10 +5,10 @@ c = Config()
 
 # Good Run Lists
 GRLList = [
-    '$TestArea/DHNLAlgorithm/data/GRL/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '$TestArea/DHNLAlgorithm/data/GRL/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
-    '$TestArea/DHNLAlgorithm/data/GRL/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '$TestArea/DHNLAlgorithm/data/GRL/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
 
 # Pileup Reweighting
@@ -43,8 +43,6 @@ GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
 lumicalcs = ",".join(lumicalcList)
 
-VtxAugStr = "_Leptons"
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% BasicEventSelection %%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -63,7 +61,7 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
-    # "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose",
+    # "m_triggerSelection"          : "HLT_mu26_ivarmedium || HLT_3mu6_msonly || HLT_j30_jes_cleanLLP_PS_llp_L1TAU60 || HLT_j30_jes_cleanLLP_PS_llp_L1TAU100 || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-NOMATCH || HLT_j30_jes_cleanLLP_PS_llp_L1LLP-RO || HLT_j30_muvtx || HLT_j30_muvtx_noiso || HLT_e26_lhtight_nod0_ivarloose || HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_mu20_iloose_L1MU15 || HLT_mu40 || HLT_mu60_0eta105_msonly",
     "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu40 || HLT_mu50 || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e60_lhmedium ||HLT_e60_medium || HLT_e120_lhloose || HLT_e140_lhloose_nod0 || HLT_e300_etcut",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
@@ -88,7 +86,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" +VtxAugStr,
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
 
@@ -148,29 +146,30 @@ c.algorithm("JetCalibrator",  JetCalibratorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 JetSelectorDict = {
-    "m_name"                      : "JetSelect",
-    #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
-    "m_outContainerName"          : "SignalJets",
-    #"m_truthJetContainer"         : "",
-    "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_outputAlgo"                : "SignalJets_Algo",
-    "m_decorateSelectedObjects"   : True,
-    "m_createSelectedContainer"   : True,
-    #----------------------- Selections ----------------------------#
-    "m_cleanJets"                 : False,
-    "m_pass_min"                  : -1,
-    "m_pT_min"                    : 20,
-    "m_eta_max"                   : 1e8,
-    #----------------------- JVT ----------------------------#
-    "m_doJVT"                     : False,
-    "m_pt_max_JVT"                : 60e3,
-    "m_eta_max_JVT"               : 2.4,
-    "m_JVTCut"                    : 0.59,
-    #----------------------- B-tagging ----------------------------#
-    "m_doBTagCut"                 : False,
-    #----------------------- Other ----------------------------#
-    "m_msgLevel"                  : "Info",
+  "m_name"                      : "JetSelect",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
+  "m_outContainerName"          : "SignalJets",
+  #"m_truthJetContainer"         : "",
+  "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
+  "m_outputAlgo"                : "SignalJets_Algo",
+  "m_decorateSelectedObjects"   : True,
+  "m_createSelectedContainer"   : True,
+  #----------------------- Selections ----------------------------#
+  "m_cleanJets"                 : False,
+  "m_pass_min"                  : -1,
+  "m_pass_max"                  : -1,
+  "m_pT_min"                    : 5,
+  "m_eta_max"                   : 5,
+  #----------------------- JVT ----------------------------#
+  "m_doJVT"                     : False,
+  "m_pt_max_JVT"                : 60e3,
+  "m_eta_max_JVT"               : 2.4,
+  "m_JVTCut"                    : 0.59,
+  #----------------------- B-tagging ----------------------------#
+  "m_doBTagCut"                 : False,
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info",
 }
 
 c.algorithm("JetSelector", JetSelectorDict )
@@ -354,11 +353,11 @@ c.algorithm("METConstructor", MetConstructorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
-    "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
-    "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + VtxAugStr,
+    "m_mapInFile"            : "usr/WorkDir/21.2.71/InstallArea/x86_64-centos6-gcc62-opt/src/Hto4bLLPAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
+    "m_mapOutFile"           : "usr/WorkDir/21.2.71/InstallArea/x86_64-centos6-gcc62-opt/src/Hto4bLLPAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
+
     #---------------------- Selections ---------------------------#
-    "m_do_trackTrimming"     : False,
+    "m_do_trackTrimming"     : True,
     "m_do_matMapVeto"        : True,
     "prop_chi2Cut"           : 5.0,
     "prop_d0_wrtSVCut"       : 0.8,
@@ -368,7 +367,7 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : VtxAugStr,
+    "prop_doDropAssociated"  : False,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -380,12 +379,12 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices"+ VtxAugStr,   # --> use selected vertices
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
     #------------------------ Lepton Matching ------------------------------#
     "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
     "m_inElContainerName"               : "Electrons",
-     "m_VSILepmatch"                    : True,
+     "m_VSILepmatch"                    : False,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -454,9 +453,9 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices"+ VtxAugStr, # --> use selected DVs
-    "m_AugumentationVersionString"   : VtxAugStr, # augument track varibles when using VSI leptons
-    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    "m_AugumentationVersionString"   : "", # no augumentation for standard VSI
+    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
