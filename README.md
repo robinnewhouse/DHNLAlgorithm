@@ -26,6 +26,10 @@ Get `DHNLAlgorithm` with:
 lsetup git; 
 git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git;
 ```
+Note that the cloning URL uses ssh authentication. Changing this to kerberos or https will fail to recursively clone the submodules because they too use ssh authentication. 
+Please [generate an ssh key pair](https://gitlab.cern.ch/help/ssh/README#generating-a-new-ssh-key-pair) 
+and [store the public key on gitlab](https://gitlab.cern.ch/help/ssh/README#adding-an-ssh-key-to-your-gitlab-account).
+(I prefer to [generate the key without arguments](https://www.ssh.com/ssh/keygen#creating-an-ssh-key-pair-for-user-authentication)).
 Please contact me if you have repository access issues at this step.
 
 
