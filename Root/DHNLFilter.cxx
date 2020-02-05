@@ -47,7 +47,7 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
     m_allJetContainerName = "AntiKt4EMTopoJets";
     m_inMuContainerName = "Muons";
     m_inElContainerName = "Electrons";
-
+    std::cout << "In the filter step" << std::endl;
     // Muons
     // Prompt muons
     m_mu1PtMin = 28.0 * GeV;
@@ -174,8 +174,8 @@ EL::StatusCode DHNLFilter::execute() {
     bool passesFilter = applyFilter();
     ANA_MSG_DEBUG("execute() : passesFilter:  " << passesFilter);
 
-    bool passesVH4bFilter = applyVH4bFilter();
-    ANA_MSG_DEBUG("execute() : passesVH4bFilter:  " << passesVH4bFilter);
+    //bool passesVH4bFilter = applyVH4bFilter();
+    //ANA_MSG_DEBUG("execute() : passesVH4bFilter:  " << passesVH4bFilter);
 
     return EL::StatusCode::SUCCESS;
 
