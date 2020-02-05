@@ -43,6 +43,8 @@ GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
 lumicalcs = ",".join(lumicalcList)
 
+VtxAugStr = "_Leptons"
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% BasicEventSelection %%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -86,7 +88,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons",
+    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" +VtxAugStr,
 
     #----------------------- Selections ----------------------------#
 
@@ -354,7 +356,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_Leptons",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + VtxAugStr,
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -366,6 +368,7 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
+    "prop_vtx_suffix"        : VtxAugStr,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -377,7 +380,7 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices_Leptons",   # --> use selected vertices
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices"+ VtxAugStr,   # --> use selected vertices
     #------------------------ Lepton Matching ------------------------------#
     "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
@@ -451,8 +454,8 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Leptons", # --> use selected DVs
-    "m_AugumentationVersionString"   : "_Leptons", # augument track varibles when using VSI leptons
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices"+ VtxAugStr, # --> use selected DVs
+    "m_AugumentationVersionString"   : VtxAugStr, # augument track varibles when using VSI leptons
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
