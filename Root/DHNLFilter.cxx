@@ -174,8 +174,8 @@ EL::StatusCode DHNLFilter::execute() {
     bool passesFilter = applyFilter();
     ANA_MSG_DEBUG("execute() : passesFilter:  " << passesFilter);
 
-    //bool passesVH4bFilter = applyVH4bFilter();
-    //ANA_MSG_DEBUG("execute() : passesVH4bFilter:  " << passesVH4bFilter);
+    // bool passesVH4bFilter = applyVH4bFilter();
+    // ANA_MSG_DEBUG("execute() : passesVH4bFilter:  " << passesVH4bFilter);
 
     return EL::StatusCode::SUCCESS;
 
@@ -708,7 +708,7 @@ void DHNLFilter::newElectronContainers(const xAOD::ElectronContainer *input, con
         int good = 0;
         int selected = 0;
 
-        if (elec->passSelection("Medium") && elec->isolation(xAOD::Iso::topoetcone20) / elec->pt() < 0.2) {
+        if (elec->passSelection(m_electronLHWP.c_str()) && elec->isolation(xAOD::Iso::topoetcone20) / elec->pt() < 0.2) {
             goodElectrons->push_back(elec);
             good = 1;
 

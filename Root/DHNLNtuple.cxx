@@ -43,7 +43,7 @@ DHNLNtuple::DHNLNtuple() :
     ANA_MSG_INFO("DHNLNtuple() : Calling constructor");
 
     m_inJetContainerName = "";
-    m_inputAlgo = "";
+    m_jetInputAlgo = "";
     m_allJetContainerName = "";
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";

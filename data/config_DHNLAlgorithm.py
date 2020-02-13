@@ -1,5 +1,15 @@
 from xAODAnaHelpers import Config
 import os
+import shlex
+import argparse
+
+
+
+parser = argparse.ArgumentParser(description='Test for extra options')
+parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+
+o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
 
@@ -59,7 +69,7 @@ basicEventSelectionDict = {
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
     "m_applyTriggerCut"           : False,
-    "m_doPUreweighting"           : args.is_MC,
+    "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
@@ -84,7 +94,7 @@ DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
     #----------------------- Container Flow ----------------------------#
 
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
@@ -95,6 +105,7 @@ DHNLFilterDict = {
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
+    "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
 
     #----------------------- Other ----------------------------#
     "m_msgLevel"                : "Info",
@@ -106,74 +117,74 @@ c.algorithm("DHNLFilter", DHNLFilterDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# JetCalibratorDict = {
-#     "m_name"                      : "JetCalibrate",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "AntiKt4EMTopoJets",
-#     "m_jetAlgo"                   : "AntiKt4EMTopo",
-#     "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
-#     "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
-#     "m_sort"                      : True,
-#     "m_redoJVT"                   : False,
-#     #----------------------- Systematics ----------------------------#
-#     "m_systName"                  : "Nominal",            ## For data
-#     "m_systVal"                   : 0,                    ## For data
-#     #----------------------- Calibration ----------------------------#
-#     "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
-#     "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
-#     "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
-#     "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
-#     "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
-#     #----------------------- JES Uncertainty ----------------------------#
-#     #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
-#     #"m_uncertMCType"               : "MC16",
-#     "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
-#     "m_uncertMCType"           : "MC16",
-#     #----------------------- JER Uncertainty ----------------------------#
-#     #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
-#     #"m_JERFullSys"                : False,
-#     #"m_JERApplyNominal"           : False,
-#     #----------------------- Cleaning ----------------------------#
-#     "m_jetCleanCutLevel"          : "LooseBad",
-#     "m_jetCleanUgly"              : False,
-#     "m_saveAllCleanDecisions"     : True,
-#     "m_cleanParent"               : False,
-#     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                  : "Info",
-# }
+JetCalibratorDict = {
+    "m_name"                      : "JetCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetAlgo"                   : "AntiKt4EMTopo",
+    "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
+    "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_sort"                      : True,
+    "m_redoJVT"                   : False,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "Nominal",            ## For data
+    "m_systVal"                   : 0,                    ## For data
+    #----------------------- Calibration ----------------------------#
+    "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
+    "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
+    "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
+    "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
+    "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
+    #----------------------- JES Uncertainty ----------------------------#
+    #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    #"m_uncertMCType"               : "MC16",
+    "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    "m_uncertMCType"           : "MC16",
+    #----------------------- JER Uncertainty ----------------------------#
+    #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
+    #"m_JERFullSys"                : False,
+    #"m_JERApplyNominal"           : False,
+    #----------------------- Cleaning ----------------------------#
+    "m_jetCleanCutLevel"          : "LooseBad",
+    "m_jetCleanUgly"              : False,
+    "m_saveAllCleanDecisions"     : False,
+    "m_cleanParent"               : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
 
-# c.algorithm("JetCalibrator",  JetCalibratorDict )
+c.algorithm("JetCalibrator",  JetCalibratorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# JetSelectorDict = {
-#     "m_name"                      : "JetSelect",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
-#     "m_outContainerName"          : "SignalJets",
-#     #"m_truthJetContainer"         : "",
-#     "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
-#     "m_outputAlgo"                : "SignalJets_Algo",
-#     "m_decorateSelectedObjects"   : True,
-#     "m_createSelectedContainer"   : True,
-#     #----------------------- Selections ----------------------------#
-#     "m_cleanJets"                 : False,
-#     "m_pass_min"                  : -1,
-#     "m_pT_min"                    : 20,
-#     "m_eta_max"                   : 1e8,
-#     #----------------------- JVT ----------------------------#
-#     "m_doJVT"                     : False,
-#     "m_pt_max_JVT"                : 60e3,
-#     "m_eta_max_JVT"               : 2.4,
-#     "m_JVTCut"                    : 0.59,
-#     #----------------------- B-tagging ----------------------------#
-#     "m_doBTagCut"                 : False,
-#     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                  : "Info",
-# }
+JetSelectorDict = {
+    "m_name"                      : "JetSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
+    "m_outContainerName"          : "SignalJets",
+    #"m_truthJetContainer"         : "",
+    "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_outputAlgo"                : "SignalJets_Algo",
+    "m_decorateSelectedObjects"   : True,
+    "m_createSelectedContainer"   : True,
+    #----------------------- Selections ----------------------------#
+    "m_cleanJets"                 : False,
+    "m_pass_min"                  : -1,
+    "m_pT_min"                    : 20,
+    "m_eta_max"                   : 1e8,
+    #----------------------- JVT ----------------------------#
+    "m_doJVT"                     : False,
+    "m_pt_max_JVT"                : 60e3,
+    "m_eta_max_JVT"               : 2.4,
+    "m_JVTCut"                    : 0.59,
+    #----------------------- B-tagging ----------------------------#
+    "m_doBTagCut"                 : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
 
-# c.algorithm("JetSelector", JetSelectorDict )
+c.algorithm("JetSelector", JetSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -218,8 +229,9 @@ MuonSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleMuTrigChains"        : "HLT_mu26_ivarmedium",
+    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu40, HLT_mu50, HLT_mu60_0eta105_msonly",
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
@@ -272,10 +284,11 @@ ElectronSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "",
+    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0, HLT_e300_etcut",
     #----------------------- Other ----------------------------#
-    "m_IsoWPList"                 : "Gradient",
+    # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
 }
 
@@ -301,7 +314,7 @@ METTrkConstructorDict = {
     "m_inputElectrons"            : "Electrons",
     "m_inputMuons"                : "Muons",
     #"m_inputTaus"                 : "TauJets",
-    "m_inputJets"                 : "AntiKt4EMTopoJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
     "m_runNominal"                : True,
     #"m_eleSystematics"            : "ElectronSelector_Syst",
     #"m_muonSystematics"           : "MuonSelector_Syst",
@@ -335,7 +348,7 @@ MetConstructorDict = {
     "m_inputElectrons"            : "Electrons",
     "m_inputMuons"                : "Muons",
     #"m_inputTaus"                 : "TauJets",
-    "m_inputJets"                 : "AntiKt4EMTopoJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
     "m_runNominal"                : True,
     #"m_eleSystematics"            : "ElectronSelector_Syst",
     #"m_muonSystematics"           : "MuonSelector_Syst",
@@ -446,12 +459,14 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"           : "SignalJets",
-    "m_inputAlgo"                    : "",#"SignalJets_Algo",
-    "m_allJetContainerName"          : "AntiKt4EMTopoJets",
+    # "m_inJetContainerName"           : "SignalJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    # "m_allJetContainerName"          : "SignalJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810" ,
+    "m_inJetContainerName"           :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"          :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetInputAlgo"                 : "",
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons",
-    "m_inElContainerName"            : "Electrons",
+    "m_inMuContainerName"            : "Muons_Calibrate",
+    "m_inElContainerName"            : "Electrons_Calibrate",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + VtxAugStr, # --> use selected DVs
@@ -463,12 +478,10 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    # "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
-    # "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
-    # "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss ",
-    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation isolationKinematics trackparams trackhitcont effSF",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
+    "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
