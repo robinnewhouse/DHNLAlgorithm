@@ -16,7 +16,7 @@ build_code:
   script:
     - mkdir build
     - cd build
-    - cmake ../
+    - cmake ../../
     - cmake --build .
   after_script:
     - source "${AnalysisBase_PLATFORM}/setup.sh"
