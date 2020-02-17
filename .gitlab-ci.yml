@@ -1,0 +1,29 @@
+
+stages:
+  - build
+  - package
+  - run
+  - test
+
+build_code:
+  stage: build
+  image: atlas/analysisbase:21.2.90
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - source /home/atlas/release_setup.sh
+  script:
+    - cp scripts/CMakeLists.txt ../
+    - mkdir build
+    - cd build
+    - cmake ../../
+    - cmake --build .
+  after_script:
+    - source "${AnalysisBase_PLATFORM}/setup.sh"
+  # only:
+  #   changes:
+  #     - src
+  artifacts:
+    paths:
+      - build
+    expire_in: 1 day
