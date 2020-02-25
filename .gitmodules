@@ -1,3 +1,3 @@
-[submodule "deps/DVAnalysisBase"]
+[submodule "source/DHNLAlgorithm/deps/DVAnalysisBase"]
 	path = source/DHNLAlgorithm/deps/DVAnalysisBase
 	url = ../../../../../uehdv/DVAnalysisBase.git

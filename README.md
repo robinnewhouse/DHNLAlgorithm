@@ -1,90 +1,72 @@
-# DHNLAlgorithm
+# DHNLAnalysis
 
-`DHNLAlgorithm` is a framework based on `DVAnalysisBase`, 
-developed for the displaced vertex heavy neutral lepton analysis. 
+`DHNLAnalysis` is a framework based on `DVAnalysisBase`, 
+developed for the displaced-vertex heavy neutral lepton analysis in ATLAS. 
 For installation instructions, see the "Getting Started" section below.
 
 ## Getting Started
 
 ### First-time Setup and Installation
 
-Make sure you have a directory structure that works for a modern CMake setup.
+Get `DHNLAnalysis` with:
 
+```bash
+setupATLAS
+lsetup git
+git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAnalysis.git
+cd DHNLAnalysis
 ```
-mkdir DHNL; cd DHNL; 
-mkdir build; 
-mkdir source; 
-mkdir run; 
-cd source;
-setupATLAS;
-asetup AnalysisBase,21.2.90,here;
-```
+(If you're having trouble with using ssh to clone, please see https://dguest.github.io/atlas-gitlab/02-credentials/index.html)
 
-Get `DHNLAlgorithm` with:
+To build the directory structure and set up `AnalysisBase`, simply run
 
-```
-lsetup git; 
-git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git;
-```
-Note that the cloning URL uses ssh authentication. Changing this to kerberos or https will fail to recursively clone the submodules because they too use ssh authentication. 
-Please [generate an ssh key pair](https://gitlab.cern.ch/help/ssh/README#generating-a-new-ssh-key-pair) 
-and [store the public key on gitlab](https://gitlab.cern.ch/help/ssh/README#adding-an-ssh-key-to-your-gitlab-account).
-(I prefer to [generate the key without arguments](https://www.ssh.com/ssh/keygen#creating-an-ssh-key-pair-for-user-authentication)).
-Please contact me if you have repository access issues at this step.
-
-
-To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`, run
-```
-cd DHNLAlgorithm/deps/DVAnalysisBase/
-source util/dependencyHack.sh
-cd ../../../
+```bash
+source setup.sh
 ```
 
 And compile
 
-```
-cd ../build/
+```bash
+cd $TestArea
 cmake ../source/
 make -j
+source */setup.sh  # (wildcard since os and gcc versions may differ)
 ```
 
-Then make sure you setup the new environment:
 
-```
-source */setup.sh  # (wildcards since os and gcc versions may differ)
-```
+#### Future Sessions w/ Same Install
 
-### Future Sessions w/ Same Install
-
-```
-cd [Analysis Directory]/DHNLAlgorithm/source/
+Simply `cd DHNLAnalysis` and run `source setup.sh` again, or if you prefer:
+```bash
+cd DHNLAnalysis/build
+setupATLAS
 asetup
-cd ../build/
-source */setup.sh 
+source */setup.sh
 ```
+
 ### Running
 
 Go to your run directory.
 
-```
-cd ../run/
+```bash
+cd $TestArea/../run/
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
 # the --force option will overwrite your output directory
 ```
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
 
-N.B. The above run command is configured for VSI vertexing. For details about running using VSI Leptons vertexing see addtional notes below. 
+N.B. The above run command is configured for VSI vertexing. For details about running using VSI Leptons vertexing see additional notes below. 
 
 To run on data, simply remove the --isMC flag
 
-```
+```bash
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
 ```
 
 To run a job on the grid, use a command like the one below. Note: We are still working on getting the grid settings right. We have not yet be sucessful at running a job on the grid.
 
-```
+```bash
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054 --inputRucio prun --optGridMergeOutput 1 --optGridOutputSampleName user.dtrischu.data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054_HNLNtuple_01 --optGridNGBPerJob 4 
 ```
 
@@ -103,14 +85,14 @@ To perform event selection and analysis on these generated ntuples please see th
 
 When making an ntuple using the VSI Leptons vertex container, make sure you update the container name as described in the "Running on different vertex containers" section. Additionally you will need to change the following flag to match electrons since a different electron collection is passed to the vertexing algorithm when using the VSI Leptons vertex configuration. 
 
-```
+```python
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 "m_VSILepmatch"                    : True,
 
 ```
 To run with VSI Lepton vertexing configuration, go to your run directory:
 
-```
+```bash
 cd ../run/
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
 # the --force option will overwrite your output directory
@@ -120,7 +102,7 @@ xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons
 
 If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. To get the vertices and tracks from this new container change the following in the config_DHNL_Algorithm.py:
 
-```
+```python
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
 
@@ -141,10 +123,10 @@ This will ensure that the vertex selection and matching is done using the new co
 When updating a repository, a recursive update must be run.
 Because `FactoryTools` contains a duplicate of `xAODAnaHelpers`, a fix must be run when updating modules.
 Please use the following commands to properly update all modules:
-```
+```bash
 git pull --recurse-submodules
 git submodule update --recursive
-cd deps/DVAnalysisBase/
+cd $TestArea/../DHNLAnalysis/source/DHNLAlgorithm/deps/DVAnalysisBase
 source util/dependencyHack.sh
 cd ../../
 ```
@@ -153,8 +135,6 @@ cd ../../
 ### WARNING: Pileup Reweighting
 
 When running on a new Monte Carlo sample you may see an error message from xAODAnaHelpers that says something like
-
-
 
 ```
 ...
@@ -176,3 +156,15 @@ If someone would like to try to debug this in xAODAnaHelpers, I'm sure the fix w
 Even if you run on only a sample from a single MC campaign (e.g. mc16a) you must refer to the pileup reweighting files for ALL mc campaigns.
 Currently that would mean mc16a,d,e. Alternatively you may remove the lumicalc files associated with the missing campaigns.
 
+## Continuous intigration and Docker
+A simple continuous intigration script has been set up and is run by `.gitlab-ci.yml`.
+This will compile the code when any changes are made to `source/` and alert you if there are any compilation errors. 
+
+A Docker image is also built after each successful compilation that can be downloaded and run as efectively a virtual machine containing the analysis. 
+This is controlled by the `Dockerfile`.
+
+These processes are still under development.
+
+If you're interested, I recommend these excellent ATLAS workshops on 
+[Continuous Integration](https://awesome-workshop.github.io/continuous-integration-deployment-gitlab/) and 
+[Docker](https://awesome-workshop.github.io/intro-to-docker/). 
