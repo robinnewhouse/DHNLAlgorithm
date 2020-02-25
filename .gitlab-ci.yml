@@ -22,9 +22,9 @@ build_code:
     - cmake --build .
   after_script:
     - source "${AnalysisBase_PLATFORM}/setup.sh"
-  only:
-    changes:
-      - source
+#   only:
+#     changes:
+#       - source
   artifacts:
     paths:
       - build
@@ -37,9 +37,9 @@ build_image:
   variables:
     TO: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     GIT_SUBMODULE_STRATEGY: recursive
-  only:
-    changes:
-      - source
+#   only:
+#     changes:
+#       - source
   tags:
     - docker-image-build
   script:
