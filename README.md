@@ -94,25 +94,35 @@ To run with VSI Lepton vertexing configuration, go to your run directory:
 
 ```bash
 cd ../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
+xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons.py --files /path/to/my/DAOD_RPVLL/file --isMC --extraOptions="--VSIstr _Leptons" --submitDir testRun --force direct
 # the --force option will overwrite your output directory
 ```
 
 ### Running on different vertex containers
 
-If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. To get the vertices and tracks from this new container change the following in the config_DHNL_Algorithm.py:
+If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. To get the vertices and tracks from this new container add the following argument to the xAH_run.py command: 
+
+```
+--extraOptions="--VSIstr AugmentingVersionString"
+```
+
+where AugmentingVersionString is the name you chose as the AugmentingVersionString during the vertexing re-running. 
+
+This will change the name following parameters in the DHNL algorithm config:
 
 ```python
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
-"m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
+"m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
+
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_YourAugumentingVersionString",
-"m_AugumentationVersionString"   : "_YourAugumentingVersionString",
+"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
+"m_AugumentationVersionString"   : o.VSIstr,
 
 ```
 This will ensure that the vertex selection and matching is done using the new container and that the appropriate track variables are written out to the ntuple. 
@@ -147,7 +157,13 @@ Reference the file location in the `PRWList` field of your configuration file.
 More information about this can be found at the [Extended Pileup Reweighting](https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting) TWiki page.
 These PRW files may need to be generated for your dataset. 
 
-You can also turn off PRW in the BasicEventSelection section of the configuration file: `m_doPUreweighting = False`.
+To turn off the pilue up reweighting add the following argument to the xAH_run.py run command: 
+
+```
+--extraOptions="--noPRW"
+```
+
+This will turn off PRW in the BasicEventSelection section of the configuration file by setting `m_doPUreweighting = False`.
 But be warned, you will get errors about not having a random run number for the electron and muon calibrators.
 These errors will not crash the algorithm, but may give you incorrect calibrations.
 If someone would like to try to debug this in xAODAnaHelpers, I'm sure the fix would be appreciated. 
