@@ -1,6 +1,6 @@
-# DHNLAnalysis
+# DHNLAlgorithm
 
-`DHNLAnalysis` is a framework based on `DVAnalysisBase`, 
+`DHNLAlgorithm` is a framework based on `DVAnalysisBase`, 
 developed for the displaced-vertex heavy neutral lepton analysis in ATLAS. 
 For installation instructions, see the "Getting Started" section below.
 
@@ -8,13 +8,13 @@ For installation instructions, see the "Getting Started" section below.
 
 ### First-time Setup and Installation
 
-Get `DHNLAnalysis` with:
+Get `DHNLAlgorithm` with:
 
 ```bash
 setupATLAS
 lsetup git
-git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAnalysis.git
-cd DHNLAnalysis
+git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git
+cd DHNLAlgorithm
 ```
 (If you're having trouble with using ssh to clone, please see https://dguest.github.io/atlas-gitlab/02-credentials/index.html)
 
@@ -36,9 +36,9 @@ source */setup.sh  # (wildcard since os and gcc versions may differ)
 
 #### Future Sessions w/ Same Install
 
-Simply `cd DHNLAnalysis` and run `source setup.sh` again, or if you prefer:
+Simply `cd DHNLAlgorithm` and run `source setup.sh` again, or if you prefer:
 ```bash
-cd DHNLAnalysis/build
+cd DHNLAlgorithm/build
 setupATLAS
 asetup
 source */setup.sh
@@ -136,7 +136,7 @@ Please use the following commands to properly update all modules:
 ```bash
 git pull --recurse-submodules
 git submodule update --recursive
-cd $TestArea/../DHNLAnalysis/source/DHNLAlgorithm/deps/DVAnalysisBase
+cd $TestArea/../DHNLAlgorithm/source/DHNLAlgorithm/deps/DVAnalysisBase
 source util/dependencyHack.sh
 cd ../../
 ```
