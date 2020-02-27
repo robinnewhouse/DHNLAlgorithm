@@ -6,4 +6,5 @@ RUN rm -rf /code/src/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/dep/ &&
     cd /code/build && \
     source /release_setup.sh && \
     cmake /code/src && \
-    make -j4
+    make -j && \
+    source */setup.sh
