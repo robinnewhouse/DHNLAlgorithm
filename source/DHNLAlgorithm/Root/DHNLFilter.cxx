@@ -345,7 +345,7 @@ void DHNLFilter::getPromptMuonCandidates(const xAOD::MuonContainer *muons,
             if (muon->isolation(isoValue, isoType) and (isoValue < m_mu1IsoCut)) isIso = true;
         } else {
             if (muon->isolation(isoValue, isoType) and (isoValue / muon->pt() < m_mu1IsoCut)) isIso = true;
-            if (not isIso) isIso = attemptIsoRecovery(muon, isoValue, m_mu1IsoCut);
+            // if (not isIso) isIso = attemptIsoRecovery(muon, isoValue, m_mu1IsoCut);
         }
         if (not isIso) continue;
 
