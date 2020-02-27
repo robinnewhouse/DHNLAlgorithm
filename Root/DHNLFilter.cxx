@@ -47,7 +47,6 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
     m_allJetContainerName = "AntiKt4EMTopoJets";
     m_inMuContainerName = "Muons";
     m_inElContainerName = "Electrons";
-    std::cout << "In the filter step" << std::endl;
     // Muons
     // Prompt muons
     m_mu1PtMin = 28.0 * GeV;
