@@ -1,4 +1,7 @@
 echo "Testing DHNLAlgorithm"
+pwd
+ls
+source build/*/setup.sh
 xAH_run.py \
 --config ../source/DHNLAlgorithm/data/config_test.py \
 --inputList \
