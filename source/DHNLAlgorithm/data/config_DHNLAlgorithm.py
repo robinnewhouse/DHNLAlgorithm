@@ -26,7 +26,7 @@ GRLList = [
 # The sample you're running over must have the PRW file available.
 # If you are getting errors such as "Unrecognised channelNumber 311660 for periodNumber 300000" this is the place to start.
 # Load the PRW File locations from an external file. Comment any lines you don't want with '#'.
-PRWFiles = os.path.dirname(os.path.abspath(__file__))+'PRW/PRWFiles.txt'
+PRWFiles = os.environ['WorkDir_DIR']+'/data/DHNLAlgorithm/PRW/PRWFiles.txt'
 with open(PRWFiles) as f:
     PRWList = [line.rstrip() for line in f] # read lines
     PRWList = [line for line in PRWList if line]  # remove empty lines
@@ -366,8 +366,8 @@ c.algorithm("METConstructor", MetConstructorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
-    "m_mapInFile"            : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3.2_Inner.root",
-    "m_mapOutFile"           : "$TestArea/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/data/DV/MaterialMap_v3_Outer.root",
+    "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
+    "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,

@@ -1,10 +1,9 @@
 echo "Testing DHNLAlgorithm"
-# export TestArea=/code/build/
 pwd
 ls
 # source build/*/setup.sh
 xAH_run.py \
---config /code/src/DHNLAlgorithm/data/config_DHNLAlgorithm.py \
+--config $WorkDir_DIR/data/DHNLAlgorithm/config_DHNLAlgorithm.py \
 --inputList \
 --files files.txt \
 --submitDir testRun \
@@ -12,4 +11,3 @@ xAH_run.py \
 --isMC \
 --nevents=10 \
 direct
-
