@@ -4,7 +4,7 @@ stages:
   - run
   - test
   
-build_code:
+.build_code:
   stage: build
   image: atlas/analysisbase:21.2.90
   variables:
@@ -30,7 +30,7 @@ build_code:
       - build
     expire_in: 1 day
 
-build_image:
+.build_image:
   stage: package
   dependencies:
     - build_code
