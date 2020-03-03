@@ -1,9 +1,9 @@
 echo "Testing DHNLAlgorithm"
 pwd
 ls
-source build/*/setup.sh
+# source build/*/setup.sh
 xAH_run.py \
---config ../source/DHNLAlgorithm/data/config_test.py \
+--config /code/src/DHNLAlgorithm/data/config_DHNLAlgorithm.py \
 --inputList \
 --files files.txt \
 --submitDir testRun \
