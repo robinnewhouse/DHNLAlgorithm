@@ -1,5 +1,5 @@
 echo "Testing DHNLAlgorithm"
-export TestArea=/code/build/
+# export TestArea=/code/build/
 pwd
 ls
 # source build/*/setup.sh
