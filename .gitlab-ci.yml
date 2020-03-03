@@ -49,7 +49,8 @@ run_DHNLAlgorithm:
   stage: run
 #   dependencies:
 #     - build_code
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+#   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:ci-1883f48b
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
