@@ -55,6 +55,7 @@ run_DHNLAlgorithm:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
     - source /release_setup.sh
+    - source /code/build/*/setup.sh
     - bash scripts/test_run.sh
   artifacts:
     paths:
