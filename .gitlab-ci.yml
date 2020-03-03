@@ -47,8 +47,8 @@ stages:
     
 run_DHNLAlgorithm:
   stage: run
-  dependencies:
-    - build_code
+#   dependencies:
+#     - build_code
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
