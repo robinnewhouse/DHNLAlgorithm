@@ -56,7 +56,8 @@ run_DHNLAlgorithm:
   script:
     - source /release_setup.sh
     - source /code/build/*/setup.sh
-    - bash scripts/test_run.sh
+    - cd scripts
+    - bash test_run.sh
   artifacts:
     paths:
       - testRun
