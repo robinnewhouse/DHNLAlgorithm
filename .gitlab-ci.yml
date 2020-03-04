@@ -9,13 +9,17 @@ build_code:
   image: atlas/analysisbase:21.2.90
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - build
   before_script:
     - source /home/atlas/release_setup.sh
     # Need to remove extra xAH from FactoryTools
     - cd source/DHNLAlgorithm/deps/DVAnalysisBase/
     - source util/dependencyHack.sh
     - cd ../../../../
-    - mkdir build
+    - mkdir -p build
     - cd build
   script:
     - cmake ../source/
@@ -32,8 +36,7 @@ build_code:
 
 build_image:
   stage: package
-  dependencies:
-    - build_code
+  # Since we are also building inside the Dockerfile, we don't actually depend on the build_code stage and we could run those two in parallel.
   variables:
     TO: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     GIT_SUBMODULE_STRATEGY: recursive
