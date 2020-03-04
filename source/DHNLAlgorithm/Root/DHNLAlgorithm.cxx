@@ -127,8 +127,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
         if (not muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF))
             msInnerMatchDOF = -1;
         muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
-
-        muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
+ 
+        // DT commented out for SUSY15 
+        // muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
 
 //        ANA_CHECK(calculateIsolation(tracks, muon));
 

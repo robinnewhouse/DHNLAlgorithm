@@ -43,7 +43,7 @@ DHNLNtuple::DHNLNtuple() :
     ANA_MSG_INFO("DHNLNtuple() : Calling constructor");
 
     m_inJetContainerName = "";
-    m_inputAlgo = "";
+    m_jetInputAlgo = "";
     m_allJetContainerName = "";
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";
@@ -237,8 +237,8 @@ EL::StatusCode DHNLNtuple::execute() {
     if (allJets) m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
     if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
 
-    const xAOD::JetContainer *signalJets = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
+    // const xAOD::JetContainer *signalJets = nullptr;
+    // ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
 
     const xAOD::TruthVertexContainer *inTruthVerts = nullptr;
     if (m_isMC) {ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store)); }

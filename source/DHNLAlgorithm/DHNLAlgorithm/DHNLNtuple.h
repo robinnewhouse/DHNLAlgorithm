@@ -42,7 +42,7 @@ public:
     bool m_truthLevelOnly;            // truthLevelOnly info
 
     std::string m_inJetContainerName;   // input Jet container name
-    std::string m_inputAlgo;          // input algo for when running systs
+    std::string m_jetInputAlgo;          // input algo for when running systs
     std::string m_allJetContainerName;// input container name
     std::string m_allJetInputAlgo;    // input algo for when running systs
     std::string m_inMETContainerName;  // input MET container name
