@@ -1,0 +1,1 @@
+xAH_run.py --config ../source/DHNLAlgorithm/data/data_config_DHNLAlgorithm_grid.py --files data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054 --inputRucio prun --optGridMergeOutput 1 --optGridOutputSampleName user.rnewhous.data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054_HNLNtuple_01 --optGridNGBPerJob 4
