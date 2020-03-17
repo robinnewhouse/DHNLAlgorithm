@@ -122,7 +122,7 @@ This will change the name following parameters in the DHNL algorithm config:
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
-"m_AugumentationVersionString"   : o.VSIstr,
+"m_AugmentationVersionString"   : o.VSIstr,
 
 ```
 This will ensure that the vertex selection and matching is done using the new container and that the appropriate track variables are written out to the ntuple. 

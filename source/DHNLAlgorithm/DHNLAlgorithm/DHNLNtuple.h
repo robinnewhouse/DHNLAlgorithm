@@ -50,7 +50,7 @@ public:
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_truthVertexContainerName;
-    std::string m_secondaryVertexContainerName;
+    std::string m_truthVertexBranchName;
     std::string m_inTruthParticleContainerName;
 
     std::string m_eventDetailStr;     // event info add to tree
@@ -69,9 +69,11 @@ public:
     std::string m_secondaryVertexDetailStr;
     std::string m_truthParticleDetailString;
 
+    std::string m_secondaryVertexContainerName;
     std::string m_secondaryVertexBranchName;
-    std::string m_truthVertexBranchName;
-    std::string m_AugumentationVersionString;
+    std::string m_AugmentationVersionString;
+    std::string m_secondaryVertexContainerNameAlt;
+    std::string m_secondaryVertexBranchNameAlt;
     bool m_suppressTrackFilter;
 
 private:

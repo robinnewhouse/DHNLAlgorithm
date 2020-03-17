@@ -54,7 +54,7 @@ DHNLNtuple::DHNLNtuple() :
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
     m_writeTree = true;
-    m_MCPileupCheckContainer = "AntiKt4TruthJets";
+    m_MCPileupCheckContainer = "None";
     m_truthLevelOnly = false;
     m_eventDetailStr = "truth pileup";
     m_trigDetailStr = "";
@@ -68,7 +68,7 @@ DHNLNtuple::DHNLNtuple() :
     m_secondaryVertexDetailStr = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
-    m_AugumentationVersionString = "";
+    m_AugmentationVersionString = "";
     m_suppressTrackFilter = true;
 
 }
@@ -138,15 +138,15 @@ EL::StatusCode DHNLNtuple::configure() {
 
 //    May want to run these checks on vertices and leptons // Robin
 
-    if (m_inJetContainerName.empty()) {
-        ANA_MSG_ERROR("configure() : InputContainer string is empty!");
-        return EL::StatusCode::FAILURE;
-    }
-
-    if (!m_truthLevelOnly && m_allJetContainerName.empty()) {
-        ANA_MSG_ERROR("configure() : AllJetInputContainer string is empty!");
-        return EL::StatusCode::FAILURE;
-    }
+//    if (m_inJetContainerName.empty()) {
+//        ANA_MSG_ERROR("configure() : InputContainer string is empty!");
+//        return EL::StatusCode::FAILURE;
+//    }
+//
+//    if (!m_truthLevelOnly && m_allJetContainerName.empty()) {
+//        ANA_MSG_ERROR("configure() : AllJetInputContainer string is empty!");
+//        return EL::StatusCode::FAILURE;
+//    }
 
     return EL::StatusCode::SUCCESS;
 }
@@ -163,7 +163,8 @@ EL::StatusCode DHNLNtuple::setupJob(EL::Job &job) {
     xAOD::Init("DHNLNtuple").ignore(); // call before opening first file
 
     EL::OutputStream outForTree(m_treeStream);
-    job.outputAdd(outForTree);
+    if (not job.outputHas(m_treeStream))
+        job.outputAdd(outForTree);
     return EL::StatusCode::SUCCESS;
 }
 
@@ -207,33 +208,38 @@ EL::StatusCode DHNLNtuple::execute() {
     if (tracks) { m_myTrees[systName]->FillTracks(tracks); }
 
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
-    if (m_isMC) {ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store)); }
+    if (m_isMC && not m_inTruthParticleContainerName.empty()) {ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store)); }
     if (TruthParts) { m_myTrees[systName]->FillTruth(TruthParts, "xAH_truth"); }
 
     const xAOD::JetContainer *truthJets = nullptr;
-    if (m_useMCPileupCheck && m_isMC) {
+    if (m_useMCPileupCheck && m_isMC ) {
         ANA_CHECK (HelperFunctions::retrieve(truthJets, m_MCPileupCheckContainer, m_event, m_store));
     }
     if (truthJets) { m_myTrees[systName]->FillJets(truthJets); }
 
     const xAOD::MissingETContainer *Met(nullptr);
-    ANA_CHECK (HelperFunctions::retrieve(Met, m_inMETContainerName, m_event, m_store));
+    if (not m_inMETContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(Met, m_inMETContainerName, m_event, m_store));
     if (Met) { m_myTrees[systName]->FillMET(Met); }
 
     const xAOD::MissingETContainer *MetTrk(nullptr);
-    ANA_CHECK (HelperFunctions::retrieve(MetTrk, m_inMETTrkContainerName, m_event, m_store));
+    if (not m_inMETTrkContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(MetTrk, m_inMETTrkContainerName, m_event, m_store));
     if (MetTrk) { m_myTrees[systName]->FillMET(MetTrk); }
 
     const xAOD::MuonContainer *allMuons(nullptr);
-    ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
+    if (not m_inMuContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
     if (allMuons) m_myTrees[systName]->FillMuons(allMuons, HelperFunctions::getPrimaryVertex(vertices));
 
     const xAOD::ElectronContainer *allElectrons = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
+    if (not m_inElContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
     if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
 
     const xAOD::JetContainer *allJets = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
+    if (not m_allJetContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
     if (allJets) m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
     if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
 
@@ -241,15 +247,24 @@ EL::StatusCode DHNLNtuple::execute() {
     // ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
 
     const xAOD::TruthVertexContainer *inTruthVerts = nullptr;
-    if (m_isMC) {ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store)); }
+    if (m_isMC && not m_truthVertexContainerName.empty()) {
+        ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store)); 
+    }
     if (inTruthVerts) m_myTrees[systName]->FillTruthVerts(inTruthVerts, m_truthVertexBranchName);
 
+    // Secondary vertex filling
     if (not m_secondaryVertexContainerName.empty()) { // Useful for running framework on AODs which have no secondary vertex container
         const xAOD::VertexContainer *inSecVerts = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg()));
         if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter);
     }
 
+    // Fill the alternative secondary vertices
+    if (not m_secondaryVertexContainerNameAlt.empty()) { 
+        const xAOD::VertexContainer *inSecVertsAlt = nullptr;
+        ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
+        if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
+    }
 
     ANA_MSG_DEBUG("Event # " << m_eventCounter);
     m_myTrees[systName]->Fill();
@@ -281,7 +296,9 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName, m_AugumentationVersionString);
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
+    // Add alternative secondary vertex container
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AugmentationVersionString);
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;

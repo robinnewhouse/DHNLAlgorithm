@@ -235,7 +235,6 @@ MuonSelectorDict = {
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
     "m_removeEventBadMuon"        : False,
-    "m_IsoWPList"                 : "FixedCutHighPtTrackOnly",
 }
 
 c.algorithm("MuonSelector", MuonSelectorDict )
@@ -305,7 +304,6 @@ METTrkConstructorDict = {
     "m_outputAlgoSystNames"       : "METTrk_Syst",
     "m_writeSystToMetadata"       : False,
     "m_setAFII"                   : True,
-    "m_calculateSignificance"     : True,
     "m_doPhotonCuts"              : True,
     "m_doElectronCuts"            : True,
     "m_addSoftClusterTerms"       : False,
@@ -339,7 +337,6 @@ MetConstructorDict = {
     "m_outputAlgoSystNames"       : "MET_Syst",
     "m_writeSystToMetadata"       : False,
     "m_setAFII"                   : True,
-    "m_calculateSignificance"     : True,
     "m_doPhotonCuts"              : True,
     "m_doElectronCuts"            : True,
     "m_addSoftClusterTerms"       : False,
@@ -392,7 +389,7 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
     "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,   # --> use selected vertices
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
     #------------------------ Lepton Matching ------------------------------#
     "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
@@ -405,7 +402,20 @@ Dict_VertexMatcher = {
 # if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
-
+Dict_VertexMatcher_Leptons = {
+"m_name"                            : "VertexMatch"+o.VSIstr,
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
+#------------------------ Lepton Matching ------------------------------#
+"m_doLeptons"                       : True,
+"m_inMuContainerName"               : "Muons",
+"m_inElContainerName"               : "Electrons",
+"m_VSILepmatch"                    : True if "Leptons" in o.VSIstr else False,
+#------------------------ Other ------------------------------#
+"m_msgLevel"             : "Info",
+}
+# Vertex Matching
+# if args.is_MC:
+c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%% TruthSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -468,10 +478,12 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
-    "m_AugumentationVersionString"   : o.VSIstr, # no augumentation for standard VSI
-    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
+    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.VSIstr,
+    "m_AugmentationVersionString"    : o.VSIstr, # no augumentation for standard VSI
+    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",

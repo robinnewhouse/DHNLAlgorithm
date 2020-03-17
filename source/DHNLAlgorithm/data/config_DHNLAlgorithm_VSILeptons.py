@@ -469,7 +469,7 @@ DHNLNtupleDict = {
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
-    "m_AugumentationVersionString"   : o.VSIstr, # no augumentation for standard VSI
+    "m_AugmentationVersionString"   : o.VSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_secondaryVertexBranchName"    : "secVtx",
     "m_truthVertexContainerName"     : "TruthVertices",
