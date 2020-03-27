@@ -1,2 +1,4 @@
 run/
 build/
+.asetup.save
+.idea/
