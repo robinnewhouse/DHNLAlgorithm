@@ -68,7 +68,7 @@ DHNLNtuple::DHNLNtuple() :
     m_secondaryVertexDetailStr = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
-    m_AugmentationVersionString = "";
+    m_AltAugmentationVersionString = "";
     m_suppressTrackFilter = true;
 
 }
@@ -260,7 +260,7 @@ EL::StatusCode DHNLNtuple::execute() {
     }
 
     // Fill the alternative secondary vertices
-    if (not m_secondaryVertexContainerNameAlt.empty()) { 
+    if (not m_secondaryVertexContainerNameAlt.empty() and not m_AltAugmentationVersionString.empty()) {  // check to make sure that you dont fill default VSI twice
         const xAOD::VertexContainer *inSecVertsAlt = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
@@ -298,7 +298,7 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddElectrons(m_elDetailStr);
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
     // Add alternative secondary vertex container
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AugmentationVersionString);
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString);
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;

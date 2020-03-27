@@ -71,7 +71,7 @@ public:
 
     std::string m_secondaryVertexContainerName;
     std::string m_secondaryVertexBranchName;
-    std::string m_AugmentationVersionString;
+    std::string m_AltAugmentationVersionString;
     std::string m_secondaryVertexContainerNameAlt;
     std::string m_secondaryVertexBranchNameAlt;
     bool m_suppressTrackFilter;

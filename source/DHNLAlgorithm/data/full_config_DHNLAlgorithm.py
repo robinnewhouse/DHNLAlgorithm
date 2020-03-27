@@ -8,7 +8,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons") # alternate vertex configuration string to store in tree along with VSI 
+parser.add_argument('--VSIstr', dest='VSIstr', type=str, default="")
 
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -16,12 +16,11 @@ c = Config()
 
 # Good Run Lists
 GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
-
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
@@ -114,6 +113,78 @@ DHNLFilterDict = {
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetCalibratorDict = {
+    "m_name"                      : "JetCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetAlgo"                   : "AntiKt4EMTopo",
+    "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
+    "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_sort"                      : True,
+    "m_redoJVT"                   : False,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "Nominal",            ## For data
+    "m_systVal"                   : 0,                    ## For data
+    #----------------------- Calibration ----------------------------#
+    "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
+    "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
+    "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
+    "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
+    "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
+    #----------------------- JES Uncertainty ----------------------------#
+    #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    #"m_uncertMCType"               : "MC16",
+    "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    "m_uncertMCType"           : "MC16",
+    #----------------------- JER Uncertainty ----------------------------#
+    #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
+    #"m_JERFullSys"                : False,
+    #"m_JERApplyNominal"           : False,
+    #----------------------- Cleaning ----------------------------#
+    "m_jetCleanCutLevel"          : "LooseBad",
+    "m_jetCleanUgly"              : False,
+    "m_saveAllCleanDecisions"     : False,
+    "m_cleanParent"               : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetCalibrator",  JetCalibratorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetSelectorDict = {
+    "m_name"                      : "JetSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
+    "m_outContainerName"          : "SignalJets",
+    #"m_truthJetContainer"         : "",
+    "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_outputAlgo"                : "SignalJets_Algo",
+    "m_decorateSelectedObjects"   : True,
+    "m_createSelectedContainer"   : True,
+    #----------------------- Selections ----------------------------#
+    "m_cleanJets"                 : False,
+    "m_pass_min"                  : -1,
+    "m_pT_min"                    : 20,
+    "m_eta_max"                   : 1e8,
+    #----------------------- JVT ----------------------------#
+    "m_doJVT"                     : False,
+    "m_pt_max_JVT"                : 60e3,
+    "m_eta_max_JVT"               : 2.4,
+    "m_JVTCut"                    : 0.59,
+    #----------------------- B-tagging ----------------------------#
+    "m_doBTagCut"                 : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetSelector", JetSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -222,15 +293,80 @@ ElectronSelectorDict = {
 
 c.algorithm("ElectronSelector", ElectronSelectorDict )
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+METTrkConstructorDict = {
+    "m_name"                      : "MetTrkConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "METTrk",
+    "m_outputAlgoSystNames"       : "METTrk_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : True,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", METTrkConstructorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MetConstructorDict = {
+    "m_name"                      : "MetConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "MET",
+    "m_outputAlgoSystNames"       : "MET_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : False,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", MetConstructorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
-    "m_name"                 : "SecVtxSel_VSI",
+    "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -242,37 +378,12 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : "",
+    "prop_vtx_suffix"        : o.VSIstr,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
 
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-
-# SecondaryVertexSelectorDict_Leptons = {
-#     "m_name"                 : "SecVtxSel_VSI"+ o.altVSIstr,
-#     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-#     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-#     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-#     #---------------------- Selections ---------------------------#
-#     "m_do_trackTrimming"     : False,
-#     "m_do_matMapVeto"        : True,
-#     "prop_chi2Cut"           : 5.0,
-#     "prop_d0_wrtSVCut"       : 0.8,
-#     "prop_z0_wrtSVCut"       : 1.2,
-#     "prop_errd0_wrtSVCut"    : 999999,
-#     "prop_errz0_wrtSVCut"    : 999999,
-#     "prop_d0signif_wrtSVCut" : 5.0,
-#     "prop_z0signif_wrtSVCut" : 5.0,
-#     "prop_chi2_toSVCut"      : 5.0,
-#     "prop_vtx_suffix"        : o.altVSIstr,
-#     #------------------------ Other ------------------------------#
-#     "m_msgLevel"             : "Info",
-# }
-
-# c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict_Leptons )
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -288,20 +399,23 @@ Dict_VertexMatcher = {
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
+# Vertex Matching
+# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
-
 Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.altVSIstr,
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, 
+"m_name"                            : "VertexMatch"+o.VSIstr,
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
 #------------------------ Lepton Matching ------------------------------#
 "m_doLeptons"                       : True,
 "m_inMuContainerName"               : "Muons",
 "m_inElContainerName"               : "Electrons",
-"m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False,
+"m_VSILepmatch"                    : True if "Leptons" in o.VSIstr else False,
 #------------------------ Other ------------------------------#
 "m_msgLevel"             : "Info",
 }
+# Vertex Matching
+# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -355,13 +469,21 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
+    # "m_inJetContainerName"           : "SignalJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    # "m_allJetContainerName"          : "SignalJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810" ,
+    "m_inJetContainerName"           :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"          :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetInputAlgo"                 : "",
+    "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMETContainerName"           : "MET",
+    "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx_VSI",
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
-    "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
+    "m_secondaryVertexBranchName"    : "secVtx",
+    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.VSIstr,
+    "m_AugmentationVersionString"    : o.VSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
