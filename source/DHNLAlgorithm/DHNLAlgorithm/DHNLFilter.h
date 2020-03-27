@@ -31,7 +31,8 @@ public:
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_electronLHWP;         // WP for electrons that changes name in SUSY15
-
+    bool m_applyFilterCut;  // skip events that don't pass the filter
+    
     // Muons
 //    std::string m_muonSGKey;
     // Prompt muons
