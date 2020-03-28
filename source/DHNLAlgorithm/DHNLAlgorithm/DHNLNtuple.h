@@ -102,6 +102,9 @@ public:
     EL::StatusCode execute() override;
 
     EL::StatusCode finalize() override;
+    
+    virtual EL::StatusCode histFinalize ();
+
 
     void AddTree(std::string name);
 

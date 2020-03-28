@@ -201,11 +201,12 @@ EL::StatusCode DHNLNtuple::execute() {
 
     const xAOD::VertexContainer *vertices = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+    
     // Should fill primary vertices here. Is this taken care of by truth vertices? // Robin
 
-    const xAOD::TrackParticleContainer *tracks = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks(tracks); }
+    // const xAOD::TrackParticleContainer *tracks = nullptr;
+    // ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
+    // if (tracks) { m_myTrees[systName]->FillTracks(tracks); }
 
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty()) {ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store)); }
@@ -291,9 +292,9 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddTrigger(m_trigDetailStr);
     miniTree->AddMET(m_metDetailStr);
     miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    miniTree->AddTrackParts(m_trackDetailStr);
+    // miniTree->AddTrackParts(m_trackDetailStr);
     miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
-    miniTree->AddJets(m_jetDetailStrSyst);
+    // miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
@@ -317,3 +318,46 @@ EL::StatusCode DHNLNtuple::finalize() {
 
     return EL::StatusCode::SUCCESS;
 }
+
+
+
+EL::StatusCode DHNLNtuple :: histFinalize ()
+{
+  // This method is the mirror image of histInitialize(), meaning it
+  // gets called after the last event has been processed on the worker
+  // node and allows you to finish up any objects you created in
+  // histInitialize() before they are written to disk.  This is
+  // actually fairly rare, since this happens separately for each
+  // worker node.  Most of the time you want to do your
+  // post-processing on the submission node after all your histogram
+  // outputs have been merged.  This is different from finalize() in
+  // that it gets called on all worker nodes regardless of whether
+  // they processed input events.
+  // if( m_writeTree ) {
+    std::string thisName;
+    //m_ss.str( std::string() );
+    //m_ss << m_mcChannelNumber;
+    TFile * treeFile = wk()->getOutputFile( m_treeStream );
+    if(m_useCutFlow) {
+      TH1F* thisCutflowHist = (TH1F*) m_cutflowHist->Clone();
+      thisName = thisCutflowHist->GetName();
+      thisCutflowHist->SetName( (thisName).c_str() );
+      //thisCutflowHist->SetName( (thisName+"_"+m_ss.str()).c_str() );
+      thisCutflowHist->SetDirectory( treeFile );
+
+      // TH1F* thisCutflowHistW = (TH1F*) m_cutflowHistW->Clone();
+      // thisName = thisCutflowHistW->GetName();
+      // thisCutflowHistW->SetName( (thisName).c_str() );
+      // //thisCutflowHistW->SetName( (thisName+"_"+m_ss.str()).c_str() );
+      // thisCutflowHistW->SetDirectory( treeFile );
+    }
+    // Get MetaData_EventCount histogram
+    // TFile* metaDataFile = wk()->getOutputFile( "metadata" );
+    // TH1D* metaDataHist = (TH1D*) metaDataFile->Get("MetaData_EventCount");
+    // TH1D* thisMetaDataHist = (TH1D*) metaDataHist->Clone();
+    // thisMetaDataHist->SetDirectory( treeFile );
+  // }
+
+  return EL::StatusCode::SUCCESS;
+}
+

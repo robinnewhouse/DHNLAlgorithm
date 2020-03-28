@@ -224,6 +224,72 @@ c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+METTrkConstructorDict = {
+    "m_name"                      : "MetTrkConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "METTrk",
+    "m_outputAlgoSystNames"       : "METTrk_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : True,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", METTrkConstructorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MetConstructorDict = {
+    "m_name"                      : "MetConstruct",
+    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
+    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
+    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
+    "m_outputContainer"           : "MET",
+    "m_outputAlgoSystNames"       : "MET_Syst",
+    "m_writeSystToMetadata"       : False,
+    "m_setAFII"                   : True,
+    "m_doPhotonCuts"              : True,
+    "m_doElectronCuts"            : True,
+    "m_addSoftClusterTerms"       : False,
+    "m_rebuildUsingTracksInJets"  : False,
+    "m_inputElectrons"            : "Electrons",
+    "m_inputMuons"                : "Muons",
+    #"m_inputTaus"                 : "TauJets",
+    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_runNominal"                : True,
+    #"m_eleSystematics"            : "ElectronSelector_Syst",
+    #"m_muonSystematics"           : "MuonSelector_Syst",
+    #"m_tauSystematics"            : "TauSelector_Syst",
+    #"m_jetSystematics"            : "JetSelector_Syst",
+    "m_doJVTCut"                  : True,
+    "m_dofJVTCut"                 : False,
+    "m_calculateSignificance"     : False,
+    "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("METConstructor", MetConstructorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
@@ -357,6 +423,8 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMETContainerName"           : "MET",
+    "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx_VSI",
@@ -368,15 +436,14 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
-    "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
+    # "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_metDetailStr"                 : "metClus sigClus",
-    "m_metTrkDetailStr"              : "metTrk sigTrk",
-    # "m_trackDetailStr"               : "fitpars",
-    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_metDetailStr"                 : "kinematics metClus sigClus",
+    "m_metTrkDetailStr"              : "kinematics metTrk sigTrk",
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
