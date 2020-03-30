@@ -65,6 +65,7 @@ DHNLNtuple::DHNLNtuple() :
     m_metDetailStr = "metClus sigClus";
     m_metTrkDetailStr = "metTrk sigTrk";
     m_trackDetailStr = "";
+    m_vertexDetailStr = "";
     m_secondaryVertexDetailStr = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
@@ -201,8 +202,7 @@ EL::StatusCode DHNLNtuple::execute() {
 
     const xAOD::VertexContainer *vertices = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
-    
-    // Should fill primary vertices here. Is this taken care of by truth vertices? // Robin
+    if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
     // const xAOD::TrackParticleContainer *tracks = nullptr;
     // ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
@@ -261,7 +261,7 @@ EL::StatusCode DHNLNtuple::execute() {
     }
 
     // Fill the alternative secondary vertices
-    if (not m_secondaryVertexContainerNameAlt.empty() and not m_AltAugmentationVersionString.empty()) {  // check to make sure that you dont fill default VSI twice
+    if (not m_secondaryVertexContainerNameAlt.empty() and not m_AltAugmentationVersionString.empty()) {  // check you do not fill default VSI twice
         const xAOD::VertexContainer *inSecVertsAlt = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
@@ -297,9 +297,10 @@ void DHNLNtuple::AddTree(std::string name) {
     // miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
+    miniTree->AddVertices(m_vertexDetailStr);
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
-    // Add alternative secondary vertex container
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString);
+    if (not m_AltAugmentationVersionString.empty()) { // check you do not fill default VSI twice
+    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;

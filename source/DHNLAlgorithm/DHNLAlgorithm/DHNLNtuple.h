@@ -66,6 +66,7 @@ public:
     std::string m_metTrkDetailStr;      // track met info add to tree
     std::string m_trackDetailStr;      // trigger info add to tree
     std::string m_truthVertexDetailStr;
+    std::string m_vertexDetailStr;
     std::string m_secondaryVertexDetailStr;
     std::string m_truthParticleDetailString;
 
