@@ -65,6 +65,7 @@ DHNLNtuple::DHNLNtuple() :
     m_metDetailStr = "metClus sigClus";
     m_metTrkDetailStr = "metTrk sigTrk";
     m_trackDetailStr = "";
+    m_vertexDetailStr = "";
     m_secondaryVertexDetailStr = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
@@ -201,6 +202,7 @@ EL::StatusCode DHNLNtuple::execute() {
 
     const xAOD::VertexContainer *vertices = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+    if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
     // Should fill primary vertices here. Is this taken care of by truth vertices? // Robin
 
     const xAOD::TrackParticleContainer *tracks = nullptr;
@@ -260,7 +262,7 @@ EL::StatusCode DHNLNtuple::execute() {
     }
 
     // Fill the alternative secondary vertices
-    if (not m_secondaryVertexContainerNameAlt.empty()) { 
+    if (not m_secondaryVertexContainerNameAlt.empty() and not m_AugmentationVersionString.empty()) { 
         const xAOD::VertexContainer *inSecVertsAlt = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
@@ -296,9 +298,11 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
+    miniTree->AddVertices(m_vertexDetailStr);
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
     // Add alternative secondary vertex container
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AugmentationVersionString);
+    if (not m_AugmentationVersionString.empty())
+        miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AugmentationVersionString);
     miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
 
     m_myTrees[name] = miniTree;

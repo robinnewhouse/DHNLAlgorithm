@@ -498,6 +498,7 @@ DHNLNtupleDict = {
     "m_metDetailStr"                 : "metClus sigClus",
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
+    "m_vertexDetailStr"              : "primary",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     "m_truthParticleDetailString"    : "", # type parents children bVtx
