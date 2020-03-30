@@ -238,11 +238,11 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
     if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
 
-    const xAOD::JetContainer *allJets = nullptr;
-    if (not m_allJetContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
-    if (allJets) m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
-    if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
+    // const xAOD::JetContainer *allJets = nullptr;
+    // if (not m_allJetContainerName.empty())
+    //     ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
+    // if (allJets) m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
+    // if (allJets) { m_myTrees[systName]->FillJets(allJets, -1); }
 
     // const xAOD::JetContainer *signalJets = nullptr;
     // ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
@@ -293,7 +293,6 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddMET(m_metDetailStr);
     miniTree->AddMET(m_metTrkDetailStr, "trkMET");
     // miniTree->AddTrackParts(m_trackDetailStr);
-    miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
     // miniTree->AddJets(m_jetDetailStrSyst);
     miniTree->AddMuons(m_muDetailStr);
     miniTree->AddElectrons(m_elDetailStr);
@@ -301,7 +300,11 @@ void DHNLNtuple::AddTree(std::string name) {
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
     if (not m_AltAugmentationVersionString.empty()) { // check you do not fill default VSI twice
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
-    miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName);
+    
+    if (m_isMC){ 
+        miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
+        miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName); 
+    }
 
     m_myTrees[name] = miniTree;
 }
