@@ -98,7 +98,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : True,
+    "m_applyFilterCut"          : False,
     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
@@ -167,7 +167,7 @@ MuonSelectorDict = {
     "m_removeEventBadMuon"        : False,
 }
 
-c.algorithm("MuonSelector", MuonSelectorDict )
+# c.algorithm("MuonSelector", MuonSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -220,7 +220,7 @@ ElectronSelectorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-c.algorithm("ElectronSelector", ElectronSelectorDict )
+# c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -254,7 +254,7 @@ METTrkConstructorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-c.algorithm("METConstructor", METTrkConstructorDict )
+# c.algorithm("METConstructor", METTrkConstructorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -287,7 +287,7 @@ MetConstructorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-c.algorithm("METConstructor", MetConstructorDict )
+# c.algorithm("METConstructor", MetConstructorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
@@ -397,8 +397,8 @@ DHNLDict = {
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
-    "m_inMETContainerName"      : "MET",
-    "m_inMETTrkContainerName"   : "METTrk",
+    # "m_inMETContainerName"      : "MET",
+    # "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,
@@ -423,8 +423,6 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
-    "m_inMETContainerName"           : "MET",
-    "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx_VSI",
@@ -436,17 +434,12 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    # "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    # "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_metDetailStr"                 : "kinematics metClus sigClus",
-    "m_metTrkDetailStr"              : "kinematics metTrk sigTrk",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
-    "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",

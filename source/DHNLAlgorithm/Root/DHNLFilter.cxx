@@ -174,9 +174,9 @@ EL::StatusCode DHNLFilter::execute() {
     bool passesFilter = applyFilter();
     ANA_MSG_DEBUG("execute() : passesFilter:  " << passesFilter);
 
-    // 
-    // if (m_applyFilterCut and not passesFilter)
-    //     wk()->skipEvent();
+
+    if (m_applyFilterCut and not passesFilter)
+        wk()->skipEvent();
     // bool passesVH4bFilter = applyVH4bFilter();
     // ANA_MSG_DEBUG("execute() : passesVH4bFilter:  " << passesVH4bFilter);
 

@@ -47,6 +47,7 @@ public:
     std::string m_allJetInputAlgo;    // input algo for when running systs
     std::string m_inMETContainerName;  // input MET container name
     std::string m_inMETTrkContainerName;  // input METTrk container name
+    std::string m_trackParticleContainerName; // input track particle container
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_truthVertexContainerName;
