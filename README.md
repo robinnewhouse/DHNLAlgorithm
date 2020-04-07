@@ -46,8 +46,11 @@ source */setup.sh
 
 ### Running
 
-Go to your run directory.
+Go to your run directory and run `xAH_run.py` like one of the below examples. 
+Local runs will be stored in `testRun` or what ever other directory you name.
+The interesting ntuples are stored in `testRun/data-tree/<filename>.root`.
 
+#### MC
 ```bash
 cd $TestArea/../run/
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
@@ -58,17 +61,21 @@ The output ntuple will be stored in the  directory `testRun/data-tree/`.
 
 N.B. The above run command is configured for VSI vertexing. For details about running using VSI Leptons vertexing see additional notes below. 
 
+#### Data
 To run on data, simply remove the --isMC flag
 
 ```bash
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
 ```
 
-To run a job on the grid, use a command like the one below. Note: We are still working on getting the grid settings right. We have not yet be sucessful at running a job on the grid.
+#### Grid
+To run a job on the grid, use a command like the one below. 
 
 ```bash
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054 --inputRucio prun --optGridMergeOutput 1 --optGridOutputSampleName user.dtrischu.data16_13TeV.00304178.physics_Main.merge.DAOD_RPVLL.r11761_r11764_p4054_HNLNtuple_01 --optGridNGBPerJob 4 
 ```
+Note: We have been running jobs successfully on the grid, but some settings may not have yet been tested. We would appreciate any feedback you have.
+
 
 ## Additional Notes
 ### Migration from NTupleMaker
