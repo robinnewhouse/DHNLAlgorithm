@@ -351,7 +351,7 @@ EL::StatusCode DHNLNtuple :: histFinalize ()
     //m_ss << m_mcChannelNumber;
     TFile * treeFile = wk()->getOutputFile( m_treeStream );
     if(m_useCutFlow) {
-      TH1F* thisCutflowHist = (TH1F*) m_cutflowHist->Clone();
+      TH1D* thisCutflowHist = (TH1D*) m_cutflowHist->Clone();
       thisName = thisCutflowHist->GetName();
       thisCutflowHist->SetName( (thisName).c_str() );
       //thisCutflowHist->SetName( (thisName+"_"+m_ss.str()).c_str() );

@@ -167,7 +167,8 @@ MuonSelectorDict = {
     "m_removeEventBadMuon"        : False,
 }
 
-# c.algorithm("MuonSelector", MuonSelectorDict )
+# Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
+c.algorithm("MuonSelector", MuonSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
