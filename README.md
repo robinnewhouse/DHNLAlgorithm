@@ -88,51 +88,33 @@ To make migration easier, a spreadsheet specifying those changes has been compil
 
 To perform event selection and analysis on these generated ntuples please see the code repository: [DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis)
 
-### VSI Leptons 
-
-When making an ntuple using the VSI Leptons vertex container, make sure you update the container name as described in the "Running on different vertex containers" section. Additionally you will need to change the following flag to match electrons since a different electron collection is passed to the vertexing algorithm when using the VSI Leptons vertex configuration. 
-
-```python
-#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_VSILepmatch"                    : True,
-
-```
-To run with VSI Lepton vertexing configuration, go to your run directory:
-
-```bash
-cd ../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm_VSILeptons.py --files /path/to/my/DAOD_RPVLL/file --isMC --extraOptions="--VSIstr _Leptons" --submitDir testRun --force direct
-# the --force option will overwrite your output directory
-```
-
 ### Running on different vertex containers
 
-If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. To get the vertices and tracks from this new container add the following argument to the xAH_run.py command: 
+If you are trying to use a DAOD_RPVLL that has had vertexing re-run on it then 
+the vertex container name will have been augmented by the `AugmentingVersionString` in VSI. 
+To get the vertices and tracks from this new container add the following argument to the xAH_run.py command: 
 
+```bash
+--extraOptions="--altVSIstr AugmentingVersionString"
 ```
---extraOptions="--VSIstr AugmentingVersionString"
-```
+where AugmentingVersionString is the name you chose as the AugmentingVersionString 
+during the vertexing re-running. e.g. `_Leptons` or `_2`.
 
-where AugmentingVersionString is the name you chose as the AugmentingVersionString during the vertexing re-running. 
-
-This will change the name following parameters in the DHNL algorithm config:
+This will augment the alternative VSI string in several places in the DHNL algorithm config. e.g:
 
 ```python
-#%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
-"m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
-"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
-"m_AugmentationVersionString"   : o.VSIstr,
-
+"m_secondaryVertexBranchName"    : "secVtx_VSI",
+"m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
 ```
-This will ensure that the vertex selection and matching is done using the new container and that the appropriate track variables are written out to the ntuple. 
+
+The vertex selection and matching is done using the new container as well 
+as the standard VSI container. Vertex and associated track variables are 
+written out to the ntuple as `secVtx_VSI*` and `secVtx_VSI_<altVSIstr>*`.
+For example `secVtx_VSI_trk_pt` and `secVtx_VSI_Leptons_trk_pt`.
 
 ### Updating repository
 
