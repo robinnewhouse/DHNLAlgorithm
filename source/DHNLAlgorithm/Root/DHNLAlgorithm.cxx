@@ -128,11 +128,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
             msInnerMatchDOF = -1;
         muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
  
-        // DT commented out for SUSY15 
-        // muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
-
-//        ANA_CHECK(calculateIsolation(tracks, muon));
-
+        muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
+        
     }
 
     for (const xAOD::Electron *electron : *inElectrons) {
@@ -159,12 +156,13 @@ EL::StatusCode DHNLAlgorithm::execute() {
         // TMP for JetUncertainties uses the same variable
         eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
     }
-    const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
-    if (primaryVertex) {
-        eventInfo->auxdecor<float>("PV_x") = primaryVertex->x();
-        eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
-        eventInfo->auxdecor<float>("PV_z") = primaryVertex->z();
-    }
+//    const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
+//    if (primaryVertex) {
+//        eventInfo->auxdecor<float>("PV_x") = primaryVertex->x();
+//        eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
+//        eventInfo->auxdecor<float>("PV_y") = primaryVertex->y();
+//        eventInfo->auxdecor<float>("PV_z") = primaryVertex->z();
+//    }
 
     return EL::StatusCode::SUCCESS;
 }

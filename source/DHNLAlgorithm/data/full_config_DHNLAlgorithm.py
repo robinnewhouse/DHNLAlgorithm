@@ -8,7 +8,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons") # alternate vertex configuration string to store in tree along with VSI 
+parser.add_argument('--VSIstr', dest='VSIstr', type=str, default="")
 
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -16,12 +16,11 @@ c = Config()
 
 # Good Run Lists
 GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
-
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
@@ -98,7 +97,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : False,
+    "m_applyFilterCut"          : True,
     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
@@ -114,6 +113,78 @@ DHNLFilterDict = {
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetCalibratorDict = {
+    "m_name"                      : "JetCalibrate",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetAlgo"                   : "AntiKt4EMTopo",
+    "m_outContainerName"          : "AntiKt4EMTopoJets_Calib",
+    "m_outputAlgo"                : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_sort"                      : True,
+    "m_redoJVT"                   : False,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "Nominal",            ## For data
+    "m_systVal"                   : 0,                    ## For data
+    #----------------------- Calibration ----------------------------#
+    "m_calibConfigAFII"           : "JES_MC16Recommendation_AFII_EMTopo_April2018_rel21.config",
+    "m_calibConfigFullSim"        : "JES_MC16Recommendation_28Nov2017.config",
+    "m_calibConfigData"           : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
+    "m_calibSequence"             : "JetArea_Residual_EtaJES_GSC",
+    "m_forceInsitu"               : False, # Insitu calibration file not found in some cases
+    #----------------------- JES Uncertainty ----------------------------#
+    #"m_uncertConfig"               : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    #"m_uncertMCType"               : "MC16",
+    "m_uncertConfig"           : "rel21/Moriond2018/R4_StrongReduction_Scenario1.config",
+    "m_uncertMCType"           : "MC16",
+    #----------------------- JER Uncertainty ----------------------------#
+    #"m_JERUncertConfig"           : "JetResolution/Prerec2015_xCalib_2012JER_ReducedTo9NP_Plots_v2.root",
+    #"m_JERFullSys"                : False,
+    #"m_JERApplyNominal"           : False,
+    #----------------------- Cleaning ----------------------------#
+    "m_jetCleanCutLevel"          : "LooseBad",
+    "m_jetCleanUgly"              : False,
+    "m_saveAllCleanDecisions"     : False,
+    "m_cleanParent"               : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetCalibrator",  JetCalibratorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% JetSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+JetSelectorDict = {
+    "m_name"                      : "JetSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "AntiKt4EMTopoJets_Calib",
+    "m_outContainerName"          : "SignalJets",
+    #"m_truthJetContainer"         : "",
+    "m_inputAlgo"                 : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_outputAlgo"                : "SignalJets_Algo",
+    "m_decorateSelectedObjects"   : True,
+    "m_createSelectedContainer"   : True,
+    #----------------------- Selections ----------------------------#
+    "m_cleanJets"                 : False,
+    "m_pass_min"                  : -1,
+    "m_pT_min"                    : 20,
+    "m_eta_max"                   : 1e8,
+    #----------------------- JVT ----------------------------#
+    "m_doJVT"                     : False,
+    "m_pt_max_JVT"                : 60e3,
+    "m_eta_max_JVT"               : 2.4,
+    "m_JVTCut"                    : 0.59,
+    #----------------------- B-tagging ----------------------------#
+    "m_doBTagCut"                 : False,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+}
+
+c.algorithm("JetSelector", JetSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -167,7 +238,6 @@ MuonSelectorDict = {
     "m_removeEventBadMuon"        : False,
 }
 
-# Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
 c.algorithm("MuonSelector", MuonSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -221,8 +291,7 @@ ElectronSelectorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-# c.algorithm("ElectronSelector", ElectronSelectorDict )
-
+c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -255,7 +324,7 @@ METTrkConstructorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-# c.algorithm("METConstructor", METTrkConstructorDict )
+c.algorithm("METConstructor", METTrkConstructorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -288,16 +357,16 @@ MetConstructorDict = {
     "m_msgLevel"                  : "Info"
 }
 
-# c.algorithm("METConstructor", MetConstructorDict )
+c.algorithm("METConstructor", MetConstructorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
-    "m_name"                 : "SecVtxSel_VSI",
+    "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -309,37 +378,12 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : "",
+    "prop_vtx_suffix"        : o.VSIstr,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
 
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-
-# SecondaryVertexSelectorDict_Leptons = {
-#     "m_name"                 : "SecVtxSel_VSI"+ o.altVSIstr,
-#     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-#     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-#     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-#     #---------------------- Selections ---------------------------#
-#     "m_do_trackTrimming"     : False,
-#     "m_do_matMapVeto"        : True,
-#     "prop_chi2Cut"           : 5.0,
-#     "prop_d0_wrtSVCut"       : 0.8,
-#     "prop_z0_wrtSVCut"       : 1.2,
-#     "prop_errd0_wrtSVCut"    : 999999,
-#     "prop_errz0_wrtSVCut"    : 999999,
-#     "prop_d0signif_wrtSVCut" : 5.0,
-#     "prop_z0signif_wrtSVCut" : 5.0,
-#     "prop_chi2_toSVCut"      : 5.0,
-#     "prop_vtx_suffix"        : o.altVSIstr,
-#     #------------------------ Other ------------------------------#
-#     "m_msgLevel"             : "Info",
-# }
-
-# c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict_Leptons )
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -355,20 +399,23 @@ Dict_VertexMatcher = {
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
+# Vertex Matching
+# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
-
 Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.altVSIstr,
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, 
+"m_name"                            : "VertexMatch"+o.VSIstr,
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
 #------------------------ Lepton Matching ------------------------------#
 "m_doLeptons"                       : True,
 "m_inMuContainerName"               : "Muons",
 "m_inElContainerName"               : "Electrons",
-"m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False,
+"m_VSILepmatch"                    : True if "Leptons" in o.VSIstr else False,
 #------------------------ Other ------------------------------#
 "m_msgLevel"             : "Info",
 }
+# Vertex Matching
+# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -398,8 +445,8 @@ DHNLDict = {
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
+    "m_inMETContainerName"      : "MET",
+    "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,
@@ -422,25 +469,38 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
+    # "m_inJetContainerName"           : "SignalJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    # "m_allJetContainerName"          : "SignalJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810" ,
+    "m_inJetContainerName"           :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"          :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_jetInputAlgo"                 : "",
+    "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMETContainerName"           : "MET",
+    "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx_VSI",
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
-    "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
+    "m_secondaryVertexBranchName"    : "secVtx",
+    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.VSIstr,
+    "m_AugmentationVersionString"    : o.VSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
+    "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
-    "m_vertexDetailStr"              : "primary",
+    "m_metDetailStr"                 : "metClus sigClus",
+    "m_metTrkDetailStr"              : "metTrk sigTrk",
+    # "m_trackDetailStr"               : "fitpars",
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
+    "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
