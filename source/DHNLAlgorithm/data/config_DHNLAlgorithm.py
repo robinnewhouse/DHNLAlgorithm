@@ -220,8 +220,8 @@ ElectronSelectorDict = {
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
 }
-
-# c.algorithm("ElectronSelector", ElectronSelectorDict )
+# Annoyingly, we must run the ElectronSelector algorithm in order to store quality parameters even in the input container.
+c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#

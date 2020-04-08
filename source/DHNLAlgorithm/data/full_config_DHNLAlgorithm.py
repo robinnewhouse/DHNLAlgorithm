@@ -8,7 +8,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--VSIstr', dest='VSIstr', type=str, default="")
+parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons")
 
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -16,11 +16,12 @@ c = Config()
 
 # Good Run Lists
 GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
+
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
@@ -97,7 +98,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : True,
+    "m_applyFilterCut"          : False,
     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
@@ -366,7 +367,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.VSIstr,
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -378,7 +379,7 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : o.VSIstr,
+    "prop_vtx_suffix"        : o.altVSIstr,
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -399,23 +400,19 @@ Dict_VertexMatcher = {
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
-# Vertex Matching
-# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.VSIstr,
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, 
+"m_name"                            : "VertexMatch"+o.altVSIstr,
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, 
 #------------------------ Lepton Matching ------------------------------#
 "m_doLeptons"                       : True,
 "m_inMuContainerName"               : "Muons",
 "m_inElContainerName"               : "Electrons",
-"m_VSILepmatch"                    : True if "Leptons" in o.VSIstr else False,
+"m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False,
 #------------------------ Other ------------------------------#
 "m_msgLevel"             : "Info",
 }
-# Vertex Matching
-# if args.is_MC:
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -480,10 +477,10 @@ DHNLNtupleDict = {
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.VSIstr, # --> use selected DVs
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
-    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.VSIstr,
-    "m_AugmentationVersionString"    : o.VSIstr, # no augumentation for standard VSI
+    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.altVSIstr,
+    "m_AltAugmentationVersionString" : o.altVSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
@@ -499,8 +496,8 @@ DHNLNtupleDict = {
     "m_metTrkDetailStr"              : "metTrk sigTrk",
     # "m_trackDetailStr"               : "fitpars",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
-    "m_truthParticleDetailString"    : "", # type parents children bVtx
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
