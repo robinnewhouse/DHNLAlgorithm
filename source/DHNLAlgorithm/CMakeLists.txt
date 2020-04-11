@@ -43,4 +43,5 @@ atlas_add_library( DHNLAlgorithmLib DHNLAlgorithm/*.h Root/*.h Root/*.cxx ${DHNL
 
 # Install files from the package:
 atlas_install_scripts( scripts/*.py )
+atlas_install_python_modules( python/*.py )
 atlas_install_data( data/* scripts/sampleLists/*)
