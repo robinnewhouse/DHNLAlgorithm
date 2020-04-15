@@ -361,6 +361,7 @@ prw_files_local = [
 "$WorkDir_DIR/data/DHNLAlgorithm/PRW/mc16_13TeV.313015.Pythia8EvtGen_A14NNPDF23LO_WelHNL50_20G_lt100dd_emu.merge.NTUP_PILEUP.e7902_e5984_a875_r10790_r10726_p3604_p3605/NTUP_PILEUP.19952110._000001.pool.root.1", 
 ]
 
+# AFII correspods to Atlas FastSim II which is appropriate for our samples, generated with fastsim. Fullsim files are marked with FS
 prw_files_cvmfs = [
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID311xxx/pileup_mc16a_dsid311602_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID311xxx/pileup_mc16a_dsid311603_AFII.root",
@@ -542,5 +543,17 @@ prw_files_cvmfs = [
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID311xxx/pileup_mc16e_dsid311659_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID311xxx/pileup_mc16e_dsid311660_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID311xxx/pileup_mc16e_dsid311661_AFII.root",
-
+ 
 ]
+
+import os.path
+dijet_pileup = [
+    # "/data/hnl/KShort/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.NTUP_PILEUP.e3668_s3126_r10848_r10706_p3384_p3385/NTUP_PILEUP.15780199._000001.pool.root.1",
+    "/data/hnl/KShort/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.NTUP_PILEUP.e3668_s3126_r11568_r11319_p3604_p3605/NTUP_PILEUP.18800017._000002.pool.root.1",
+    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID361xxx/pileup_mc16a_dsid361024_FS.root",
+    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID361xxx/pileup_mc16d_dsid361024_FS.root",
+]
+for f in dijet_pileup:
+    if os.path.isfile(f):
+        prw_files_cvmfs.append(f)
+        prw_files_local.append(f)

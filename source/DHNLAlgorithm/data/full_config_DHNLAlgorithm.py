@@ -26,12 +26,12 @@ GRLList = [
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
 # If you are getting errors such as "Unrecognised channelNumber 311660 for periodNumber 300000" this is the place to start.
-# Load the PRW File locations from an external file. Comment any lines you don't want with '#'.
-PRWFiles = os.environ['WorkDir_DIR']+'/data/DHNLAlgorithm/PRW/PRWFiles.txt'
-with open(PRWFiles) as f:
-    PRWList = [line.rstrip() for line in f] # read lines
-    PRWList = [line for line in PRWList if line]  # remove empty lines
-    PRWList = [line for line in PRWList if not line.startswith("#")]  # remove comments
+# option 1. use local PRW files (these may be deleted in the future if the central cvmfs files work well)
+# from DHNLAlgorithm.prw_files import prw_files_local as PRWList
+# option 2. use centrally produced CVMFS files. This is still being tested as there are potentially issues.
+# see https://indico.cern.ch/event/892901/contributions/3779966/attachments/2002909/3344068/sampleRequest.pdf
+from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
+
 
 # Lumicalc Files
 # Must be careful about which lines are commented and which are active.
@@ -68,7 +68,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : True,
+    "m_applyTriggerCut"           : False,
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -79,8 +79,8 @@ basicEventSelectionDict = {
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
-    "m_applyPrimaryVertexCut"     : False,
-    "m_PVNTrack"                    : 2,
+    "m_applyPrimaryVertexCut"     : True,
+    "m_PVNTrack"                  : 0,
     "m_msgLevel"                  : "Info",
 }
 
@@ -478,8 +478,8 @@ DHNLNtupleDict = {
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx",
-    "m_secondaryVertexBranchNameAlt" : "secVtx" + o.altVSIstr,
+    "m_secondaryVertexBranchName"    : "secVtx_VSI",
+    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
