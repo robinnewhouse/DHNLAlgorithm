@@ -6,6 +6,7 @@ mkdir build
 cd build
 setupATLAS
 asetup AnalysisBase,21.2.90,here
+lsetup git
 
 # To fix issues relating to the fact that `FactoryTools` was checked out with it's own copy of `xAODAnaHelpers` as a submodule within `DVAnalysisBase`
 cd $TestArea/../source/DHNLAlgorithm/deps/DVAnalysisBase
