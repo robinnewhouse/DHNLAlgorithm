@@ -363,11 +363,11 @@ EL::StatusCode DHNLNtuple :: histFinalize ()
       // //thisCutflowHistW->SetName( (thisName+"_"+m_ss.str()).c_str() );
       // thisCutflowHistW->SetDirectory( treeFile );
     }
-    // Get MetaData_EventCount histogram
-    // TFile* metaDataFile = wk()->getOutputFile( "metadata" );
-    // TH1D* metaDataHist = (TH1D*) metaDataFile->Get("MetaData_EventCount");
-    // TH1D* thisMetaDataHist = (TH1D*) metaDataHist->Clone();
-    // thisMetaDataHist->SetDirectory( treeFile );
+    //Get MetaData_EventCount histogram
+    TFile* metaDataFile = wk()->getOutputFile( "metadata" );
+    TH1D* metaDataHist = (TH1D*) metaDataFile->Get("MetaData_EventCount");
+    TH1D* thisMetaDataHist = (TH1D*) metaDataHist->Clone();
+    thisMetaDataHist->SetDirectory( treeFile );
   // }
 
   return EL::StatusCode::SUCCESS;
