@@ -112,6 +112,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
         muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
         muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
         muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+
+        muon->auxdecor<std::uint32_t>("runNumber") = muon->runNumber();
+        muon->auxdecor<unsigned long long>("eventNumber") = muon->eventNumber();
+
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
         if (not(m_inMuContainerName == "Muons")) {
             muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
@@ -137,6 +141,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
         electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
         electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
         electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+
+        electron->auxdecor<std::uint32_t>("runNumber") = electron->runNumber();
+        electron->auxdecor<unsigned long long>("eventNumber") = electron->eventNumber();
+
         if (not(m_inElContainerName == "Electrons")) {
             electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
             electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
