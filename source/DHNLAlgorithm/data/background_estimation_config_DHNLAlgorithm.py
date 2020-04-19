@@ -475,6 +475,7 @@ DHNLNtupleDict = {
     "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_trackParticleContainerName"   : "InDetTrackParticles",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
