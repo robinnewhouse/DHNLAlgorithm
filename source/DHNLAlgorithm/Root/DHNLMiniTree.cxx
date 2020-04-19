@@ -77,7 +77,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string
 
     std::string name = trkName + "_";
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
-    m_tree->Branch((name + "runNumber").c_str(), &m_track_runtNumber);
+    m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
 }
 
