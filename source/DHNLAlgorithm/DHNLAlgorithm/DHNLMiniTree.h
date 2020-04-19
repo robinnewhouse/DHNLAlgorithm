@@ -83,6 +83,12 @@ public:
 
     void ClearSecondaryVerts(const std::string secVtxName = "secVtx");
 
+
+    void AddTracksUser(const std::string &detailStr, const std::string &trkName);
+
+    void FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName);
+
+    void ClearTracksUser(const std::string &trkName);
 protected:
     std::map<std::string, DVs::TruthVertexContainer *> m_truthVerts;
     std::map<std::string, DVs::SecondaryVertexContainer *> m_secVerts;

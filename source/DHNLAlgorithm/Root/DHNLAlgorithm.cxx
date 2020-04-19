@@ -148,11 +148,19 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     //////////////////// Store track information (for Background Estimation) //////////////////////
 
+    uint8_t PixelHits = 0;
+    uint8_t SCTHits   = 0;
+    uint8_t BLayHits  = 0;
+    uint8_t PixShare  = 0;
+    uint8_t SCTShare  = 0;
+    uint8_t TRTHits   = 0;
+    TLorentzVector p4;
+
     if(m_backgroundEstimationBranches){
 
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
-            const xAOS::TrackParticle *track = muon->primaryTrackParticle();
+            const xAOD::TrackParticle *track = muon->primaryTrackParticle();
 
             track->auxdecor<float_t>("type") = TrackType::MUON;
 
@@ -189,7 +197,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint8_t>("TRTHits") = TRTHits;
 
             track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
-            TLorentzVector p4 = muon->p4();
+            p4 = muon->p4();
             track->auxdecor<Double_t>("px") = p4.Px();
             track->auxdecor<Double_t>("py") = p4.Py();
             track->auxdecor<Double_t>("pz") = p4.Pz();
@@ -201,7 +209,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
         // electron tracks
         for (const xAOD::Muon *muon : *inMuons) {
-            const xAOS::TrackParticle *track = muon->primaryTrackParticle();
+            const xAOD::TrackParticle *track = muon->primaryTrackParticle();
 
             track->auxdecor<TrackType>("type") = TrackType::MUON;
 
@@ -238,7 +246,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint8_t>("TRTHits") = TRTHits;
 
             track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
-            TLorentzVector p4 = muon->p4();
+            p4 = muon->p4();
             track->auxdecor<Double_t>("px") = p4.Px();
             track->auxdecor<Double_t>("py") = p4.Py();
             track->auxdecor<Double_t>("pz") = p4.Pz();
@@ -290,7 +298,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint8_t>("TRTHits") = TRTHits;
 
             track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
-            TLorentzVector p4 = track->p4();
+            p4 = track->p4();
             track->auxdecor<Double_t>("px") = p4.Px();
             track->auxdecor<Double_t>("py") = p4.Py();
             track->auxdecor<Double_t>("pz") = p4.Pz();
