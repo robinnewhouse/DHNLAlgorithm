@@ -72,6 +72,16 @@ void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::str
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
 }
 
+void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string &trkName) {
+    (void) detailStr; // suppress warning
+
+    std::string name = trkName + "_";
+    m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
+    m_tree->Branch((name + "runNumber").c_str(), &m_track_runtNumber);
+//    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
+}
+
+
 /////////////////// Assign values to defined event variables here ////////////////////////
 void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
     // Event level info
@@ -256,4 +266,18 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->clear();
+}
+
+
+//////////////////// TRACKS (USED FOR BACKGROUND ESTIMATION) //////////////////////////////////////////
+
+void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
+    (void) trackName; // suppress warning
+
+    if (track->isAvailable<int>("runNumber"))
+        m_track_runNumber.push_back(track->auxdecor<int>("runNumber"));
+
+    if (track->isAvailable<int>("eventNumber"))
+        m_track_eventNumber.push_back(track->auxdecor<int>("eventNumber"));
+
 }

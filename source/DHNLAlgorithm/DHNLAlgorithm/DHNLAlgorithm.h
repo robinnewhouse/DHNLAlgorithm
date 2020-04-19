@@ -50,6 +50,7 @@ public:
     float m_subleadingJetPtCut;          // Leading jet Pt cut
     uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
+    bool m_backgroundEstimationBranches; // do we add branches required for background estimation
     float m_metCut;
 
 private:

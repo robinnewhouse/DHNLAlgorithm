@@ -453,6 +453,7 @@ DHNLDict = {
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
+    "m_backgroundEstimationBranches": True,
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )

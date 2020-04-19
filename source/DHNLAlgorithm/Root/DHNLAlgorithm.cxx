@@ -1,4 +1,6 @@
 #include <DHNLAlgorithm/DHNLAlgorithm.h>
+#include <DHNLAlgorithm/DHNLTrackType.h>
+
 #include <EventLoop/Job.h>
 #include <EventLoop/Worker.h>
 #include "EventLoop/OutputStream.h"
@@ -56,6 +58,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_subleadingJetPtCut = 225;
     m_jetMultiplicity = 3;
     m_truthLevelOnly = false;
+    m_backgroundEstimationBranches = false;
     m_metCut = 0;
 
 }
@@ -143,6 +146,161 @@ EL::StatusCode DHNLAlgorithm::execute() {
         }
     }
 
+    //////////////////// Store track information (for Background Estimation) //////////////////////
+
+    if(m_backgroundEstimationBranches){
+
+        // muon tracks
+        for (const xAOD::Muon *muon : *inMuons) {
+            const xAOS::TrackParticle *track = muon->primaryTrackParticle();
+
+            track->auxdecor<float_t>("type") = TrackType::MUON;
+
+            // Decorate ID track with type and filter info.
+            track->auxdecor<float_t>("qOverP") = track->qOverP();
+            track->auxdecor<float_t>("theta")  = track->theta();
+            track->auxdecor<float_t>("phi")  = track->phi();
+            track->auxdecor<float_t>("d0")  = track->d0();
+            track->auxdecor<float_t>("z0")  = track->z0();
+
+            track->auxdecor<std::vector< float >>("definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
+
+            track->auxdecor<float_t>("vx")  = track->vx();
+            track->auxdecor<float_t>("vy")  = track->vy();
+            track->auxdecor<float_t>("vz")  = track->vz();
+
+            track->auxdecor<float_t>("beamlineTiltX")  = track->beamlineTiltX();
+            track->auxdecor<float_t>("beamlineTiltY")  = track->beamlineTiltY();
+
+            track->auxdecor<float_t>("numberDoF") = track->numberDoF();
+            track->auxdecor<float_t>("chiSquared") = track->chiSquared();
+
+            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
+            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
+            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
+            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
+            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
+            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
+            track->auxdecor<uint8_t>("PixelHits") = PixelHits;
+            track->auxdecor<uint8_t>("SCTHits") = SCTHits;
+            track->auxdecor<uint8_t>("BLayHits") = BLayHits;
+            track->auxdecor<uint8_t>("PixShare") = PixShare;
+            track->auxdecor<uint8_t>("SCTShare") = SCTShare;
+            track->auxdecor<uint8_t>("TRTHits") = TRTHits;
+
+            track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
+            TLorentzVector p4 = muon->p4();
+            track->auxdecor<Double_t>("px") = p4.Px();
+            track->auxdecor<Double_t>("py") = p4.Py();
+            track->auxdecor<Double_t>("pz") = p4.Pz();
+            track->auxdecor<Double_t>("e") = p4.E();
+
+            track->auxdecor<uint32_t>("runNumber") = eventInfo->runNumber();
+            track->auxdecor<unsigned long long>("eventNumber") = eventInfo->eventNumber();
+        }
+
+        // electron tracks
+        for (const xAOD::Muon *muon : *inMuons) {
+            const xAOS::TrackParticle *track = muon->primaryTrackParticle();
+
+            track->auxdecor<TrackType>("type") = TrackType::MUON;
+
+            // Decorate ID track with type and filter info.
+            track->auxdecor<float_t>("qOverP") = track->qOverP();
+            track->auxdecor<float_t>("theta")  = track->theta();
+            track->auxdecor<float_t>("phi")  = track->phi();
+            track->auxdecor<float_t>("d0")  = track->d0();
+            track->auxdecor<float_t>("z0")  = track->z0();
+
+            track->auxdecor<std::vector< float >>("definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
+
+            track->auxdecor<float_t>("vx")  = track->vx();
+            track->auxdecor<float_t>("vy")  = track->vy();
+            track->auxdecor<float_t>("vz")  = track->vz();
+
+            track->auxdecor<float_t>("beamlineTiltX")  = track->beamlineTiltX();
+            track->auxdecor<float_t>("beamlineTiltY")  = track->beamlineTiltY();
+
+            track->auxdecor<float_t>("numberDoF") = track->numberDoF();
+            track->auxdecor<float_t>("chiSquared") = track->chiSquared();
+
+            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
+            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
+            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
+            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
+            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
+            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
+            track->auxdecor<uint8_t>("PixelHits") = PixelHits;
+            track->auxdecor<uint8_t>("SCTHits") = SCTHits;
+            track->auxdecor<uint8_t>("BLayHits") = BLayHits;
+            track->auxdecor<uint8_t>("PixShare") = PixShare;
+            track->auxdecor<uint8_t>("SCTShare") = SCTShare;
+            track->auxdecor<uint8_t>("TRTHits") = TRTHits;
+
+            track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
+            TLorentzVector p4 = muon->p4();
+            track->auxdecor<Double_t>("px") = p4.Px();
+            track->auxdecor<Double_t>("py") = p4.Py();
+            track->auxdecor<Double_t>("pz") = p4.Pz();
+            track->auxdecor<Double_t>("e") = p4.E();
+
+            track->auxdecor<uint32_t>("runNumber") = eventInfo->runNumber();
+            track->auxdecor<unsigned long long>("eventNumber") = eventInfo->eventNumber();
+        }
+
+        // non-lepton tracks
+        for (const xAOD::TrackParticle *track : *tracks) {
+            if (track->isAvailable<TrackType>("type")){
+                // This is either a muon or an electron, which were already added.
+                continue;
+            }
+
+            track->auxdecor<TrackType>("type") = TrackType::NON_LEPTON;
+
+            // Decorate ID track with type and filter info.
+            track->auxdecor<float_t>("qOverP") = track->qOverP();
+            track->auxdecor<float_t>("theta")  = track->theta();
+            track->auxdecor<float_t>("phi")  = track->phi();
+            track->auxdecor<float_t>("d0")  = track->d0();
+            track->auxdecor<float_t>("z0")  = track->z0();
+
+            track->auxdecor<std::vector< float >>("definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
+
+            track->auxdecor<float_t>("vx")  = track->vx();
+            track->auxdecor<float_t>("vy")  = track->vy();
+            track->auxdecor<float_t>("vz")  = track->vz();
+
+            track->auxdecor<float_t>("beamlineTiltX")  = track->beamlineTiltX();
+            track->auxdecor<float_t>("beamlineTiltY")  = track->beamlineTiltY();
+
+            track->auxdecor<float_t>("numberDoF") = track->numberDoF();
+            track->auxdecor<float_t>("chiSquared") = track->chiSquared();
+
+            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
+            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
+            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
+            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
+            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
+            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
+            track->auxdecor<uint8_t>("PixelHits") = PixelHits;
+            track->auxdecor<uint8_t>("SCTHits") = SCTHits;
+            track->auxdecor<uint8_t>("BLayHits") = BLayHits;
+            track->auxdecor<uint8_t>("PixShare") = PixShare;
+            track->auxdecor<uint8_t>("SCTShare") = SCTShare;
+            track->auxdecor<uint8_t>("TRTHits") = TRTHits;
+
+            track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
+            TLorentzVector p4 = track->p4();
+            track->auxdecor<Double_t>("px") = p4.Px();
+            track->auxdecor<Double_t>("py") = p4.Py();
+            track->auxdecor<Double_t>("pz") = p4.Pz();
+            track->auxdecor<Double_t>("e") = p4.E();
+
+            track->auxdecor<uint32_t>("runNumber") = eventInfo->runNumber();
+            track->auxdecor<unsigned long long>("eventNumber") = eventInfo->eventNumber();
+
+        }
+    }
     //////////////////// Store primary vertex information //////////////////////
 
     SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
