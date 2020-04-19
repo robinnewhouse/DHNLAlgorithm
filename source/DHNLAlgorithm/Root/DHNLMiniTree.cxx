@@ -57,10 +57,6 @@ void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string 
     m_tree->Branch((name + "isLRT").c_str(), &m_muon_isLRT);
     m_tree->Branch((name + "myptcone30").c_str(), &m_muon_myptcone30);
     m_tree->Branch((name + "myptcone30noLRT").c_str(), &m_muon_myptcone30noLRT);
-
-    // Required fields for Background Estimation Framework
-    m_tree->Branch((name + "runNumber").c_str(), &m_muon_runNumber);
-    m_tree->Branch((name + "eventNumber").c_str(), &m_muon_eventNumber);
 }
 
 void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::string &elecName) {
@@ -74,10 +70,6 @@ void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::str
     m_tree->Branch((name + "py").c_str(), &m_electron_py);
     m_tree->Branch((name + "pz").c_str(), &m_electron_pz);
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
-
-    // Required fields for Background Estimation Framework
-    m_tree->Branch((name + "runNumber").c_str(), &m_muon_runNumber);
-    m_tree->Branch((name + "eventNumber").c_str(), &m_muon_eventNumber);
 }
 
 /////////////////// Assign values to defined event variables here ////////////////////////
@@ -139,12 +131,6 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
     if (muon->isAvailable<bool>("isLRT"))
         m_muon_isLRT.push_back(muon->auxdecor<bool>("isLRT"));
 
-    if (muon->isAvailable<bool>("runNumber"))
-        m_muon_runNumber.push_back(muon->auxdecor<bool>("runNumber"));
-
-    if (muon->isAvailable<bool>("eventNumber"))
-        m_muon_eventNumber.push_back(muon->auxdecor<bool>("eventNumber"));
-
 }
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string &electronName) {
@@ -169,12 +155,6 @@ void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::
 
     if (electron->isAvailable<float>("pz"))
         m_electron_pz.push_back(electron->auxdecor<float>("pz"));
-
-    if (electron->isAvailable<bool>("runNumber"))
-        m_electron_runNumber.push_back(electron->auxdecor<bool>("runNumber"));
-
-    if (electron->isAvailable<bool>("eventNumber"))
-        m_electron_eventNumber.push_back(electron->auxdecor<bool>("eventNumber"));
 
 //    if (electron->isAvailable<float>("ptC30"))
 //        m_electron_ptC30.push_back(electron->auxdecor<float>("ptC30"));

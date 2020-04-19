@@ -30,8 +30,6 @@ private:
     std::vector<double> m_muon_chi2;
     std::vector<int> m_muon_msInnerMatchDOF;
     std::vector<bool> m_muon_isLRT;
-    std::vector<std::uint32_t> m_muon_runNumber;
-    std::vector<unsigned long long> m_muon_eventNumber;
 
     std::vector<int> m_electron_index;
     std::vector<bool> m_electron_passesPromptCuts;
@@ -40,8 +38,6 @@ private:
     std::vector<double> m_electron_py;
     std::vector<double> m_electron_pz;
     std::vector<double> m_electron_ptC30;
-    std::vector<std::uint32_t> m_electron_runNumber;
-    std::vector<unsigned long long> m_electron_eventNumber;
 
     float m_weight;
 
