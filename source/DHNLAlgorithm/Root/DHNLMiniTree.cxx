@@ -78,6 +78,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string
     std::string name = trkName + "_";
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
+    m_tree->Branch((name + "type").c_str(), &m_track_type);
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
 }
 
@@ -273,6 +274,9 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 
 void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
     (void) trackName; // suppress warning
+    Info("DHNLMiniTree", "TrackType: " << track->aucdecor<int>("be_type"));
+    if (track->isAvailable<uint32_t>("be_type"))
+        m_track_type.push_back(track->auxdecor<uint32_t>("be_type"));
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
@@ -284,6 +288,7 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
 void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
+    m_track_type.clear();
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
 }
