@@ -284,7 +284,6 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
 void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
-    Info("DHNLMiniTree", "ClearTracksUser");
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
 }
