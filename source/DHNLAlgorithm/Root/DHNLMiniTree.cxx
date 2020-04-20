@@ -6,7 +6,7 @@
 #include "xAODAnaHelpers/HelperFunctions.h"
 
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
-        HelpTreeBase(event, tree, file, 1e3, true) {
+        HelpTreeBase(event, tree, file, 1e3) {
     Info("DHNLMiniTree", "Creating output TTree");
     tree->SetAutoSave(1000000000); // Why?
     m_firstEvent = true;
