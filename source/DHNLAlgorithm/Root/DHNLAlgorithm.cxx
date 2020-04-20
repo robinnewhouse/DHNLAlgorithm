@@ -162,7 +162,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
         for (const xAOD::Muon *muon : *inMuons) {
             const xAOD::TrackParticle *track = muon->primaryTrackParticle();
 
-            track->auxdecor<TrackType>("type") = TrackType::MUON;
+            track->auxdecor<int>("type") = TrackType::MUON;
 
             // Decorate ID track with type and filter info.
             track->auxdecor<float_t>("qOverP") = track->qOverP();
@@ -211,7 +211,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
         for (const xAOD::Muon *muon : *inMuons) {
             const xAOD::TrackParticle *track = muon->primaryTrackParticle();
 
-            track->auxdecor<TrackType>("type") = TrackType::MUON;
+            track->auxdecor<int>("type") = TrackType::MUON;
 
             // Decorate ID track with type and filter info.
             track->auxdecor<float_t>("qOverP") = track->qOverP();
@@ -258,12 +258,12 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
         // non-lepton tracks
         for (const xAOD::TrackParticle *track : *tracks) {
-            if (track->isAvailable<TrackType>("type")){
+            if (track->isAvailable<int>("type")){
                 // This is either a muon or an electron, which were already added.
                 continue;
             }
 
-            track->auxdecor<TrackType>("type") = TrackType::NON_LEPTON;
+            track->auxdecor<int>("type") = TrackType::NON_LEPTON;
 
             // Decorate ID track with type and filter info.
             track->auxdecor<float_t>("qOverP") = track->qOverP();
