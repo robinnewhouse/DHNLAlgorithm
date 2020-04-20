@@ -266,23 +266,23 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<int>("type") = (int) TrackType::NON_LEPTON;
 
             // Decorate ID track with type and filter info.
-            track->auxdecor<float_t>("qOverP") = track->qOverP();
-            track->auxdecor<float_t>("theta")  = track->theta();
-            track->auxdecor<float_t>("phi")  = track->phi();
-            track->auxdecor<float_t>("d0")  = track->d0();
-            track->auxdecor<float_t>("z0")  = track->z0();
+            track->auxdecor<float_t>("be_qOverP") = track->qOverP();
+            track->auxdecor<float_t>("be_theta")  = track->theta();
+            track->auxdecor<float_t>("be_phi")  = track->phi();
+            track->auxdecor<float_t>("be_d0")  = track->d0();
+            track->auxdecor<float_t>("be_z0")  = track->z0();
 
-            track->auxdecor<std::vector< float >>("definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
+            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
-            track->auxdecor<float_t>("vx")  = track->vx();
-            track->auxdecor<float_t>("vy")  = track->vy();
-            track->auxdecor<float_t>("vz")  = track->vz();
+            track->auxdecor<float_t>("be_vx")  = track->vx();
+            track->auxdecor<float_t>("be_vy")  = track->vy();
+            track->auxdecor<float_t>("be_vz")  = track->vz();
 
-            track->auxdecor<float_t>("beamlineTiltX")  = track->beamlineTiltX();
-            track->auxdecor<float_t>("beamlineTiltY")  = track->beamlineTiltY();
+            track->auxdecor<float_t>("be_beamlineTiltX")  = track->beamlineTiltX();
+            track->auxdecor<float_t>("be_beamlineTiltY")  = track->beamlineTiltY();
 
-            track->auxdecor<float_t>("numberDoF") = track->numberDoF();
-            track->auxdecor<float_t>("chiSquared") = track->chiSquared();
+            track->auxdecor<float_t>("be_numberDoF") = track->numberDoF();
+            track->auxdecor<float_t>("be_chiSquared") = track->chiSquared();
 
             if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
             if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
@@ -290,22 +290,22 @@ EL::StatusCode DHNLAlgorithm::execute() {
             if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
             if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
             if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
-            track->auxdecor<uint8_t>("PixelHits") = PixelHits;
-            track->auxdecor<uint8_t>("SCTHits") = SCTHits;
-            track->auxdecor<uint8_t>("BLayHits") = BLayHits;
-            track->auxdecor<uint8_t>("PixShare") = PixShare;
-            track->auxdecor<uint8_t>("SCTShare") = SCTShare;
-            track->auxdecor<uint8_t>("TRTHits") = TRTHits;
+            track->auxdecor<uint8_t>("be_PixelHits") = PixelHits;
+            track->auxdecor<uint8_t>("be_SCTHits") = SCTHits;
+            track->auxdecor<uint8_t>("be_BLayHits") = BLayHits;
+            track->auxdecor<uint8_t>("be_PixShare") = PixShare;
+            track->auxdecor<uint8_t>("be_SCTShare") = SCTShare;
+            track->auxdecor<uint8_t>("be_TRTHits") = TRTHits;
 
-            track->auxdecor<uint32_t>("hitPattern") = track->hitPattern();
+            track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
             p4 = track->p4();
-            track->auxdecor<Double_t>("px") = p4.Px();
-            track->auxdecor<Double_t>("py") = p4.Py();
-            track->auxdecor<Double_t>("pz") = p4.Pz();
-            track->auxdecor<Double_t>("e") = p4.E();
+            track->auxdecor<Double_t>("be_px") = p4.Px();
+            track->auxdecor<Double_t>("be_py") = p4.Py();
+            track->auxdecor<Double_t>("be_pz") = p4.Pz();
+            track->auxdecor<Double_t>("be_e") = p4.E();
 
-            track->auxdecor<uint32_t>("runNumber") = eventInfo->runNumber();
-            track->auxdecor<unsigned long long>("eventNumber") = eventInfo->eventNumber();
+            track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
+            track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
 
         }
     }
