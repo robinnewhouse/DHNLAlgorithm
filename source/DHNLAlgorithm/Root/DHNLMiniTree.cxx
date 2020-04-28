@@ -276,8 +276,11 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     (void) trackName; // suppress warning
     //
     //
-    if (track->isAvailable<int>("be_type")){
+    if (track->isAvailable<bool>("be_toSave") && track->auxdecor<bool>("be_toSave")){
         Info("DHNLMiniTree", ("TrackType: " + std::to_string(track->auxdecor<int>("be_type")) + " eventNumber = " + std::to_string(track->auxdecor<unsigned long long>("be_eventNumber"))).c_str());
+    }
+
+    if (track->isAvailable<int>("be_type")){
         m_track_type.push_back(track->auxdecor<int>("be_type"));
     }
 

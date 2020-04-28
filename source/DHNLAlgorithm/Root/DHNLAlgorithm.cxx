@@ -162,6 +162,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
         for (const xAOD::Muon *muon : *inMuons) {
             const xAOD::TrackParticle *track = muon->primaryTrackParticle();
 
+            track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
             // Decorate ID track with type and filter info.
             track->auxdecor<float_t>("be_qOverP") = track->qOverP();
