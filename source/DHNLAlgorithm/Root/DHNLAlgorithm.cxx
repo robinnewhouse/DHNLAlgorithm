@@ -208,7 +208,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
         // electron tracks
         for (const xAOD::Electron *electron : *inElectrons) {
-            const xAOD::TrackParticle *track = electron->primaryTrackParticle();
+            const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
