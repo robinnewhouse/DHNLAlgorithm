@@ -87,7 +87,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     ANA_CHECK (evtStore()->retrieve(eventInfo, "EventInfo"));
 
     // print out run and event number from retrieved object
-    ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Store lepton information //////////////////////
 
@@ -205,7 +205,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
 
-            ANA_MSG_DEBUG("going over muon " << i << " in event " << eventInfo->eventNumber() << " run "<< eventInfo->runNumber());
+            ANA_MSG_INFO("going over muon " << i << " in eventNumber " << eventInfo->eventNumber() << " runNumber "<< eventInfo->runNumber());
         }
 
         // electron tracks
