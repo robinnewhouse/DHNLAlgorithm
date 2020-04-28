@@ -157,7 +157,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
     TLorentzVector p4;
 
     if(m_backgroundEstimationBranches){
-        int i = 0;
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
             const xAOD::TrackParticle *track = muon->primaryTrackParticle();
@@ -205,9 +204,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
-
-            ANA_MSG_INFO("going over muon " << i << " in eventNumber " << eventInfo->eventNumber() << " runNumber "<< eventInfo->runNumber());
-            i++;
         }
 
         // electron tracks
