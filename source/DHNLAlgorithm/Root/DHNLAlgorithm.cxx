@@ -206,6 +206,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
 
             ANA_MSG_INFO("going over muon " << i << " in eventNumber " << eventInfo->eventNumber() << " runNumber "<< eventInfo->runNumber());
+            i++;
         }
 
         // electron tracks
