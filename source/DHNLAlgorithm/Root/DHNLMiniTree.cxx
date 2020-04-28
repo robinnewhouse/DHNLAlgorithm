@@ -274,8 +274,8 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 
 void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
     (void) trackName; // suppress warning
-    Info("DHNLMiniTree", "TrackType: ");
-    Info("DHNLMiniTree", std::to_string(track->auxdecor<int>("be_type")).c_str());
+    // Info("DHNLMiniTree", "TrackType: ");
+    // Info("DHNLMiniTree", std::to_string(track->auxdecor<int>("be_type")).c_str());
     if (track->isAvailable<int>("be_type"))
         m_track_type.push_back(track->auxdecor<int>("be_type"));
 
