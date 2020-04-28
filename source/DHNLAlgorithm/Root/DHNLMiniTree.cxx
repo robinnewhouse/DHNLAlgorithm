@@ -277,7 +277,7 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     //
     //
     if (track->isAvailable<int>("be_type")){
-        Info("DHNLMiniTree", "TrackType: " + std::to_string(track->auxdecor<int>("be_type")).c_str() + " eventNumber = " << track->auxdecor<unsigned long long>("be_eventNumber"));
+        Info("DHNLMiniTree", "TrackType: " + std::to_string(track->auxdecor<int>("be_type")) + " eventNumber = " << std::to_string(track->auxdecor<unsigned long long>("be_eventNumber")));
         m_track_type.push_back(track->auxdecor<int>("be_type"));
     }
 
