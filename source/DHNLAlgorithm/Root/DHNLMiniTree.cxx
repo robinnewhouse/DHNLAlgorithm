@@ -76,6 +76,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string
     (void) detailStr; // suppress warning
 
     std::string name = trkName + "_";
+    m_tree->Branch((name+ "toSave").c_str(), &m_track_toSave);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "type").c_str(), &m_track_type);
@@ -275,20 +276,22 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
     (void) trackName; // suppress warning
 
-    if (track->isAvailable<bool>("be_toSave") && track->auxdecor<bool>("be_toSave")){
-        if (track->isAvailable<int>("be_type"))
-            m_track_type.push_back(track->auxdecor<int>("be_type"));
+    if (track->isAvailable<bool>("be_toSave")
+        m_track_toSave.push_back(track->auxdecor<bool>("be_toSave"));
 
-        if (track->isAvailable<uint32_t>("be_runNumber"))
-            m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
+    if (track->isAvailable<int>("be_type"))
+        m_track_type.push_back(track->auxdecor<int>("be_type"));
 
-        if (track->isAvailable<unsigned long long>("be_eventNumber"))
-            m_track_eventNumber.push_back(track->auxdecor<unsigned long long>("be_eventNumber"));
-    }
+    if (track->isAvailable<uint32_t>("be_runNumber"))
+        m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
+
+    if (track->isAvailable<unsigned long long>("be_eventNumber"))
+        m_track_eventNumber.push_back(track->auxdecor<unsigned long long>("be_eventNumber"));
 }
 
 void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
+    m_track_toSave.clear();
     m_track_type.clear();
     m_track_runNumber.clear();
     m_track_eventNumber.clear();

@@ -39,6 +39,7 @@ private:
     std::vector<double> m_electron_pz;
     std::vector<double> m_electron_ptC30;
 
+    std::vector<bool> m_track_toSave;
     std::vector<unsigned long long> m_track_eventNumber;
     std::vector<std::uint32_t> m_track_runNumber;
     std::vector<int> m_track_type;
