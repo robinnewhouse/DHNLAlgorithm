@@ -18,12 +18,12 @@ atlas_depends_on_subdirs( PUBLIC
 
 
 # external dependencies
-find_package( ROOT COMPONENTS Core RIO Hist Tree )
+find_package(Root COMPONENTS Core RIO Hist Tree )
 
 # build a dictionary for the library
 atlas_add_root_dictionary ( DHNLAlgorithmLib DHNLAlgorithmDictSource
         ROOT_HEADERS DHNLAlgorithm/*.h Root/LinkDef.h
-        EXTERNAL_PACKAGES ROOT )
+        EXTERNAL_PACKAGES Root)
 
 # Component(s) in the package:
 atlas_add_library( DHNLAlgorithmLib DHNLAlgorithm/*.h Root/*.h Root/*.cxx ${DHNLAlgorithmDictSource}
