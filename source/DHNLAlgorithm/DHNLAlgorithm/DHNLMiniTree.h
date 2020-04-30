@@ -39,10 +39,10 @@ private:
     std::vector<double> m_electron_pz;
     std::vector<double> m_electron_ptC30;
 
-    bool m_track_toSave;
-    unsigned long long m_track_eventNumber;
-    std::uint32_t m_track_runNumber;
-    int m_track_type;
+    std::vector<bool> m_track_toSave;
+    std::vector<unsigned long long> m_track_eventNumber;
+    std::vector<std::uint32_t> m_track_runNumber;
+    std::vector<int> m_track_type;
 
     std::vector<float_t> m_track_qOverP;
     std::vector<float_t> m_track_theta;
