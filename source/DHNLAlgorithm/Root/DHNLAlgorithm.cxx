@@ -89,7 +89,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     ANA_CHECK (evtStore()->retrieve(eventInfo, "EventInfo"));
 
     // print out run and event number from retrieved object
-    ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Store lepton information //////////////////////
 
