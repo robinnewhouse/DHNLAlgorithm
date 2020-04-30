@@ -308,16 +308,16 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     (void) trackName; // suppress warning
 
     if (track->isAvailable<bool>("be_toSave"))
-        m_track_toSave.push_back(track->auxdecor<bool>("be_toSave"));
+        m_track_toSave = track->auxdecor<bool>("be_toSave");
 
     if (track->isAvailable<int>("be_type"))
-        m_track_type.push_back(track->auxdecor<int>("be_type"));
+        m_track_type = track->auxdecor<int>("be_type");
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
-        m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
+        m_track_runNumber = track->auxdecor<uint32_t>("be_runNumber");
 
     if (track->isAvailable<unsigned long long>("be_eventNumber"))
-        m_track_eventNumber.push_back(track->auxdecor<unsigned long long>("be_eventNumber"));
+        m_track_eventNumber = track->auxdecor<unsigned long long>("be_eventNumber");
     
     
     // Track details
@@ -382,10 +382,10 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
 void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
-    m_track_toSave.clear();
-    m_track_type.clear();
-    m_track_runNumber.clear();
-    m_track_eventNumber.clear();
+    m_track_toSave = false;
+    m_track_type = -1;
+    m_track_runNumber = 0;
+    m_track_eventNumber = 0;
 
     m_track_qOverP.clear();
     m_track_theta.clear();
