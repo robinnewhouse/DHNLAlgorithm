@@ -16,6 +16,8 @@
 #include <xAODTruth/TruthVertex.h>
 #include "xAODTracking/TrackParticle.h"
 #include "xAODTracking/TrackParticlexAODHelpers.h"
+#include <xAODAnaHelpers/HelperFunctions.h>
+#include <xAODEgamma/ElectronxAODHelpers.h>
 
 #include "TFile.h"
 #include "TEnv.h"
