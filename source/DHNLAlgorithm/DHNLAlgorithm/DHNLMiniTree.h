@@ -44,6 +44,37 @@ private:
     std::vector<std::uint32_t> m_track_runNumber;
     std::vector<int> m_track_type;
 
+    std::vector<float_t> m_track_qOverP;
+    std::vector<float_t> m_track_theta;
+    std::vector<float_t> m_track_phi;
+    std::vector<float_t> m_track_d0;
+    std::vector<float_t> m_track_z0;
+
+    std::vector<std::vector< float >> m_track_definingParametersCovMatrixVec;
+
+    std::vector<float_t> m_track_vx;
+    std::vector<float_t> m_track_vy;
+    std::vector<float_t> m_track_vz;
+
+    std::vector<float_t> m_track_beamlineTiltX;
+    std::vector<float_t> m_track_beamlineTiltY;
+
+    std::vector<float_t> m_track_numberDoF;
+    std::vector<float_t> m_track_chiSquared;
+    std::vector<uint8_t> m_track_PixelHits;
+    std::vector<uint8_t> m_track_SCTHits;
+    std::vector<uint8_t> m_track_BLayHits;
+    std::vector<uint8_t> m_track_PixShare;
+    std::vector<uint8_t> m_track_SCTShare;
+    std::vector<uint8_t> m_track_TRTHits;
+
+    std::vector<uint32_t> m_track_hitPattern;
+    std::vector<Double_t> m_track_px;
+    std::vector<Double_t> m_track_py;
+    std::vector<Double_t> m_track_pz;
+    std::vector<Double_t> m_track_e;
+
+
     float m_weight;
 
 public:
