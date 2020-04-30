@@ -260,7 +260,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
         // non-lepton tracks
         for (const xAOD::TrackParticle *track : *tracks) {
-            if (track->isAvailable<int>("be_toSave") && track->auxdecor<bool>("be_toSave")){
+            if (track->isAvailable<bool>("be_toSave") && track->auxdecor<bool>("be_toSave")){
                 // This is either a muon or an electron, which were already added.
                 continue;
             }
