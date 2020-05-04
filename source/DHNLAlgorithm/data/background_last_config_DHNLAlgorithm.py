@@ -21,7 +21,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "_2",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "2",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -33,7 +33,7 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : o.altVSIstr+ "_2",
+    "prop_vtx_suffix"        : o.altVSIstr+ "2",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -57,8 +57,8 @@ Dict_VertexMatcher = {
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.altVSIstr+ "_2",
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "_2",
+"m_name"                            : "VertexMatch"+o.altVSIstr+ "2",
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "2",
 #------------------------ Lepton Matching ------------------------------#
 "m_doLeptons"                       : True,
 "m_inMuContainerName"               : "Muons",
@@ -133,10 +133,10 @@ DHNLNtupleDict = {
     "m_inMETContainerName"           : "",
     "m_inMETTrkContainerName"        : "",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + "_2", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr + "_2", # --> use selected DVs
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr + "2", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx_VSI" + "_2",
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr + "_2",
-    "m_AltAugmentationVersionString" : o.altVSIstr + "_2", # no augumentation for standard VSI
+    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr + "2",
+    "m_AltAugmentationVersionString" : o.altVSIstr + "2", # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "",
     "m_truthVertexBranchName"        : "",
