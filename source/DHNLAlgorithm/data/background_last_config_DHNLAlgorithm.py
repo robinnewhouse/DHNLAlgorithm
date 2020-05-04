@@ -7,7 +7,6 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
-parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons")
 
 o = parser.parse_args(shlex.split(args.extra_options))
@@ -22,7 +21,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "_2",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -34,7 +33,7 @@ SecondaryVertexSelectorDict = {
     "prop_d0signif_wrtSVCut" : 5.0,
     "prop_z0signif_wrtSVCut" : 5.0,
     "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : o.altVSIstr,
+    "prop_vtx_suffix"        : o.altVSIstr+ "_2",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 }
@@ -45,8 +44,8 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 Dict_VertexMatcher = {
-    "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
+    "m_name"                            : "VertexMatch"+ "_2",
+    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices"+ "_2",   # --> use selected vertices
     #------------------------ Lepton Matching ------------------------------#
     "m_doLeptons"                       : True,
     "m_inMuContainerName"               : "Muons",
@@ -58,8 +57,8 @@ Dict_VertexMatcher = {
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.altVSIstr,
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, 
+"m_name"                            : "VertexMatch"+o.altVSIstr+ "_2",
+"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr+ "_2",
 #------------------------ Lepton Matching ------------------------------#
 "m_doLeptons"                       : True,
 "m_inMuContainerName"               : "Muons",
@@ -133,10 +132,10 @@ DHNLNtupleDict = {
     "m_trackParticleContainerName"   : "InDetTrackParticles",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx_VSI",
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + "_2", # --> use selected DVs
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr + "_2", # --> use selected DVs
+    "m_secondaryVertexBranchName"    : "secVtx_VSI" + "_2",
+    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr + "_2",
     "m_AltAugmentationVersionString" : o.altVSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",

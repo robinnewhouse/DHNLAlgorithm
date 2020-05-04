@@ -7,6 +7,8 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons")
 
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -406,11 +408,11 @@ DHNLNtupleDict = {
     "m_trackParticleContainerName"   : "InDetTrackParticles",
     "m_inMETContainerName"           : "MET",
     "m_inMETTrkContainerName"        : "METTrk",
-    "m_secondaryVertexContainerName" : "", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "", # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "",
-    "m_secondaryVertexBranchNameAlt" : "",
-    "m_AltAugmentationVersionString" : "", # no augumentation for standard VSI
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
+    "m_secondaryVertexBranchName"    : "secVtx_VSI",
+    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
+    "m_AltAugmentationVersionString" : o.altVSIstr, # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
