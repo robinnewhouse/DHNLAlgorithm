@@ -327,6 +327,8 @@ EL::StatusCode DHNLNtuple::finalize() {
     // submission node after all your histogram outputs have been
     // merged.  This is different from histFinalize() in that it only
     // gets called on worker nodes that processed input events.
+    for (auto tree: m_myTrees)
+        delete tree.second;
 
     return EL::StatusCode::SUCCESS;
 }
