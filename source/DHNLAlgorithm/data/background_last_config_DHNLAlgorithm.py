@@ -123,38 +123,39 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     # "m_inJetContainerName"           : "SignalJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
     # "m_allJetContainerName"          : "SignalJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810" ,
-    "m_inJetContainerName"           :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
-    "m_allJetContainerName"          :  "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_inJetContainerName"           :  "",
+    "m_allJetContainerName"          :  "",
     "m_jetInputAlgo"                 : "",
-    "m_allJetInputAlgo"              : "",#"AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
-    "m_trackParticleContainerName"   : "InDetTrackParticles",
-    "m_inMETContainerName"           : "MET",
-    "m_inMETTrkContainerName"        : "METTrk",
+    "m_allJetInputAlgo"              : "",
+    "m_inMuContainerName"            : "",
+    "m_inElContainerName"            : "",
+    "m_trackParticleContainerName"   : "",
+    "m_inMETContainerName"           : "",
+    "m_inMETTrkContainerName"        : "",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + "_2", # --> use selected DVs
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr + "_2", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx_VSI" + "_2",
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr + "_2",
-    "m_AltAugmentationVersionString" : o.altVSIstr, # no augumentation for standard VSI
+    "m_AltAugmentationVersionString" : o.altVSIstr + "_2", # no augumentation for standard VSI
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
-    "m_truthVertexContainerName"     : "TruthVertices",
-    "m_truthVertexBranchName"        : "truthVtx",
-    "m_inTruthParticleContainerName" : "MuonTruthParticles",
+    "m_truthVertexContainerName"     : "",
+    "m_truthVertexBranchName"        : "",
+    "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
-    "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth flavorTag trackAll trackPV allTrackPVSel allTrackDetail allTrackDetailPVSel btag_jettrk",
-    "m_jetDetailStrSyst"             : "kinematic rapidity energy clean flavorTag",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams trackhitcont effSF quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
-    "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_metDetailStr"                 : "metClus sigClus",
-    "m_metTrkDetailStr"              : "metTrk sigTrk",
-    "m_trackDetailStr"               : "numbers",
+    "m_eventDetailStr"               : "", #shapeEM
+    "m_jetDetailStr"                 : "",
+    "m_jetDetailStrSyst"             : "",
+    "m_elDetailStr"                  : "",
+    "m_muDetailStr"                  : "",
+    "m_trigDetailStr"                : "",#basic menuKeys passTriggers",
+    "m_metDetailStr"                 : "",
+    "m_metTrkDetailStr"              : "",
+    "m_trackDetailStr"               : "",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "linked": pt-matched truth vertices. "close": distance matched truth vertices.
-    "m_vertexDetailStr"              : "primary",
-    "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
+    "m_vertexDetailStr"              : "",
+    "m_truthVertexDetailStr"         : "", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
+    "m_useCutFlow"              : False,
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
