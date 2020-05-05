@@ -124,6 +124,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     # "m_inJetContainerName"           : "SignalJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
     # "m_allJetContainerName"          : "SignalJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810" ,
+    "m_eventInfoContainerName"       : "",
     "m_inJetContainerName"           :  "",
     "m_allJetContainerName"          :  "",
     "m_jetInputAlgo"                 : "",
@@ -159,7 +160,7 @@ DHNLNtupleDict = {
     "m_useCutFlow"              : False,
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Info",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )
