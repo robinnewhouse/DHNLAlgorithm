@@ -329,7 +329,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (!m_truthLevelOnly && !m_backgroundEstimationNoParticleData) {
         ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
     }
-    if (!m_truthLevelOnly && !NPVAccessor.isAvailable(*eventInfo)) { // NPV might already be available
+    if (!m_truthLevelOnly && !NPVAccessor.isAvailable(*eventInfo) && vertices) { // NPV might already be available
         // number of PVs with 2 or more tracks
         //eventInfo->auxdecor< int >( "NPV" ) = HelperFunctions::countPrimaryVertices(vertices, 2);
         // TMP for JetUncertainties uses the same variable
