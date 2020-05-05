@@ -51,6 +51,7 @@ public:
     uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
     bool m_backgroundEstimationBranches; // do we add branches required for background estimation
+    bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     float m_metCut;
 
 private:
