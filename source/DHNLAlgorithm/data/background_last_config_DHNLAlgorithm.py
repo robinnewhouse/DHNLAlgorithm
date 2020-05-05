@@ -90,14 +90,15 @@ c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"      : "SignalJets",
-    "m_inputAlgo"               : "SignalJets_Algo",
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
-    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
-    "m_inMETContainerName"      : "MET",
-    "m_inMETTrkContainerName"   : "METTrk",
+    "m_inJetContainerName"      : "",
+    "m_inputAlgo"               : "",
+    "m_allJetContainerName"     : "",
+    "m_allJetInputAlgo"         : "",
+    "m_inDetTrackParticlesContainerName": "",
+    "m_inMuContainerName"       : "",
+    "m_inElContainerName"       : "",
+    "m_inMETContainerName"      : "",
+    "m_inMETTrkContainerName"   : "",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,
@@ -107,7 +108,7 @@ DHNLDict = {
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
-    "m_backgroundEstimationBranches": True,
+    "m_backgroundEstimationNoParticleData": True,
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )

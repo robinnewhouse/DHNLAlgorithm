@@ -53,6 +53,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
+    m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
     m_MCPileupCheckContainer = "AntiKt4TruthJets";
@@ -61,6 +62,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_jetMultiplicity = 3;
     m_truthLevelOnly = false;
     m_backgroundEstimationBranches = false;
+    m_backgroundEstimationNoParticleData = false;
     m_metCut = 0;
 
 }
@@ -94,57 +96,65 @@ EL::StatusCode DHNLAlgorithm::execute() {
     //////////////////// Store lepton information //////////////////////
 
     const xAOD::MuonContainer *inMuons = nullptr;
-    ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
+    if(!m_inMuContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
 
     const xAOD::ElectronContainer *inElectrons = nullptr;
-    ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
+    if(!m_inElContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
 
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
     const xAOD::MuonContainer *inMuonsUncalibrated = nullptr;
-    ANA_CHECK(HelperFunctions::retrieve(inMuonsUncalibrated, "Muons", m_event, m_store, msg()));
+    if(m_backgroundEstimationNoParticleData)
+        ANA_CHECK(HelperFunctions::retrieve(inMuonsUncalibrated, "Muons", m_event, m_store, msg()));
 
     const xAOD::ElectronContainer *inElectronsUncalibrated = nullptr;
-    ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
+    if(m_backgroundEstimationNoParticleData)
+        ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
 
     const xAOD::TrackParticleContainer *tracks = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(tracks, "InDetTrackParticles", m_event, m_store));
+    ANA_CHECK (HelperFunctions::retrieve(tracks, m_inDetTrackParticlesContainerName, m_event, m_store));
 
-    for (const xAOD::Muon *muon : *inMuons) {
-        muon->auxdecor<int>("index") = muon->index();
-        muon->auxdecor<int>("type") = muon->muonType();
-        muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
-        muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
-        muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+    if(inMuons){
+        for (const xAOD::Muon *muon : *inMuons) {
+            muon->auxdecor<int>("index") = muon->index();
+            muon->auxdecor<int>("type") = muon->muonType();
+            muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
+            muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
+            muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
-        if (not(m_inMuContainerName == "Muons")) {
-            muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
-            muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");
+            if (not(m_inMuContainerName == "Muons")) {
+                muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
+                muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");
+            }
+
+            float chi2;
+            if (not muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2))
+                chi2 = -1;
+            muon->auxdecor<float>("chi2") = chi2;
+
+            int msInnerMatchDOF;
+            if (not muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF))
+                msInnerMatchDOF = -1;
+            muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
+
+            muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
+
         }
-
-        float chi2;
-        if (not muon->parameter(chi2, xAOD::Muon::msInnerMatchChi2))
-            chi2 = -1;
-        muon->auxdecor<float>("chi2") = chi2;
-
-        int msInnerMatchDOF;
-        if (not muon->parameter(msInnerMatchDOF, xAOD::Muon::msInnerMatchDOF))
-            msInnerMatchDOF = -1;
-        muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
- 
-        muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
-        
     }
 
-    for (const xAOD::Electron *electron : *inElectrons) {
-        electron->auxdecor<int>("index") = electron->index();
-        electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
-        electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
-        electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
-        if (not(m_inElContainerName == "Electrons")) {
-            electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
-            electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
+    if(inElectrons){
+        for (const xAOD::Electron *electron : *inElectrons) {
+            electron->auxdecor<int>("index") = electron->index();
+            electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
+            electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
+            electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+            if (not(m_inElContainerName == "Electrons")) {
+                electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
+                electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
+            }
         }
     }
 
@@ -316,7 +326,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
     const xAOD::VertexContainer *vertices = nullptr;
-    if (!m_truthLevelOnly) {
+    if (!m_truthLevelOnly && !m_backgroundEstimationNoParticleData) {
         ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
     }
     if (!m_truthLevelOnly && !NPVAccessor.isAvailable(*eventInfo)) { // NPV might already be available
