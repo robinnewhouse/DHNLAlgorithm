@@ -134,6 +134,7 @@ DHNLNtupleDict = {
     "m_trackParticleContainerName"   : "",
     "m_inMETContainerName"           : "",
     "m_inMETTrkContainerName"        : "",
+    "m_vertexContainerName"          : "",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + "_2", # --> use selected DVs
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr + "2", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx_VSI" + "_2",
