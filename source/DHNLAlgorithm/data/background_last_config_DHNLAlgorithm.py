@@ -94,7 +94,7 @@ DHNLDict = {
     "m_inputAlgo"               : "",
     "m_allJetContainerName"     : "",
     "m_allJetInputAlgo"         : "",
-    "m_inDetTrackParticlesContainerName": "",
+    "m_inDetTrackParticlesContainerName": "TracksForVSI",
     "m_inMuContainerName"       : "",
     "m_inElContainerName"       : "",
     "m_inMETContainerName"      : "",
