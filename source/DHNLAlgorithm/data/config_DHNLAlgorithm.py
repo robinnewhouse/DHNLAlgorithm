@@ -372,19 +372,24 @@ Dict_VertexMatcher_Leptons = {
 c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% TruthSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# TruthSelectorDict = {
-#     "m_name"                      : "TruthSelect",
-#     #----------------------- Container Flow ----------------------------#
-#     "m_inContainerName"           : "Muons_Signal",
-#     "m_outContainerName"          : "Muons_Truth",
-#     #------------------------ Other ------------------------------#
-#     "m_msgLevel"             : "Debug",
-# }
-#
-# if args.is_MC:
-#     c.algorithm("TruthSelector", TruthSelectorDict )
+TruthVertexSelectorDict = {
+    "m_name"                      : "TruthVtxSel",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "TruthVertices",
+    "m_outContainerName"          : "SelectedTruthVertices",
+    "m_createSelectedContainer"   : True,
+    #---------------------- Selections ---------------------------#
+    "m_pdgIdList"               : "50, 24",
+    #------------------------ Other ------------------------------#
+    "m_msgLevel"             : "Info",
+
+}
+
+if args.is_MC:
+    c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 ##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -430,7 +435,7 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
-    "m_truthVertexContainerName"     : "TruthVertices",
+    "m_truthVertexContainerName"     : "SelectedTruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
