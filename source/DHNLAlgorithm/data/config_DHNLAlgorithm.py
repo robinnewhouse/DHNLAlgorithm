@@ -200,7 +200,7 @@ ElectronSelectorDict = {
     "m_outContainerName"          : "Electrons_Signal",
     "m_createSelectedContainer"   : True,
     #----------------------- PID ------------- ----------------------------#
-    "m_doLHPIDcut"                : True,
+    "m_doLHPIDcut"                : False,
     "m_LHOperatingPoint"          : "Medium",
     #----------------------- configurable cuts ----------------------------#
     "m_pass_max"                  : -1,
