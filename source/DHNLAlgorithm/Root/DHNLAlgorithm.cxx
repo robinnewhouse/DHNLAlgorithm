@@ -107,11 +107,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
     const xAOD::MuonContainer *inMuonsUncalibrated = nullptr;
-    if(m_backgroundEstimationNoParticleData)
+    if(!m_backgroundEstimationNoParticleData)
         ANA_CHECK(HelperFunctions::retrieve(inMuonsUncalibrated, "Muons", m_event, m_store, msg()));
 
     const xAOD::ElectronContainer *inElectronsUncalibrated = nullptr;
-    if(m_backgroundEstimationNoParticleData)
+    if(!m_backgroundEstimationNoParticleData)
         ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
 
     const xAOD::TrackParticleContainer *tracks = nullptr;
