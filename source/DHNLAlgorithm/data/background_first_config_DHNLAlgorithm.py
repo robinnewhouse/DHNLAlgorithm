@@ -79,8 +79,8 @@ basicEventSelectionDict = {
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
-    "m_applyPrimaryVertexCut"     : True,
-    "m_PVNTrack"                  : 0,
+    "m_applyPrimaryVertexCut"     : False,
+    "m_PVNTrack"                    : 2,
     "m_msgLevel"                  : "Info",
 }
 
@@ -98,7 +98,7 @@ DHNLFilterDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : True,
+    "m_applyFilterCut"          : False,
     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
     #----------------------- Selections ----------------------------#
