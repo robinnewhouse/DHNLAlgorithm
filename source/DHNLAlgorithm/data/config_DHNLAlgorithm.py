@@ -387,8 +387,8 @@ TruthVertexSelectorDict = {
 
 }
 
-if args.is_MC:
-    c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
+# if args.is_MC:
+#     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
