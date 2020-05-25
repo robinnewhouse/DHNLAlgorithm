@@ -15,6 +15,12 @@ DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::
 }
 
 DHNLMiniTree::~DHNLMiniTree() {
+    // Clean memory
+    for (auto vtx: m_secVerts)
+        delete vtx.second;
+
+    for (auto vtx: m_truthVerts)
+        delete vtx.second;
 
 }
 
