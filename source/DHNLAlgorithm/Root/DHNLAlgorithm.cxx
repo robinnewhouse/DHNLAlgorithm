@@ -140,8 +140,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 msInnerMatchDOF = -1;
             muon->auxdecor<int>("msDOF") = msInnerMatchDOF;
 
-            muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
-
+            if (muon->primaryTrackParticle()->isAvailable<unsigned long>("patternRecoInfo") ){
+                muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
         }
     }
 
