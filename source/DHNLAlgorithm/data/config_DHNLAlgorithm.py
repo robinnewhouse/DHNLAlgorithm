@@ -79,7 +79,7 @@ basicEventSelectionDict = {
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
-    "m_applyPrimaryVertexCut"     : False,
+    "m_applyPrimaryVertexCut"     : True,
     "m_PVNTrack"                    : 2,
     "m_msgLevel"                  : "Info",
 }
