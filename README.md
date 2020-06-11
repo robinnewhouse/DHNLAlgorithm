@@ -125,9 +125,9 @@ Please use the following commands to properly update all modules:
 ```bash
 git pull --recurse-submodules
 git submodule update --recursive
-cd $TestArea/../DHNLAlgorithm/source/DHNLAlgorithm/deps/DVAnalysisBase
+cd $TestArea/../source/DHNLAlgorithm/deps/DVAnalysisBase
 source util/dependencyHack.sh
-cd ../../
+cd $TestArea
 ```
 
 
