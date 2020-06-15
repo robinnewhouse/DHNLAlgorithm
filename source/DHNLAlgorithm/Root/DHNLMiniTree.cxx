@@ -298,7 +298,7 @@ void DHNLMiniTree::FillSecondaryVerts(const xAOD::VertexContainer *secVerts, con
 void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::string secVtxName, bool suppressFilter) {
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
-    thisSecVtx->FillSecondaryVertex(secVtx, treeName, suppressFilter);
+    thisSecVtx->FillSecondaryVertex(secVtx, "", treeName, suppressFilter);
 
 }
 
