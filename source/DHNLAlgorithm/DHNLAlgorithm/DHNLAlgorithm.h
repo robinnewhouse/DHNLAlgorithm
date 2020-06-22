@@ -16,6 +16,10 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODMuon/MuonContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
+#include <AsgTools/MessageCheck.h>
+#include "AsgTools/StatusCode.h"
+#include "EgammaAnalysisInterfaces/IAsgElectronLikelihoodTool.h"
+#include "ElectronPhotonSelectorTools/AsgElectronLikelihoodTool.h"
 #include "xAODEventInfo/EventInfo.h"
 #include <xAODAnaHelpers/JetHists.h>
 //#include "DHNLAlgorithm/DHNLMiniTree.h"
@@ -51,6 +55,13 @@ public:
     uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
     float m_metCut;
+
+    //Likelihood tools: */
+    /* std::string m_lhTune; */
+    AsgElectronLikelihoodTool* m_LHToolVeryLoose; //
+    /* AsgElectronLikelihoodTool* m_LHToolVeryVeryLoose; // */
+    /* //AsgElectronLikelihoodTool* m_LHToolTight2015; //! */
+
 
 private:
 

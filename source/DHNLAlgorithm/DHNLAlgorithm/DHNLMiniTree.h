@@ -34,6 +34,8 @@ private:
     std::vector<int> m_electron_index;
     std::vector<bool> m_electron_passesPromptCuts;
     std::vector<bool> m_electron_passesDisplacedCuts;
+    std::vector<bool> m_electron_isVeryLoose;
+    std::vector<bool> m_electron_isVeryVeryLoose;
     std::vector<double> m_electron_px;
     std::vector<double> m_electron_py;
     std::vector<double> m_electron_pz;

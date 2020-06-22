@@ -68,10 +68,17 @@ void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string 
 void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::string &elecName) {
     (void) detailStr; // suppress warning
 
+    std::string configFileVVL = "ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
+    std::string configFileVL = "ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
+
+    std::cout << "let's test this, configFileVVL: " << configFileVVL << std::endl;
+
     std::string name = elecName + "_";
     m_tree->Branch((name + "index").c_str(), &m_electron_index);
     m_tree->Branch((name + "passesPromptCuts").c_str(), &m_electron_passesPromptCuts);
     m_tree->Branch((name + "passesDisplacedCuts").c_str(), &m_electron_passesDisplacedCuts);
+    m_tree->Branch((name + "isVeryLoose").c_str(), &m_electron_isVeryLoose);
+    m_tree->Branch((name + "isVeryVeryLoose").c_str(), &m_electron_isVeryVeryLoose);
     m_tree->Branch((name + "px").c_str(), &m_electron_px);
     m_tree->Branch((name + "py").c_str(), &m_electron_py);
     m_tree->Branch((name + "pz").c_str(), &m_electron_pz);
