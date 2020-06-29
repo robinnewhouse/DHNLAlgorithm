@@ -176,7 +176,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             if (track == nullptr) continue;
 
             // Quality data
-            track->auxdecor<int>("be_quality") = (int) track->quality();
+            track->auxdecor<int>("be_quality") = (int) muon->quality();
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
@@ -230,7 +230,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             if (track == nullptr) continue;
 
             // Quality data
-            track->auxdecor<int>("be_quality") = (int) track->quality();
+            track->auxdecor<int>("be_quality") = (int) electron->quality();
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
