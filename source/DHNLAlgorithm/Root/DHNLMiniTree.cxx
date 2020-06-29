@@ -86,6 +86,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "type").c_str(), &m_track_type);
+    m_tree->Branch((name + "quality").c_str(), &m_track_quality);
 
     m_tree->Branch((name+ "qOverP").c_str(), &m_track_qOverP);
     m_tree->Branch((name+ "theta").c_str(), &m_track_theta);
@@ -319,6 +320,9 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     if (track->isAvailable<int>("be_type"))
         m_track_type.push_back(track->auxdecor<int>("be_type"));
 
+    if (track->isAvailable<int>("be_quality"))
+        m_track_quality.push_back(track->auxdecor<int>("be_quality"));
+
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
 
@@ -390,6 +394,7 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
     m_track_toSave.clear();
     m_track_type.clear();
+    m_track_quality.clear();
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
 

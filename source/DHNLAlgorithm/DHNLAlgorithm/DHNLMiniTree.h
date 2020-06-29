@@ -43,6 +43,7 @@ private:
     std::vector<unsigned long long> m_track_eventNumber;
     std::vector<std::uint32_t> m_track_runNumber;
     std::vector<int> m_track_type;
+    std::vector<int> m_track_quality;
 
     std::vector<float_t> m_track_qOverP;
     std::vector<float_t> m_track_theta;

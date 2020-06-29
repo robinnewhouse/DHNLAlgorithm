@@ -175,6 +175,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             if (track == nullptr) continue;
 
+            // Quality data
+            track->auxdecor<int>("be_quality") = (int) track->quality();
+
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
             // Decorate ID track with type and filter info.
@@ -225,6 +228,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
             const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
 
             if (track == nullptr) continue;
+
+            // Quality data
+            track->auxdecor<int>("be_quality") = (int) track->quality();
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
@@ -281,6 +287,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
+            track->auxdecor<int>("be_quality") = -999;
 
             // Decorate ID track with type and filter info.
             track->auxdecor<float_t>("be_qOverP") = track->qOverP();
