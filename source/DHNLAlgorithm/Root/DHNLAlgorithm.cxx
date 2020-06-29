@@ -230,7 +230,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             if (track == nullptr) continue;
 
             // Quality data
-            track->auxdecor<int>("be_quality") = (int) electron->quality();
+            track->auxdecor<int>("be_quality") = -998;
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
