@@ -171,7 +171,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if(m_backgroundEstimationBranches){
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
-            const xAOD::TrackParticle *track = muon->primaryTrackParticle();
+            const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
+
+            if (track == nullptr) continue;
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
@@ -221,6 +223,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
         // electron tracks
         for (const xAOD::Electron *electron : *inElectrons) {
             const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
+
+            if (track == nullptr) continue;
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
