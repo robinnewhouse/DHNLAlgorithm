@@ -124,6 +124,39 @@ EL::StatusCode DHNLNtuple::initialize() {
         m_cutflowHistW->GetXaxis()->FindBin("y*");
     }
 
+
+      // Parse altVSIstr list, split by comma, and put into a vector for later use
+      // Make sure it's not empty!
+      //
+      if ( m_secondaryVertexContainerNameAltList.empty() ) {
+          ANA_MSG_ERROR("Empty secondaryVertexContainerNameAlt list");
+      }
+       if ( m_secondaryVertexBranchNameAltList.empty() ) {
+          ANA_MSG_ERROR("Empty secondaryVertexBranchNameAlt list");
+      }
+       if ( m_AltAugmentationVersionStringList.empty() ) {
+          ANA_MSG_ERROR("Empty AltAugmentationVersionString list");
+      }
+      std::string secondaryVertexContainerNameAlt_token;
+      std::string secondaryVertexBranchNameAlt_token;
+      std::string AltAugmentationVersionString_token;
+
+      std::istringstream sv(m_secondaryVertexContainerNameAltList);
+      std::istringstream sb(m_secondaryVertexBranchNameAltList);
+      std::istringstream augstr(m_AltAugmentationVersionStringList);
+
+      while ( std::getline(sv, secondaryVertexContainerNameAlt_token, ',') ) {
+        m_secondaryVertexContainerNameAltKeys.push_back(secondaryVertexContainerNameAlt_token);
+      }
+
+      while ( std::getline(sb, secondaryVertexBranchNameAlt_token, ',') ) {
+        m_secondaryVertexBranchNameAltKeys.push_back(secondaryVertexBranchNameAlt_token);
+      }
+
+      while ( std::getline(augstr, AltAugmentationVersionString_token, ',') ) {
+        m_AltAugmentationVersionStringKeys.push_back(AltAugmentationVersionString_token);
+      }
+
     ANA_MSG_INFO("initialize() : Successfully initialized! \n");
     return EL::StatusCode::SUCCESS;
 }
@@ -178,6 +211,8 @@ EL::StatusCode DHNLNtuple::execute() {
     // code will go.
     ANA_MSG_DEBUG("execute(): Applying selection");
     ++m_eventCounter;
+
+
 
     ///////////////////////////// Retrieve Containers /////////////////////////////////////////
 
@@ -275,6 +310,19 @@ EL::StatusCode DHNLNtuple::execute() {
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
     }
 
+     // Fill the alternative secondary vertices from the list
+
+
+    if (not m_secondaryVertexContainerNameAltKeys.empty() and not m_AltAugmentationVersionStringList.empty()) {  // check you do not fill default VSI twice
+        for(size_t i=0; i < m_secondaryVertexContainerNameAltKeys.size(); i++){
+            if (m_AltAugmentationVersionStringList[i] == m_AltAugmentationVersionString) continue; // check you do not fill alt VSI twice
+            const xAOD::VertexContainer *inSecVertsAlt_rerunVSI = nullptr;
+            ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt_rerunVSI, m_secondaryVertexContainerNameAltKeys[i], m_event, m_store, msg()));
+            if (inSecVertsAlt_rerunVSI) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt_rerunVSI, m_secondaryVertexBranchNameAltKeys[i], m_suppressTrackFilter);
+        }
+       
+    }
+
     ANA_MSG_DEBUG("Event # " << m_eventCounter);
     m_myTrees[systName]->Fill();
     ANA_MSG_DEBUG("Tree Written");
@@ -308,7 +356,9 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_secondaryVertexDetailStr.empty()) miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
     if (not m_AltAugmentationVersionString.empty() and not m_secondaryVertexDetailStr.empty()) { // check you do not fill default VSI twice
     miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
-    
+    if (not m_AltAugmentationVersionStringList.empty() and not m_secondaryVertexDetailStr.empty()) { // check you do not fill default VSI twice
+        for(size_t i=0; i < m_secondaryVertexContainerNameAltKeys.size(); i++){
+             miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAltKeys[i], m_AltAugmentationVersionStringKeys[i]); } }
     if (m_isMC){ 
         miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
         miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName); 

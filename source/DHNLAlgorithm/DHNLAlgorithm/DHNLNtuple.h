@@ -78,6 +78,17 @@ public:
     std::string m_secondaryVertexBranchNameAlt;
     bool m_suppressTrackFilter;
 
+
+    std::string m_secondaryVertexContainerNameAltList = "";
+    std::vector<std::string> m_secondaryVertexContainerNameAltKeys;
+
+    std::string m_secondaryVertexBranchNameAltList = "";
+    std::vector<std::string> m_secondaryVertexBranchNameAltKeys;
+
+    std::string m_AltAugmentationVersionStringList = "";
+    std::vector<std::string> m_AltAugmentationVersionStringKeys;
+
+
 private:
     int m_eventCounter;     //!
 
