@@ -69,7 +69,7 @@ basicEventSelectionDict = {
     "m_applyGRLCut"               : not args.is_MC,
     "m_GRLxml"                    : GRL,
     #"m_derivationName"            : "SUSY15Kernel_skim",
-    "m_useMetaData"               : False,
+    "m_useMetaData"               : True,
     "m_storePassHLT"              : True,
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
