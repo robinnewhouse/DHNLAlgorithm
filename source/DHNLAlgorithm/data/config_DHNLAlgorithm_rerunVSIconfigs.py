@@ -22,13 +22,13 @@ secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecIncl
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
 
-# for suffix in TrkD0Suffices: 
-#     secondaryVertexContainerName.append("VrtSecInclusive_SecondaryVertices" + suffix)
-#     secondaryVertexContainerName.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
-#     secondaryVertexBranchName.append("secVtx_VSI" + suffix)
-#     secondaryVertexBranchName.append("secVtx_VSI_Leptons" + suffix)
-#     AugmentationVersionString.append(suffix)
-#     AugmentationVersionString.append("_Leptons" + suffix)
+for suffix in TrkD0Suffices: 
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
+    AugmentationVersionStrings.append(suffix)
+    AugmentationVersionStrings.append("_Leptons" + suffix)
 
 
 
@@ -82,7 +82,7 @@ basicEventSelectionDict = {
     "m_applyGRLCut"               : not args.is_MC,
     "m_GRLxml"                    : GRL,
     #"m_derivationName"            : "SUSY15Kernel_skim",
-    "m_useMetaData"               : False,
+    "m_useMetaData"               : True,
     "m_storePassHLT"              : True,
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
