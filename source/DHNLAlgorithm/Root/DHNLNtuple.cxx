@@ -128,33 +128,33 @@ EL::StatusCode DHNLNtuple::initialize() {
       // Parse altVSIstr list, split by comma, and put into a vector for later use
       // Make sure it's not empty!
       //
-      if ( m_secondaryVertexContainerNameAltList.empty() ) {
-          ANA_MSG_ERROR("Empty secondaryVertexContainerNameAlt list");
+      if ( m_secondaryVertexContainerNameList.empty() ) {
+          ANA_MSG_ERROR("Empty secondaryVertexContainerName List!!!");
       }
-       if ( m_secondaryVertexBranchNameAltList.empty() ) {
-          ANA_MSG_ERROR("Empty secondaryVertexBranchNameAlt list");
+       if ( m_secondaryVertexBranchNameList.empty() ) {
+          ANA_MSG_ERROR("Empty secondaryVertexBranchName List!!!");
       }
-       if ( m_AltAugmentationVersionStringList.empty() ) {
-          ANA_MSG_ERROR("Empty AltAugmentationVersionString list");
+       if ( m_AugmentationVersionStringList.empty() ) {
+          ANA_MSG_ERROR("Empty AugmentationVersionString List!!!");
       }
-      std::string secondaryVertexContainerNameAlt_token;
-      std::string secondaryVertexBranchNameAlt_token;
-      std::string AltAugmentationVersionString_token;
+      std::string secondaryVertexContainerName_token;
+      std::string secondaryVertexBranchName_token;
+      std::string AugmentationVersionString_token;
 
-      std::istringstream sv(m_secondaryVertexContainerNameAltList);
-      std::istringstream sb(m_secondaryVertexBranchNameAltList);
-      std::istringstream augstr(m_AltAugmentationVersionStringList);
+      std::istringstream sv(m_secondaryVertexContainerNameList);
+      std::istringstream sb(m_secondaryVertexBranchNameList);
+      std::istringstream augstr(m_AugmentationVersionStringList);
 
-      while ( std::getline(sv, secondaryVertexContainerNameAlt_token, ',') ) {
-        m_secondaryVertexContainerNameAltKeys.push_back(secondaryVertexContainerNameAlt_token);
-      }
-
-      while ( std::getline(sb, secondaryVertexBranchNameAlt_token, ',') ) {
-        m_secondaryVertexBranchNameAltKeys.push_back(secondaryVertexBranchNameAlt_token);
+      while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+        m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
       }
 
-      while ( std::getline(augstr, AltAugmentationVersionString_token, ',') ) {
-        m_AltAugmentationVersionStringKeys.push_back(AltAugmentationVersionString_token);
+      while ( std::getline(sb, secondaryVertexBranchName_token, ',') ) {
+        m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
+      }
+
+      while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
+        m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
     ANA_MSG_INFO("initialize() : Successfully initialized! \n");
@@ -297,31 +297,26 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store));
     if (inTruthVerts) m_myTrees[systName]->FillTruthVerts(inTruthVerts, m_truthVertexBranchName);
 
-    // Secondary vertex filling
-    const xAOD::VertexContainer *inSecVerts = nullptr;
-    if (not m_secondaryVertexContainerName.empty())
-        ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg()));
-    if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchName, m_suppressTrackFilter);
 
-    // Fill the alternative secondary vertices
-    if (not m_secondaryVertexContainerNameAlt.empty() and not m_AltAugmentationVersionString.empty()) {  // check you do not fill default VSI twice
+     // Fill the secondary vertices from the list
+    if (not m_secondaryVertexContainerNameKeys.empty() and not m_AugmentationVersionStringList.empty()) { 
+        for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
+            if (m_AugmentationVersionStringList[i] == m_AltAugmentationVersionString) continue; // check you do not fill same as alt VSI twice
+            const xAOD::VertexContainer *inSecVerts = nullptr;
+            ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
+            if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchNameKeys[i], m_suppressTrackFilter);
+        }
+       
+    }
+
+    // Fill the alternative secondary vertex container from command line if required 
+    if (not m_secondaryVertexContainerNameAlt.empty() and m_AltAugmentationVersionString != "None" ) { 
         const xAOD::VertexContainer *inSecVertsAlt = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
     }
 
-     // Fill the alternative secondary vertices from the list
 
-
-    if (not m_secondaryVertexContainerNameAltKeys.empty() and not m_AltAugmentationVersionStringList.empty()) {  // check you do not fill default VSI twice
-        for(size_t i=0; i < m_secondaryVertexContainerNameAltKeys.size(); i++){
-            if (m_AltAugmentationVersionStringList[i] == m_AltAugmentationVersionString) continue; // check you do not fill alt VSI twice
-            const xAOD::VertexContainer *inSecVertsAlt_rerunVSI = nullptr;
-            ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt_rerunVSI, m_secondaryVertexContainerNameAltKeys[i], m_event, m_store, msg()));
-            if (inSecVertsAlt_rerunVSI) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt_rerunVSI, m_secondaryVertexBranchNameAltKeys[i], m_suppressTrackFilter);
-        }
-       
-    }
 
     ANA_MSG_DEBUG("Event # " << m_eventCounter);
     m_myTrees[systName]->Fill();
@@ -353,12 +348,11 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
-    if (not m_secondaryVertexDetailStr.empty()) miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchName);
-    if (not m_AltAugmentationVersionString.empty() and not m_secondaryVertexDetailStr.empty()) { // check you do not fill default VSI twice
-    miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
-    if (not m_AltAugmentationVersionStringList.empty() and not m_secondaryVertexDetailStr.empty()) { // check you do not fill default VSI twice
-        for(size_t i=0; i < m_secondaryVertexContainerNameAltKeys.size(); i++){
-             miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAltKeys[i], m_AltAugmentationVersionStringKeys[i]); } }
+    if (not m_AugmentationVersionStringList.empty() and not m_secondaryVertexDetailStr.empty()) { 
+        for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
+             miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
+    if (m_AltAugmentationVersionString != "None" ) { 
+        miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
     if (m_isMC){ 
         miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
         miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName); 

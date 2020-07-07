@@ -8,11 +8,17 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons") # alternate vertex configuration string to store in tree along with VSI 
-
+parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
+
+
+# vertex container information (by default run VSI & VSI Leptons)
+secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
+secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
+AugmentationVersionStrings = ["","_Leptons"]
+
 
 # Good Run Lists
 GRLList = [
@@ -224,72 +230,6 @@ c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%% METTrk Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-METTrkConstructorDict = {
-    "m_name"                      : "MetTrkConstruct",
-    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
-    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
-    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
-    "m_outputContainer"           : "METTrk",
-    "m_outputAlgoSystNames"       : "METTrk_Syst",
-    "m_writeSystToMetadata"       : False,
-    "m_setAFII"                   : True,
-    "m_doPhotonCuts"              : True,
-    "m_doElectronCuts"            : True,
-    "m_addSoftClusterTerms"       : False,
-    "m_rebuildUsingTracksInJets"  : True,
-    "m_inputElectrons"            : "Electrons",
-    "m_inputMuons"                : "Muons",
-    #"m_inputTaus"                 : "TauJets",
-    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
-    "m_runNominal"                : True,
-    #"m_eleSystematics"            : "ElectronSelector_Syst",
-    #"m_muonSystematics"           : "MuonSelector_Syst",
-    #"m_tauSystematics"            : "TauSelector_Syst",
-    #"m_jetSystematics"            : "JetSelector_Syst",
-    "m_doJVTCut"                  : True,
-    "m_dofJVTCut"                 : False,
-    "m_calculateSignificance"     : False,
-    "m_msgLevel"                  : "Info"
-}
-
-# c.algorithm("METConstructor", METTrkConstructorDict )
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%% MET Constructor %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-MetConstructorDict = {
-    "m_name"                      : "MetConstruct",
-    "m_referenceMETContainer"     : "MET_Reference_AntiKt4EMTopo",
-    "m_mapName"                   : "METAssoc_AntiKt4EMTopo",
-    "m_coreName"                  : "MET_Core_AntiKt4EMTopo",
-    "m_outputContainer"           : "MET",
-    "m_outputAlgoSystNames"       : "MET_Syst",
-    "m_writeSystToMetadata"       : False,
-    "m_setAFII"                   : True,
-    "m_doPhotonCuts"              : True,
-    "m_doElectronCuts"            : True,
-    "m_addSoftClusterTerms"       : False,
-    "m_rebuildUsingTracksInJets"  : False,
-    "m_inputElectrons"            : "Electrons",
-    "m_inputMuons"                : "Muons",
-    #"m_inputTaus"                 : "TauJets",
-    "m_inputJets"                 : "AntiKt4EMTopoJets" if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
-    "m_runNominal"                : True,
-    #"m_eleSystematics"            : "ElectronSelector_Syst",
-    #"m_muonSystematics"           : "MuonSelector_Syst",
-    #"m_tauSystematics"            : "TauSelector_Syst",
-    #"m_jetSystematics"            : "JetSelector_Syst",
-    "m_doJVTCut"                  : True,
-    "m_dofJVTCut"                 : False,
-    "m_calculateSignificance"     : False,
-    "m_msgLevel"                  : "Info"
-}
-
-# c.algorithm("METConstructor", MetConstructorDict )
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
@@ -315,60 +255,42 @@ SecondaryVertexSelectorDict = {
 
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
-# SecondaryVertexSelectorDict_Leptons = {
-#     "m_name"                 : "SecVtxSel_VSI"+ o.altVSIstr,
-#     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-#     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-#     "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-#     #---------------------- Selections ---------------------------#
-#     "m_do_trackTrimming"     : False,
-#     "m_do_matMapVeto"        : True,
-#     "prop_chi2Cut"           : 5.0,
-#     "prop_d0_wrtSVCut"       : 0.8,
-#     "prop_z0_wrtSVCut"       : 1.2,
-#     "prop_errd0_wrtSVCut"    : 999999,
-#     "prop_errz0_wrtSVCut"    : 999999,
-#     "prop_d0signif_wrtSVCut" : 5.0,
-#     "prop_z0signif_wrtSVCut" : 5.0,
-#     "prop_chi2_toSVCut"      : 5.0,
-#     "prop_vtx_suffix"        : o.altVSIstr,
-#     #------------------------ Other ------------------------------#
-#     "m_msgLevel"             : "Info",
-# }
-
-# c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict_Leptons )
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-Dict_VertexMatcher = {
-    "m_name"                            : "VertexMatch",
-    "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
-    #------------------------ Lepton Matching ------------------------------#
-    "m_doLeptons"                       : True,
-    "m_inMuContainerName"               : "Muons",
-    "m_inElContainerName"               : "Electrons",
-     "m_VSILepmatch"                    : False,
-    #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
-}
-c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 
-Dict_VertexMatcher_Leptons = {
-"m_name"                            : "VertexMatch"+o.altVSIstr,
-"m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, 
-#------------------------ Lepton Matching ------------------------------#
-"m_doLeptons"                       : True,
-"m_inMuContainerName"               : "Muons",
-"m_inElContainerName"               : "Electrons",
-"m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False,
-#------------------------ Other ------------------------------#
-"m_msgLevel"             : "Info",
-}
-c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Leptons           )
+for augstr in AugmentationVersionStrings: 
+
+    Dict_VertexMatcher = {
+        "m_name"                            : "VertexMatch"+ augstr,
+        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
+        #------------------------ Lepton Matching ------------------------------#
+        "m_doLeptons"                       : True,
+        "m_inMuContainerName"               : "Muons",
+        "m_inElContainerName"               : "Electrons",
+         "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
+        #------------------------ Other ------------------------------#
+        "m_msgLevel"             : "Info",
+    }
+    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
+
+if o.altVSIstr != "None":
+    Dict_VertexMatcher_Alt = {
+        "m_name"                            : "VertexMatch"+o.altVSIstr ,
+        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr , 
+        #------------------------ Lepton Matching ------------------------------#
+        "m_doLeptons"                       : True,
+        "m_inMuContainerName"               : "Muons",
+        "m_inElContainerName"               : "Electrons",
+        "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
+        #------------------------ Other ------------------------------#
+        "m_msgLevel"             : "Info",
+        }
+    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
+
+
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -428,9 +350,10 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr, # --> use selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx_VSI",
+    "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
+    "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
+    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
+    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
