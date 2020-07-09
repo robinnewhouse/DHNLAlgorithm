@@ -14,10 +14,23 @@ o = parser.parse_args(shlex.split(args.extra_options))
 c = Config()
 
 
-# vertex container information (by default run VSI & VSI Leptons)
+# vertex container information 
+
+TrkD0Suffices = ["_d0min_2p0","_d0min_1p5","_d0min_1p0","_d0min_0p5","_d0min_0p0"]
+
 secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
+
+for suffix in TrkD0Suffices: 
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
+    AugmentationVersionStrings.append(suffix)
+    AugmentationVersionStrings.append("_Leptons" + suffix)
+
+
 
 
 # Good Run Lists
