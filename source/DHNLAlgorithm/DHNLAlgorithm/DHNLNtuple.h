@@ -71,12 +71,23 @@ public:
     std::string m_secondaryVertexDetailStr;
     std::string m_truthParticleDetailString;
 
-    std::string m_secondaryVertexContainerName;
-    std::string m_secondaryVertexBranchName;
+    //std::string m_secondaryVertexContainerName;
+    //std::string m_secondaryVertexBranchName;
     std::string m_AltAugmentationVersionString;
     std::string m_secondaryVertexContainerNameAlt;
     std::string m_secondaryVertexBranchNameAlt;
-    bool m_suppressTrackFilter;
+    bool m_suppressTrackFilter; // turn on and off VSI bonsai track filter
+
+
+    std::string m_secondaryVertexContainerNameList = ""; // list of secondary vertex container names 
+    std::vector<std::string> m_secondaryVertexContainerNameKeys;
+
+    std::string m_secondaryVertexBranchNameList = ""; // list of secondary vertex branch names 
+    std::vector<std::string> m_secondaryVertexBranchNameKeys;
+
+    std::string m_AugmentationVersionStringList = ""; // list of the agumentation strings for each vertex container (used by VSI bonsai)
+    std::vector<std::string> m_AugmentationVersionStringKeys;
+
 
 private:
     int m_eventCounter;     //!
