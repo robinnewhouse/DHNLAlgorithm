@@ -8,6 +8,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+parser.add_argument('--rerunVSI_d0test', dest='rerunVSI_d0test', action="store_true", default=False)
+parser.add_argument('--rerunVSI_LRTR3test', dest='rerunVSI_LRTR3test', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -15,14 +17,17 @@ c = Config()
 
 
 # vertex container information 
+if o.rerunVSI_d0test:
+    VSI_Suffixes = ["_d0min_2p0","_d0min_1p5","_d0min_1p0","_d0min_0p5","_d0min_0p0"]
 
-TrkD0Suffices = ["_d0min_2p0","_d0min_1p5","_d0min_1p0","_d0min_0p5","_d0min_0p0"]
+if o.rerunVSI_LRTR3test: 
+    VSI_Suffixes = ["_LRTR3","_LRTR3_wGeoCut"]
 
 secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
 
-for suffix in TrkD0Suffices: 
+for suffix in VSI_Suffixes: 
     secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
     secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
     secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
