@@ -115,7 +115,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
         ANA_CHECK(HelperFunctions::retrieve(inElectronsUncalibrated, "Electrons", m_event, m_store, msg()));
 
     const xAOD::TrackParticleContainer *tracks = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(tracks, m_inDetTrackParticlesContainerName, m_event, m_store));
+    if(!m_backgroundEstimationNoParticleData)
+        ANA_CHECK (HelperFunctions::retrieve(tracks, m_inDetTrackParticlesContainerName, m_event, m_store));
 
     if(inMuons){
         for (const xAOD::Muon *muon : *inMuons) {
