@@ -16,9 +16,13 @@ DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::
     m_LHToolVeryVeryLoose  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLoose");
     m_LHToolVeryVeryLooseSi  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLooseSi");
     
-    std::string configFileVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
-    std::string configFileVVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
-    std::string configFileVVLS = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_plusSi_Smooth.conf";
+    // std::string configFileVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
+    // std::string configFileVVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
+    // std::string configFileVVLS = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_plusSi_Smooth.conf";
+
+    std::string configFileVL = "$WorkDir_DIR/../../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
+    std::string configFileVVL = "$WorkDir_DIR/../../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
+    std::string configFileVVLS = "$WorkDir_DIR/../../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_plusSi_Smooth.conf";
 
     if((m_LHToolVeryLoose->setProperty("ConfigFile",configFileVL)).isFailure())
       std::cout << "Failure loading ConfigFile in very loose electron likelihood tool."  <<  std::endl;
