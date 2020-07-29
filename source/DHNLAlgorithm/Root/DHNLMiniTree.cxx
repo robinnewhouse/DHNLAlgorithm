@@ -12,6 +12,37 @@ DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::
     m_firstEvent = true;
     m_store = store;
 
+    m_LHToolVeryLoose  = new AsgElectronLikelihoodTool ("m_LHToolVeryLoose");
+    m_LHToolVeryVeryLoose  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLoose");
+    m_LHToolVeryVeryLooseSi  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLooseSi");
+    
+    std::string configFileVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
+    std::string configFileVVL = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
+    std::string configFileVVLS = "$TestArea/../source/DHNLAlgorithm/Root/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_plusSi_Smooth.conf";
+
+    if((m_LHToolVeryLoose->setProperty("ConfigFile",configFileVL)).isFailure())
+      std::cout << "Failure loading ConfigFile in very loose electron likelihood tool."  <<  std::endl;
+    if((m_LHToolVeryVeryLoose->setProperty("ConfigFile",configFileVVL)).isFailure())
+      std::cout << "Failure loading ConfigFile in very very loose electron likelihood tool."  <<  std::endl;
+    if((m_LHToolVeryVeryLooseSi->setProperty("ConfigFile",configFileVVLS)).isFailure())
+      std::cout << "Failure loading ConfigFile in very very loose Si electron likelihood tool."  <<  std::endl;
+
+    m_LHToolVeryLoose->setProperty("ConfigFile",configFileVL);
+    m_LHToolVeryVeryLoose->setProperty("ConfigFile",configFileVVL);
+    m_LHToolVeryVeryLooseSi->setProperty("ConfigFile",configFileVVLS);
+
+    StatusCode lhvl = m_LHToolVeryLoose->initialize();
+    StatusCode lhvvl = m_LHToolVeryVeryLoose->initialize();
+    StatusCode lhvvls = m_LHToolVeryVeryLooseSi->initialize();
+
+     if(lhvl.isFailure())
+      std::cout << "Very loose electron likelihood tool initialize() failed!" << std::endl;
+    if(lhvvl.isFailure())
+      std::cout << "Veryvery loose electron likelihood tool initialize() failed!" << std::endl;
+    if(lhvvls.isFailure())
+      std::cout << "Veryvery loose si electron likelihood tool initialize() failed!" << std::endl;
+
+
 }
 
 DHNLMiniTree::~DHNLMiniTree() {
@@ -72,6 +103,9 @@ void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::str
     m_tree->Branch((name + "index").c_str(), &m_electron_index);
     m_tree->Branch((name + "passesPromptCuts").c_str(), &m_electron_passesPromptCuts);
     m_tree->Branch((name + "passesDisplacedCuts").c_str(), &m_electron_passesDisplacedCuts);
+    m_tree->Branch((name + "isLHVeryLoose").c_str(), &m_electron_isVeryLoose);
+    m_tree->Branch((name + "isLHVeryLoose_mod1").c_str(), &m_electron_isVeryVeryLoose);
+    m_tree->Branch((name + "isLHVeryLoose_modSi").c_str(), &m_electron_isVeryVeryLooseSi);
     m_tree->Branch((name + "px").c_str(), &m_electron_px);
     m_tree->Branch((name + "py").c_str(), &m_electron_py);
     m_tree->Branch((name + "pz").c_str(), &m_electron_pz);
@@ -141,6 +175,23 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string &electronName) {
     (void) electronName; // suppress warning
+ 	
+    bool val_vloose(false),val_vvloose(false),val_vvloosesi(false);
+    val_vloose = (bool)m_LHToolVeryLoose->accept(electron);
+    val_vvloose = (bool)m_LHToolVeryVeryLoose->accept(electron);
+    val_vvloosesi = (bool)m_LHToolVeryVeryLooseSi->accept(electron);
+
+   if(val_vloose)
+      m_electron_isVeryLoose.push_back(val_vvloose);
+    else m_electron_isVeryLoose.push_back(false);
+
+   if(val_vvloose)
+      m_electron_isVeryVeryLoose.push_back(val_vvloose);
+    else m_electron_isVeryVeryLoose.push_back(false);
+
+   if(val_vvloosesi)
+      m_electron_isVeryVeryLooseSi.push_back(val_vvloosesi);
+    else m_electron_isVeryVeryLooseSi.push_back(false);
 
     if (electron->isAvailable<int>("index"))
         m_electron_index.push_back(electron->auxdecor<int>("index"));
@@ -198,6 +249,9 @@ void DHNLMiniTree::ClearElectronsUser(const std::string &electronName) {
     m_electron_index.clear();
     m_electron_passesPromptCuts.clear();
     m_electron_passesDisplacedCuts.clear();
+    m_electron_isVeryLoose.clear();
+    m_electron_isVeryVeryLoose.clear();
+    m_electron_isVeryVeryLooseSi.clear();
     m_electron_px.clear();
     m_electron_py.clear();
     m_electron_pz.clear();
