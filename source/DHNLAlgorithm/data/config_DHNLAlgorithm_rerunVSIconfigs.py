@@ -22,8 +22,8 @@ if o.rerunVSI_d0test:
 
 if o.rerunVSI_LRTR3test: 
     # VSI_Suffixes = ["_LRTR3","_LRTR3_wGeoCut"]
-    VSI_Suffixes = ["_d0min_1p0","_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
-
+    # VSI_Suffixes = ["_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
+    VSI_Suffixes = ["_LRTR3_0p0"]	
 secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
