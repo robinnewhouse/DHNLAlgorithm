@@ -222,6 +222,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
+            track->auxdecor<bool>("be_fromPV") = false;
         }
 
         // electron tracks
@@ -277,6 +278,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
+            track->auxdecor<bool>("be_fromPV") = false;
         }
 
         // non-lepton tracks
@@ -331,6 +333,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
+            track->auxdecor<bool>("be_fromPV") = false;
 
         }
     }
@@ -346,6 +349,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
         //eventInfo->auxdecor< int >( "NPV" ) = HelperFunctions::countPrimaryVertices(vertices, 2);
         // TMP for JetUncertainties uses the same variable
         eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
+    }
+
+    if(m_backgroundEstimationBranches){
+        // This logic is similar to https://gitlab.cern.ch/dtrischu/athena/-/blob/vrtSecInclusive-21.2-hnl/Reconstruction/VKalVrt/VrtSecInclusive/src/Utilities.cxx#L37 so we could later filter only tracks that are not from PV before shuffling
+        const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
+        if(primaryVertex){
+            for( size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++ ) {
+                auto* pvtrk = primaryVertex->trackParticle( iv );
+                pvtrk->auxdecor<bool>("be_fromPV") = true;
+            }
+        }
     }
 //    const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
 //    if (primaryVertex) {

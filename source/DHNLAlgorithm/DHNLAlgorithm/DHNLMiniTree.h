@@ -44,6 +44,7 @@ private:
     std::vector<std::uint32_t> m_track_runNumber;
     std::vector<int> m_track_type;
     std::vector<int> m_track_quality;
+    std::vector<bool> m_track_fromPV;
 
     std::vector<float_t> m_track_qOverP;
     std::vector<float_t> m_track_theta;
