@@ -7,6 +7,11 @@
 #include "DVAnalysisBase/SecondaryVertexContainer.h"
 #include "DVAnalysisBase/TruthVertexContainer.h"
 
+#include "xAODAnaHelpers/ParticlePIDManager.h"
+#include "EgammaAnalysisInterfaces/IAsgElectronLikelihoodTool.h"
+#include "ElectronPhotonSelectorTools/AsgElectronLikelihoodTool.h"
+
+
 class DHNLMiniTree : public HelpTreeBase {
 
 private:
@@ -34,12 +39,24 @@ private:
     std::vector<int> m_electron_index;
     std::vector<bool> m_electron_passesPromptCuts;
     std::vector<bool> m_electron_passesDisplacedCuts;
+    std::vector<bool> m_electron_isVeryLoose;
+    std::vector<bool> m_electron_isVeryVeryLoose;
+    std::vector<bool> m_electron_isVeryVeryLooseSi;
     std::vector<double> m_electron_px;
     std::vector<double> m_electron_py;
     std::vector<double> m_electron_pz;
     std::vector<double> m_electron_ptC30;
 
     float m_weight;
+
+
+    //Likelihood tools: */
+    
+    ElectronLHPIDManager*      m_el_LH_PIDManager = nullptr;        //!
+    AsgElectronLikelihoodTool* m_LHToolVeryLoose; //
+    AsgElectronLikelihoodTool* m_LHToolVeryVeryLoose; // 
+    AsgElectronLikelihoodTool* m_LHToolVeryVeryLooseSi; // 
+
 
 public:
     DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store = nullptr);
