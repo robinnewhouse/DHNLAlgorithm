@@ -23,7 +23,8 @@ if o.rerunVSI_d0test:
 if o.rerunVSI_LRTR3test: 
     # VSI_Suffixes = ["_LRTR3","_LRTR3_wGeoCut"]
     # VSI_Suffixes = ["_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
-    VSI_Suffixes = ["_LRTR3_0p0"]	
+    VSI_Suffixes = ["_LRTR3_1p0"]	
+
 secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
@@ -31,10 +32,13 @@ AugmentationVersionStrings = ["","_Leptons"]
 for suffix in VSI_Suffixes: 
     secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
     secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix)
     secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
     secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix)
     AugmentationVersionStrings.append(suffix)
     AugmentationVersionStrings.append("_Leptons" + suffix)
+    AugmentationVersionStrings.append("_LeptonsMod" + suffix)
 
 
 
