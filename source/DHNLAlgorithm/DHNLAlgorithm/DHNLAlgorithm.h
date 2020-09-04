@@ -53,12 +53,14 @@ public:
     bool m_truthLevelOnly;            // truthLevelOnly info
     bool m_backgroundEstimationBranches; // do we add branches required for background estimation
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
+    bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
 
 private:
 
     TH1D *m_cutflowHist;    //!
     TH1D *m_cutflowHistW;   //!
+    StatusCode eventSelection();
 
 public:
     // this is a standard constructor
@@ -77,6 +79,7 @@ ClassDef(DHNLAlgorithm, 1);
     const xAOD::Electron *matchTrackToElectron(const xAOD::TrackParticle *track, const xAOD::ElectronContainer *inElectrons);
 
     StatusCode calculateIsolation(const xAOD::TrackParticleContainer *tracks, const xAOD::Muon *muon) const;
+
 };
 
 

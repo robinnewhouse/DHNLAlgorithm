@@ -63,6 +63,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_truthLevelOnly = false;
     m_backgroundEstimationBranches = false;
     m_backgroundEstimationNoParticleData = false;
+    m_doInverseLeptonControlRegion = false;
     m_metCut = 0;
 
 }
@@ -74,6 +75,92 @@ EL::StatusCode DHNLAlgorithm::initialize() {
     // trees.  This method gets called before any input files are
     // connected.
     return EL::StatusCode::SUCCESS;
+}
+
+
+const double D0_CUT = 3.0;
+const double Z0_SIN_THETA_CUT = 0.5;
+
+EL::StatusCode DHNLAlgorithm::eventSelection() {
+
+  int nPromptMuons = 0;
+  int nPromptElectrons = 0;
+
+  if (m_doInverseLeptonControlRegion) {
+
+    ANA_MSG_DEBUG ("in eventSelection:m_doInverseLeptonControlRegion. Inspecting muons.");
+    const xAOD::MuonContainer *inMuons = nullptr;
+    ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
+    for (const xAOD::Muon *muon : *inMuons) {
+
+      // Check that a muon has at lest some quality
+      if (not(muon->quality() == xAOD::Muon_v1::Quality::Loose ||
+              muon->quality() == xAOD::Muon_v1::Quality::Medium ||
+              muon->quality() == xAOD::Muon_v1::Quality::Tight)) {
+        ANA_MSG_DEBUG ("Muon doesn't satisfy any quality. Ignore this muon.");
+        continue;
+      }
+      // 	check that the muon satisfies prompt lepton requirements
+      const xAOD::TrackParticle *muonPrimaryTrackParticle = muon->primaryTrackParticle();
+      if (muonPrimaryTrackParticle == nullptr) {
+        ANA_MSG_DEBUG ("Muon primary track particle not found. Ignore this muon.");
+        continue;
+      }
+      static SG::AuxElement::Accessor<float> z0sinthetaAcc("z0sintheta");
+      if (not z0sinthetaAcc.isAvailable(*muon)) {
+        ANA_MSG_DEBUG ("Muon z0sintheta not available. Ignore this muon.");
+        continue;
+      }
+      if ((abs(muonPrimaryTrackParticle->d0()) < D0_CUT) and
+          (abs(z0sinthetaAcc(*muon)) < Z0_SIN_THETA_CUT)) {
+        nPromptMuons++;
+        ANA_MSG_DEBUG ("Quality prompt muon found. The event is outside of the control region. Skipping.");
+        wk()->skipEvent();
+      }
+    } // for (const xAOD::Muon *muon : *inMuons)
+
+    ANA_MSG_DEBUG ("in eventSelection:m_doInverseLeptonControlRegion. Inspecting muons.");
+    const xAOD::ElectronContainer *inElectrons = nullptr;
+    ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
+    for (const xAOD::Electron *electron : *inElectrons) {
+
+      // Check that an electron has at lest some quality
+      // Quality checking is different than for muons. Of course.
+      bool passLHLoose = false;
+      bool passLHMedium = false;
+      bool passLHTight = false;
+      electron->passSelection(passLHLoose, "LHLoose");
+      electron->passSelection(passLHMedium, "LHMedium");
+      electron->passSelection(passLHTight, "LHTight");
+      if (not(passLHLoose || passLHMedium || passLHTight)) {
+        ANA_MSG_DEBUG ("Electron doesn't satisfy any quality. Ignore this electron.");
+        continue;
+      }
+      // 	check that the electron satisfies prompt lepton requirements
+      // This is how the track particle is retrieved in xAODAnaHelpers::ElectronContainer
+      const xAOD::TrackParticle *electronTrackParticle = electron->trackParticle();
+      if (electronTrackParticle == nullptr) {
+        ANA_MSG_DEBUG ("Electron track particle not found. Ignore this electron.");
+        continue;
+      }
+      static SG::AuxElement::Accessor<float> z0sinthetaAcc("z0sintheta");
+      if (not z0sinthetaAcc.isAvailable(*electron)) {
+        ANA_MSG_DEBUG ("Electron z0sintheta not available. Ignore this electron.");
+        continue;
+      }
+      if ((abs(electronTrackParticle->d0()) < D0_CUT) and
+          (abs(z0sinthetaAcc(*electron)) < Z0_SIN_THETA_CUT)) {
+        nPromptElectrons++;
+        ANA_MSG_DEBUG ("Quality prompt electron found. The event is outside of the control region. Skipping.");
+        wk()->skipEvent();
+      }
+    } // for (const xAOD::Electron *electron : *inElectrons)
+    ANA_MSG_DEBUG ("Prompt leptons with at least 'Loose' or 'LHLoose' quality found: " << nPromptMuons + nPromptElectrons);
+    ANA_MSG_DEBUG ("Event accepted for control region: ");
+  }
+
+  return EL::StatusCode::SUCCESS;
+
 }
 
 
@@ -92,6 +179,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     // print out run and event number from retrieved object
     ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+
+
+    ANA_CHECK(eventSelection());
 
     //////////////////// Store lepton information //////////////////////
 
