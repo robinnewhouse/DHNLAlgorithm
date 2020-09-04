@@ -50,12 +50,14 @@ public:
     float m_subleadingJetPtCut;          // Leading jet Pt cut
     uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
+    bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
 
 private:
 
     TH1D *m_cutflowHist;    //!
     TH1D *m_cutflowHistW;   //!
+    StatusCode eventSelection();
 
 public:
     // this is a standard constructor
@@ -74,6 +76,7 @@ ClassDef(DHNLAlgorithm, 1);
     const xAOD::Electron *matchTrackToElectron(const xAOD::TrackParticle *track, const xAOD::ElectronContainer *inElectrons);
 
     StatusCode calculateIsolation(const xAOD::TrackParticleContainer *tracks, const xAOD::Muon *muon) const;
+
 };
 
 
