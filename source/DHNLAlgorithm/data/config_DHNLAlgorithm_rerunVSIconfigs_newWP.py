@@ -23,23 +23,53 @@ if o.rerunVSI_d0test:
 if o.rerunVSI_LRTR3test: 
     # VSI_Suffixes = ["_LRTR3","_LRTR3_wGeoCut"]
     # VSI_Suffixes = ["_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
-    VSI_Suffixes = ["_LRTR3_1p0"]   
+    VSI_Suffixes = ["_LRTR3_1p0"]	
 
-secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
-secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
-AugmentationVersionStrings = ["","_Leptons"]
+# secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
+# secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
+# AugmentationVersionStrings = ["","_Leptons"]
+secondaryVertexContainerNames = []
+secondaryVertexBranchNames = []
+AugmentationVersionStrings = []
+AugmentationVersionStringList = []
 
-for suffix in VSI_Suffixes: 
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix)
-    AugmentationVersionStrings.append(suffix)
-    AugmentationVersionStrings.append("_Leptons" + suffix)
-    AugmentationVersionStrings.append("_LeptonsMod" + suffix)
+working_points = ["","_Tight", "_Medium"]
+for WP in working_points: 
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices"+ WP)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons"+ WP)
+    secondaryVertexBranchNames.append("secVtx_VSI"+ WP)
+    secondaryVertexBranchNames.append("secVtx_VSI_Leptons"+ WP)
+    AugmentationVersionStringList.append("") #no WP for the aug string becuase this goes to the input container!
+    AugmentationVersionStringList.append("_Leptons")
+    if WP == "": 
+        AugmentationVersionStrings.append("") #no WP for the aug string becuase this goes to the input container!
+        AugmentationVersionStrings.append("_Leptons")
 
+    for suffix in VSI_Suffixes: 
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix + WP)
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix + WP)
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix + WP)
+        secondaryVertexBranchNames.append("secVtx_VSI" + suffix + WP)
+        secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix + WP)
+        secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix + WP)
+        if WP == "":
+            AugmentationVersionStrings.append(suffix )
+            AugmentationVersionStrings.append("_Leptons" + suffix )
+            AugmentationVersionStrings.append("_LeptonsMod" + suffix)
+        AugmentationVersionStringList.append(suffix )
+        AugmentationVersionStringList.append("_Leptons" + suffix )
+        AugmentationVersionStringList.append("_LeptonsMod" + suffix)
+
+for i in range(len(secondaryVertexContainerNames)):
+    print (secondaryVertexContainerNames[i])
+print (len(secondaryVertexContainerNames))
+
+for i in range(len(AugmentationVersionStrings)):
+    print (AugmentationVersionStrings[i])
+print (len(AugmentationVersionStrings))
+
+
+# exit()
 
 
 
@@ -279,12 +309,68 @@ SecondaryVertexSelectorDict = {
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
 
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Selection & Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 
 for augstr in AugmentationVersionStrings: 
+    SecondaryVertexSelectorDict_Tight = {
+    "m_name"                 : "SecVtxSel_Tight"+ augstr,
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices"+ augstr, 
+    "m_outContainerName"     : "VrtSecInclusive_SecondaryVertices"+ augstr+ "_Tight",
+    #----------------------- Material Veto -----------------------------#
+    "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
+    "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
+    #---------------------- Selections ---------------------------#
+    "m_do_trackTrimming"     : True,
+    "m_do_matMapVeto"        : True,
+    "m_bonsaiName"           : "Tight",
+    "prop_trimLRT"           : False,
+    "prop_chi2Cut"           : 5.0,
+    "prop_d0_wrtSVCut"       : 0.1,
+    "prop_z0_wrtSVCut"       : 0.4,
+    "prop_errd0_wrtSVCut"    : 0.01,
+    "prop_errz0_wrtSVCut"    : 0.04,
+    "prop_d0signif_wrtSVCut" : 999999,
+    "prop_z0signif_wrtSVCut" : 999999,
+    "prop_chi2_toSVCut"      : 999999,
+    "prop_doDropAssociated"  : False,
+    #------------------------ Other ------------------------------#
+    "m_msgLevel"             : "Debug",
+    }
+
+    SecondaryVertexSelectorDict_Medium = {
+        "m_name"                 : "SecVtxSel_Medium"+ augstr,
+        #----------------------- Container Flow ----------------------------#
+        "m_inContainerName"           : "VrtSecInclusive_SecondaryVertices"+ augstr,
+        "m_outContainerName"          : "VrtSecInclusive_SecondaryVertices" + augstr + "_Medium",
+        #----------------------- Material Veto -----------------------------#
+        "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
+        "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
+        #---------------------- Selections ---------------------------#
+        "m_do_trackTrimming"     : True,
+        "m_do_matMapVeto"        : True,
+        "m_bonsaiName"           : "Medium",
+        "prop_trimLRT"           : False,
+        "prop_chi2Cut"           : 5.0,
+        "prop_d0_wrtSVCut"       : 0.8,
+        "prop_z0_wrtSVCut"       : 1.2,
+        "prop_errd0_wrtSVCut"    : 0.1,
+        "prop_errz0_wrtSVCut"    : 0.2,
+        "prop_d0signif_wrtSVCut" : 999999,
+        "prop_z0signif_wrtSVCut" : 999999,
+        "prop_chi2_toSVCut"      : 999999,
+        "prop_doDropAssociated"  : False,
+        #------------------------ Other ------------------------------#
+        "m_msgLevel"             : "Info",
+    }
+
+    c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict_Tight )
+    c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict_Medium )
 
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,
@@ -295,9 +381,42 @@ for augstr in AugmentationVersionStrings:
         "m_inElContainerName"               : "Electrons",
          "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
         #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
+        "m_msgLevel"             : "Info"
     }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
+
+    Dict_VertexMatcherMedium = {
+        "m_name"                           : "VertexMatch"+ augstr +"_Medium",
+        "m_msgLevel"                       : "Info",
+        "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + augstr + "_Medium",   # --> use selected vertices
+        #------------------------ Lepton Matching ------------------------------#
+        "m_doLeptons"                       : True,
+        "m_inMuContainerName"               : "Muons",
+        "m_inElContainerName"               : "Electrons",
+        "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
+        #------------------------ Other ------------------------------#
+        "m_bonsaiName"                     : "Medium",
+        "m_msgLevel"             : "Info"
+    }
+
+    Dict_VertexMatcherTight = {
+        "m_name"                           : "VertexMatch"+ augstr+ "_Tight",
+        "m_msgLevel"                       : "Info",
+        "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices" + augstr + "_Tight",   # --> use selected vertices
+        #------------------------ Lepton Matching ------------------------------#
+        "m_doLeptons"                       : True,
+        "m_inMuContainerName"               : "Muons",
+        "m_inElContainerName"               : "Electrons",
+        "m_VSILepmatch"                     : True if "Leptons" in augstr else False,
+        #------------------------ Other ------------------------------#
+        "m_bonsaiName"                     : "Tight",
+        "m_msgLevel"             : "Info"
+    }
+
+    c.algorithm ( "VertexMatcher",  Dict_VertexMatcher   )
+    c.algorithm ( "VertexMatcher",  Dict_VertexMatcherMedium   )
+    c.algorithm ( "VertexMatcher",  Dict_VertexMatcherTight   )
+
+
 
 if o.altVSIstr != "None":
     Dict_VertexMatcher_Alt = {
@@ -375,7 +494,7 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
-    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
+    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStringList),
     "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
@@ -394,7 +513,7 @@ DHNLNtupleDict = {
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Info",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )
