@@ -9,5 +9,5 @@ xAH_run.py \
 --submitDir testRun \
 --force \
 --isMC \
---nevents=10 \
+--nevents=100 \
 direct
