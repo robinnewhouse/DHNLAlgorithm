@@ -31,7 +31,7 @@ build_code:
     expire_in: 1 day
 
 build_image:
-  stage: build
+  stage: package
   dependencies:
     - build_code
   variables:
