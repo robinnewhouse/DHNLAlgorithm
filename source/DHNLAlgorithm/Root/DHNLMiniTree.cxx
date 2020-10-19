@@ -82,38 +82,21 @@ void DHNLMiniTree::AddTracksUser(const std::string &detailStr, const std::string
     (void) detailStr; // suppress warning
 
     std::string name = trkName + "_";
-    m_tree->Branch((name+ "toSave").c_str(), &m_track_toSave);
-    m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
-    m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
+    m_tree->Branch((name + "toSave").c_str(), &m_track_toSave);
     m_tree->Branch((name + "type").c_str(), &m_track_type);
     m_tree->Branch((name + "quality").c_str(), &m_track_quality);
+    m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
+    m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
-
-    m_tree->Branch((name+ "qOverP").c_str(), &m_track_qOverP);
-    m_tree->Branch((name+ "theta").c_str(), &m_track_theta);
-    m_tree->Branch((name+ "phi").c_str(), &m_track_phi);
-    m_tree->Branch((name+ "d0").c_str(), &m_track_d0);
-    m_tree->Branch((name+ "z0").c_str(), &m_track_z0);
-
-    m_tree->Branch((name+ "definingParametersCovMatrixVec").c_str(), &m_track_definingParametersCovMatrixVec);
 
     m_tree->Branch((name+ "vx").c_str(), &m_track_vx);
     m_tree->Branch((name+ "vy").c_str(), &m_track_vy);
-    m_tree->Branch((name+ "vz").c_str(), &m_track_vz);
 
     m_tree->Branch((name+ "beamlineTiltX").c_str(), &m_track_beamlineTiltX);
     m_tree->Branch((name+ "beamlineTiltY").c_str(), &m_track_beamlineTiltY);
 
-    m_tree->Branch((name+ "numberDoF").c_str(), &m_track_numberDoF);
-    m_tree->Branch((name+ "chiSquared").c_str(), &m_track_chiSquared);
-    m_tree->Branch((name+ "PixelHits").c_str(), &m_track_PixelHits);
-    m_tree->Branch((name+ "SCTHits").c_str(), &m_track_SCTHits);
-    m_tree->Branch((name+ "BLayHits").c_str(), &m_track_BLayHits);
-    m_tree->Branch((name+ "PixShare").c_str(), &m_track_PixShare);
-    m_tree->Branch((name+ "SCTShare").c_str(), &m_track_SCTShare);
-    m_tree->Branch((name+ "TRTHits").c_str(), &m_track_TRTHits);
-
     m_tree->Branch((name+ "hitPattern").c_str(), &m_track_hitPattern);
+
     m_tree->Branch((name+ "px").c_str(), &m_track_px);
     m_tree->Branch((name+ "py").c_str(), &m_track_py);
     m_tree->Branch((name+ "pz").c_str(), &m_track_pz);
@@ -333,51 +316,18 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     if (track->isAvailable<bool>("be_fromPV"))
         m_track_fromPV.push_back(track->auxdecor<bool>("be_fromPV"));
     
-    // Track details
-
-    if (track->isAvailable<float_t>("be_qOverP"))
-        m_track_qOverP.push_back(track->auxdecor<float_t>("be_qOverP"));
-    if (track->isAvailable<float_t>("be_theta"))
-        m_track_theta.push_back(track->auxdecor<float_t>("be_theta"));
-    if (track->isAvailable<float_t>("be_phi"))
-        m_track_phi.push_back(track->auxdecor<float_t>("be_phi"));
-    if (track->isAvailable<float_t>("be_d0"))
-        m_track_d0.push_back(track->auxdecor<float_t>("be_d0"));
-    if (track->isAvailable<float_t>("be_z0"))
-        m_track_z0.push_back(track->auxdecor<float_t>("be_z0"));
-
-    if (track->isAvailable<std::vector< float >>("be_definingParametersCovMatrixVec"))
-        m_track_definingParametersCovMatrixVec.push_back(track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec"));
+    // Missing track details
 
     if (track->isAvailable<float_t>("be_vx"))
         m_track_vx.push_back(track->auxdecor<float_t>("be_vx"));
     if (track->isAvailable<float_t>("be_vy"))
         m_track_vy.push_back(track->auxdecor<float_t>("be_vy"));
-    if (track->isAvailable<float_t>("be_vz"))
-        m_track_vz.push_back(track->auxdecor<float_t>("be_vz"));
 
     if (track->isAvailable<float_t>("be_beamlineTiltX"))
         m_track_beamlineTiltX.push_back(track->auxdecor<float_t>("be_beamlineTiltX"));
     if (track->isAvailable<float_t>("be_beamlineTiltY"))
         m_track_beamlineTiltY.push_back(track->auxdecor<float_t>("be_beamlineTiltY"));
 
-    if (track->isAvailable<float_t>("be_numberDoF"))
-        m_track_numberDoF.push_back(track->auxdecor<float_t>("be_numberDoF"));
-    if (track->isAvailable<float_t>("be_chiSquared"))
-        m_track_chiSquared.push_back(track->auxdecor<float_t>("be_chiSquared"));
-
-    if (track->isAvailable<uint8_t>("be_PixelHits"))
-        m_track_PixelHits.push_back(track->auxdecor<uint8_t>("be_PixelHits"));
-    if (track->isAvailable<uint8_t>("be_SCTHits"))
-        m_track_SCTHits.push_back(track->auxdecor<uint8_t>("be_SCTHits"));
-    if (track->isAvailable<uint8_t>("be_BLayHits"))
-        m_track_BLayHits.push_back(track->auxdecor<uint8_t>("be_BLayHits"));
-    if (track->isAvailable<uint8_t>("be_PixShare"))
-        m_track_PixShare.push_back(track->auxdecor<uint8_t>("be_PixShare"));
-    if (track->isAvailable<uint8_t>("be_SCTShare"))
-        m_track_SCTShare.push_back(track->auxdecor<uint8_t>("be_SCTShare"));
-    if (track->isAvailable<uint8_t>("be_TRTHits"))
-        m_track_TRTHits.push_back(track->auxdecor<uint8_t>("be_TRTHits"));
 
     if (track->isAvailable<uint32_t>("be_hitPattern"))
         m_track_hitPattern.push_back(track->auxdecor<uint32_t>("be_hitPattern"));
@@ -402,34 +352,16 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
 
-    m_track_qOverP.clear();
-    m_track_theta.clear();
-    m_track_phi.clear();
-    m_track_d0.clear();
-    m_track_z0.clear();
-
-    m_track_definingParametersCovMatrixVec.clear();
-
-    m_track_vx.clear();
     m_track_vy.clear();
     m_track_vz.clear();
 
     m_track_beamlineTiltX.clear();
     m_track_beamlineTiltY.clear();
 
-    m_track_numberDoF.clear();
-    m_track_chiSquared.clear();
-    m_track_PixelHits.clear();
-    m_track_SCTHits.clear();
-    m_track_BLayHits.clear();
-    m_track_PixShare.clear();
-    m_track_SCTShare.clear();
-    m_track_TRTHits.clear();
-
     m_track_hitPattern.clear();
+
     m_track_px.clear();
     m_track_py.clear();
     m_track_pz.clear();
     m_track_e.clear();
-
 }

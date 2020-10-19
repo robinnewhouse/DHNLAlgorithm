@@ -301,7 +301,7 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
     if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
     if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr);
+    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
