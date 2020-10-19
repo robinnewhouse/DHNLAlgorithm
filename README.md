@@ -76,6 +76,11 @@ xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files
 ```
 Note: We have been running jobs successfully on the grid, but some settings may not have yet been tested. We would appreciate any feedback you have.
 
+#### Useful flags
+There are several flags that can be used in addition to the example above which control xAODAnaHelpers behaviour. The full list can be found in the [xADOAnaHelpers Documentation](https://xaodanahelpers.readthedocs.io/en/latest/UsingUs.html#optional).
+
+A very useful flag for running smaller tests is `--nevents <X>` which completes the event loop after running `<X>` events.
+
 
 ## Additional Notes
 ### Migration from NTupleMaker

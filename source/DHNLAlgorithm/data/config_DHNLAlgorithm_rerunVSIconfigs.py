@@ -8,16 +8,39 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+parser.add_argument('--rerunVSI_d0test', dest='rerunVSI_d0test', action="store_true", default=False)
+parser.add_argument('--rerunVSI_LRTR3test', dest='rerunVSI_LRTR3test', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
 
 
-# vertex container information (by default run VSI & VSI Leptons)
+# vertex container information 
+if o.rerunVSI_d0test:
+    VSI_Suffixes = ["_d0min_2p0","_d0min_1p5","_d0min_1p0","_d0min_0p5","_d0min_1p0"]
+
+if o.rerunVSI_LRTR3test: 
+    # VSI_Suffixes = ["_LRTR3","_LRTR3_wGeoCut"]
+    # VSI_Suffixes = ["_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
+    VSI_Suffixes = ["_LRTR3_1p0"]   
+
 secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
+
+for suffix in VSI_Suffixes: 
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
+    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
+    secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix)
+    AugmentationVersionStrings.append(suffix)
+    AugmentationVersionStrings.append("_Leptons" + suffix)
+    AugmentationVersionStrings.append("_LeptonsMod" + suffix)
+
+
 
 
 # Good Run Lists
@@ -74,7 +97,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : True,
+    "m_applyTriggerCut"           : False,
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -308,8 +331,8 @@ TruthVertexSelectorDict = {
 
 }
 
-# if args.is_MC:
-#     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
+if args.is_MC:
+    c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -332,10 +355,9 @@ DHNLDict = {
     "m_jetMultiplicity"         : 2,
     "m_useMCPileupCheck"        : False,
     "m_metCut"                  : 20000,
-    "m_doInverseLeptonControlRegion"   : False,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -358,7 +380,7 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
-    "m_truthVertexContainerName"     : "TruthVertices",
+    "m_truthVertexContainerName"     : "SelectedTruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
