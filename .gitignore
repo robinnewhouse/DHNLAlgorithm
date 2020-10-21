@@ -2,3 +2,5 @@ run/
 build/
 .asetup.save
 .idea/
+tests/*pdf
+tests/*root
