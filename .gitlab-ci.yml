@@ -62,18 +62,18 @@ run_DHNLAlgorithm:
       - scripts/testRun
     expire_in: 1 week
 
-tests: 
+run_tests: 
   stage: test
   dependencies: 
     - run_DHNLAlgorithm
-  image: "rootproject/root-conda:6.18.04"
+  image: rootproject/root-conda:6.18.04
   script: 
-    - "cd tests"
-    - "python histograms.py \"scripts/testRun/data-tree/data.root\" \"hists.root\""
-    - "mkdir plots"
-    - "python plots.py \"hists.root\" \"plots\""
+    - cd tests
+    - python histograms.py /scripts/testRun/data-tree/files.root hists.root
+    - mkdir plots
+    - python plots.py hists.root plots
   artifacts: 
     paths: 
       - tests/hists.root
       - tests/plots
-    expire_in: "1 week"
+    expire_in: 1 week
