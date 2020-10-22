@@ -69,7 +69,7 @@ run_tests:
   image: rootproject/root-conda:6.18.04
   script: 
     - cd tests
-    - python histograms.py /scripts/testRun/data-tree/files.root hists.root
+    - python histograms.py scripts/testRun/data-tree/files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
   artifacts: 
