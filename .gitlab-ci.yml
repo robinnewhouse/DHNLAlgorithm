@@ -68,7 +68,12 @@ run_tests:
     - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
   script: 
-    - python histograms.py scripts/testRun/data-tree/files.root hists.root
+    - pwd
+    - ls
+    - cd tests
+    - pwd
+    - ls
+    - python histograms.py ../scripts/testRun/data-tree/files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
   artifacts: 
