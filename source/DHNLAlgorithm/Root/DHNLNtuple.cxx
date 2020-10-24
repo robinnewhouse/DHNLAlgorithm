@@ -231,8 +231,37 @@ EL::StatusCode DHNLNtuple::execute() {
 //    if (doCutflow)
 //        DHNLFunctions::passCut(m_cutflowHist, m_cutflowHistW, m_iCutflow, m_mcEventWeight); //TriggerEfficiency
 
+    string m_inputAlgo = "";
+    if( m_inputAlgo == "" ) {
+      // executeAnalysis
+      ANA_MSG_INFO("IMPLEMENT FILL TREE. m_inputAlgo = " << m_inputAlgo);
+    }
+    else { // get the list of systematics to run over
+  
+      // get vector of strings giving the names
+      std::vector<std::string>* systNames = nullptr;
+      if ( m_store->contains< std::vector<std::string> >( m_inputAlgo ) )
+      {
+        if(!m_store->retrieve( systNames, m_inputAlgo ).isSuccess())
+        {
+          ANA_MSG_INFO("Cannot find vector from " << m_inputAlgo);
+          return StatusCode::FAILURE;
+        }
+      }
+  
+      for( auto systName : *systNames ) {
+        ANA_MSG_DEBUG("execute() : Systematic Loop " << systName);
 
-    std::string systName; // This is a placeholder to be modified when we start doing the analysis with systematics
+        ANA_MSG_INFO("IMPLEMENT FILL TREE. m_inputAlgo = " << m_inputAlgo);
+      }
+  
+    }
+
+  return EL::StatusCode::SUCCESS;
+
+
+
+  std::string systName; // This is a placeholder to be modified when we start doing the analysis with systematics
     if (m_myTrees.find(systName) == m_myTrees.end()) { AddTree(systName); } // Get tree or make a new one
 
     ANA_MSG_DEBUG("execute() : Get Containers");

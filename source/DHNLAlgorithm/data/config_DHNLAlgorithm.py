@@ -6,6 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--runAllSyst', dest='runAllSyst', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
@@ -76,25 +77,32 @@ lumicalcs = ",".join(lumicalcList)
 basicEventSelectionDict = {
     "m_name"                      : "BasicEventSelect",
     "m_applyGRLCut"               : not args.is_MC,
+    #-------------------------- GRL --------------------------------------#
     "m_GRLxml"                    : GRL,
-    #"m_derivationName"            : "SUSY15Kernel_skim",
-    "m_useMetaData"               : True,
+    #-------------------------- Derivation -------------------------------#
+    "m_derivationName"            : "SUSY15Kernel_skim",
+    #-------------------------- PRW --------------------------------------#
+    "m_doPUreweighting"           : False if o.noPRW else True,
+    "m_PRWFileNames"              : PRW,
+    "m_lumiCalcFileNames"         : lumicalcs,
+    "m_autoconfigPRW"             : False,
+    #-------------------------- Trigger ----------------------------------#
+    "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
     "m_storePassHLT"              : True,
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
     "m_applyTriggerCut"           : not args.is_MC,
-    "m_doPUreweighting"           : False if o.noPRW else True,
-    "m_PRWFileNames"              : PRW,
-    "m_lumiCalcFileNames"         : lumicalcs,
-    "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
+    #---------------------------- Cuts ----------------------------------#
     "m_checkDuplicatesData"       : False,
+    # "m_applyGRLCut"               : True,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
     "m_applyPrimaryVertexCut"     : True,
     "m_PVNTrack"                    : 2,
+    #---------------------------- Other ---------------------------------#
+    "m_useMetaData"               : True,
     "m_msgLevel"                  : "Info",
 }
 
@@ -138,8 +146,9 @@ MuonCalibratorDict = {
     "m_inContainerName"           : "Muons",
     "m_outContainerName"          : "Muons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",
-    "m_systVal"                   : 0,
+    "m_systName"                  : "All" if o.runAllSyst else "",
+    "m_systVal"                   : 1.0,
+    "m_outputAlgoSystNames"       : "MuonCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_forceDataCalib"            : False,
     "m_sort"                      : True,
@@ -158,8 +167,8 @@ MuonSelectorDict = {
     "m_outContainerName"          : "Muons_Signal",
     "m_createSelectedContainer"   : True,
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",        ## Data
-    "m_systVal"                   : 0,
+    "m_inputAlgoSystNames"        : "MuonCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "MuonSelector_Syst",
     #----------------------- configurable cuts ----------------------------#
     "m_muonQualityStr"            : "VeryLoose",
     "m_pass_max"                  : -1,
