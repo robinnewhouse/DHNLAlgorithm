@@ -112,6 +112,34 @@ void DHNLMiniTree::AddElectronsUser(const std::string &detailStr, const std::str
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
 }
 
+void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &detailStr) {
+    (void) detailStr; // suppress warning
+
+    std::string name = trkName + "_";
+    m_tree->Branch((name + "toSave").c_str(), &m_track_toSave);
+    m_tree->Branch((name + "type").c_str(), &m_track_type);
+    m_tree->Branch((name + "quality").c_str(), &m_track_quality);
+    m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
+    m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
+    m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
+
+    m_tree->Branch((name+ "vx").c_str(), &m_track_vx);
+    m_tree->Branch((name+ "vy").c_str(), &m_track_vy);
+
+    m_tree->Branch((name+ "beamlineTiltX").c_str(), &m_track_beamlineTiltX);
+    m_tree->Branch((name+ "beamlineTiltY").c_str(), &m_track_beamlineTiltY);
+
+    m_tree->Branch((name+ "hitPattern").c_str(), &m_track_hitPattern);
+
+    m_tree->Branch((name+ "px").c_str(), &m_track_px);
+    m_tree->Branch((name+ "py").c_str(), &m_track_py);
+    m_tree->Branch((name+ "pz").c_str(), &m_track_pz);
+    m_tree->Branch((name+ "e").c_str(), &m_track_e);
+
+//    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
+}
+
+
 /////////////////// Assign values to defined event variables here ////////////////////////
 void DHNLMiniTree::FillEventUser(const xAOD::EventInfo *eventInfo) {
     // Event level info
@@ -316,4 +344,78 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->clear();
+}
+
+
+//////////////////// TRACKS (USED FOR BACKGROUND ESTIMATION) //////////////////////////////////////////
+
+void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
+    (void) trackName; // suppress warning
+
+    if (track->isAvailable<bool>("be_toSave"))
+        m_track_toSave.push_back(track->auxdecor<bool>("be_toSave"));
+
+    if (track->isAvailable<int>("be_type"))
+        m_track_type.push_back(track->auxdecor<int>("be_type"));
+
+    if (track->isAvailable<int>("be_quality"))
+        m_track_quality.push_back(track->auxdecor<int>("be_quality"));
+
+    if (track->isAvailable<uint32_t>("be_runNumber"))
+        m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
+
+    if (track->isAvailable<unsigned long long>("be_eventNumber"))
+        m_track_eventNumber.push_back(track->auxdecor<unsigned long long>("be_eventNumber"));
+
+    if (track->isAvailable<bool>("be_fromPV"))
+        m_track_fromPV.push_back(track->auxdecor<bool>("be_fromPV"));
+    
+    // Missing track details
+
+    if (track->isAvailable<float_t>("be_vx"))
+        m_track_vx.push_back(track->auxdecor<float_t>("be_vx"));
+    if (track->isAvailable<float_t>("be_vy"))
+        m_track_vy.push_back(track->auxdecor<float_t>("be_vy"));
+
+    if (track->isAvailable<float_t>("be_beamlineTiltX"))
+        m_track_beamlineTiltX.push_back(track->auxdecor<float_t>("be_beamlineTiltX"));
+    if (track->isAvailable<float_t>("be_beamlineTiltY"))
+        m_track_beamlineTiltY.push_back(track->auxdecor<float_t>("be_beamlineTiltY"));
+
+
+    if (track->isAvailable<uint32_t>("be_hitPattern"))
+        m_track_hitPattern.push_back(track->auxdecor<uint32_t>("be_hitPattern"));
+    
+    if (track->isAvailable<Double_t>("be_px"))
+        m_track_px.push_back(track->auxdecor<Double_t>("be_px"));
+    if (track->isAvailable<Double_t>("be_py"))
+        m_track_py.push_back(track->auxdecor<Double_t>("be_py"));
+    if (track->isAvailable<Double_t>("be_pz"))
+        m_track_pz.push_back(track->auxdecor<Double_t>("be_pz"));
+    if (track->isAvailable<Double_t>("be_e"))
+        m_track_e.push_back(track->auxdecor<Double_t>("be_e"));
+
+}
+
+void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
+    (void) trackName; // suppress warning
+    m_track_toSave.clear();
+    m_track_type.clear();
+    m_track_quality.clear();
+    m_track_runNumber.clear();
+    m_track_eventNumber.clear();
+    m_track_fromPV.clear();
+
+    m_track_vy.clear();
+    m_track_vz.clear();
+
+    m_track_beamlineTiltX.clear();
+    m_track_beamlineTiltY.clear();
+
+    m_track_hitPattern.clear();
+
+    m_track_px.clear();
+    m_track_py.clear();
+    m_track_pz.clear();
+    m_track_e.clear();
 }

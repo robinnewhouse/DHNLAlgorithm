@@ -42,6 +42,7 @@ public:
     std::string m_inMETTrkContainerName;  // input METTrk container name
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
+    std::string m_inDetTrackParticlesContainerName; // Track container
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
     std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
@@ -50,6 +51,8 @@ public:
     float m_subleadingJetPtCut;          // Leading jet Pt cut
     uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
+    bool m_backgroundEstimationBranches; // do we add branches required for background estimation
+    bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
 

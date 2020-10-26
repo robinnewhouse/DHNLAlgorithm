@@ -39,14 +39,14 @@ find_package( AnalysisBase )
 atlas_ctest_setup()
 
 # Set up a work directory project:
-atlas_project( WorkDir 21.2.90
-   USE AnalysisBase 21.2.90
+atlas_project( WorkDir 21.2.121
+   USE AnalysisBase 21.2.121
     )
 
 # Set up the runtime environment setup script(s):
 lcg_generate_env( SH_FILE ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh )
 install( FILES ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh
-   DESTINATION . )
+   DESTINATION .)
 
 # Set up CPack:
 atlas_cpack_setup()
