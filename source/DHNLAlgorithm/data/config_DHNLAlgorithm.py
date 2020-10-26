@@ -19,7 +19,6 @@ secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecIncl
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
 
-
 # Good Run Lists
 GRLList = [
     '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
@@ -74,7 +73,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : True,
+    "m_applyTriggerCut"           : False,
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,

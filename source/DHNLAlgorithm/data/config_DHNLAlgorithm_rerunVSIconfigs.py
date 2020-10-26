@@ -29,16 +29,20 @@ secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecIncl
 secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
 AugmentationVersionStrings = ["","_Leptons"]
 
-for suffix in VSI_Suffixes: 
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
-    secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
-    secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix)
-    AugmentationVersionStrings.append(suffix)
-    AugmentationVersionStrings.append("_Leptons" + suffix)
-    AugmentationVersionStrings.append("_LeptonsMod" + suffix)
+if o.rerunVSI_LRTR3test: 
+    for suffix in VSI_Suffixes: 
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices" + suffix)
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_Leptons" + suffix)
+        secondaryVertexContainerNames.append("VrtSecInclusive_SecondaryVertices_LeptonsMod" + suffix)
+        secondaryVertexBranchNames.append("secVtx_VSI" + suffix)
+        secondaryVertexBranchNames.append("secVtx_VSI_Leptons" + suffix)
+        secondaryVertexBranchNames.append("secVtx_VSI_LeptonsMod" + suffix)
+        AugmentationVersionStrings.append(suffix)
+        AugmentationVersionStrings.append("_Leptons" + suffix)
+        AugmentationVersionStrings.append("_LeptonsMod" + suffix)
+    
+        
+
 
 
 
@@ -134,8 +138,8 @@ DHNLFilterDict = {
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
-
+    "m_electronLHWP"              : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
+    "m_el1IDKey"                  :  "LHLoose", # if not o.isSUSY15 else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
     #----------------------- Other ----------------------------#
     "m_msgLevel"                : "Info",
 }
@@ -285,7 +289,6 @@ c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
 
 for augstr in AugmentationVersionStrings: 
-
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,
         "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
@@ -325,7 +328,7 @@ TruthVertexSelectorDict = {
     "m_outContainerName"          : "SelectedTruthVertices",
     "m_createSelectedContainer"   : True,
     #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "50, 24",
+    "m_pdgIdList"               : "50, 24 443", # HNL W J/Psi
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 
