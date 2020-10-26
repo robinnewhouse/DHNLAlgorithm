@@ -4,53 +4,52 @@ stages:
   - run
   - test
   
-# build_code:
-#   stage: build
-#   image: atlas/analysisbase:21.2.90
-#   variables:
-#     GIT_SUBMODULE_STRATEGY: recursive
-#   before_script:
-#     - source /home/atlas/release_setup.sh
-#     # Need to remove extra xAH from FactoryTools
-#     - cd source/DHNLAlgorithm/deps/DVAnalysisBase/
-#     - source util/dependencyHack.sh
-#     - cd ../../../../
-#     - mkdir build
-#     - cd build
-#   script:
-#     - cmake ../source/
-#     - cmake --build .
-#   after_script:
-#     - source "${AnalysisBase_PLATFORM}/setup.sh"
-# #   only:
-# #     changes:
-# #       - source
-#   artifacts:
-#     paths:
-#       - build
-#     expire_in: 1 day
+build_code:
+  stage: build
+  image: atlas/analysisbase:21.2.90
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - source /home/atlas/release_setup.sh
+    # Need to remove extra xAH from FactoryTools
+    - cd source/DHNLAlgorithm/deps/DVAnalysisBase/
+    - source util/dependencyHack.sh
+    - cd ../../../../
+    - mkdir build
+    - cd build
+  script:
+    - cmake ../source/
+    - cmake --build .
+  after_script:
+    - source "${AnalysisBase_PLATFORM}/setup.sh"
+#   only:
+#     changes:
+#       - source
+  artifacts:
+    paths:
+      - build
+    expire_in: 1 day
 
-# build_image:
-#   stage: package
-#   dependencies:
-#     - build_code
-#   variables:
-#     TO: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
-#     GIT_SUBMODULE_STRATEGY: recursive
-# #   only:
-# #     changes:
-# #       - source
-#   tags:
-#     - docker-image-build
-#   script:
-#     - ignore
+build_image:
+  stage: package
+  dependencies:
+    - build_code
+  variables:
+    TO: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+    GIT_SUBMODULE_STRATEGY: recursive
+#   only:
+#     changes:
+#       - source
+  tags:
+    - docker-image-build
+  script:
+    - ignore
     
 run_DHNLAlgorithm:
   stage: run
-#   dependencies:
-#     - build_image
- # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
-  image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:feature-add-ci-72841c16
+  dependencies:
+    - build_image
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
@@ -61,24 +60,4 @@ run_DHNLAlgorithm:
   artifacts:
     paths:
       - scripts/testRun
-    expire_in: 1 week
-
-run_tests: 
-  stage: test
-  dependencies: 
-    - run_DHNLAlgorithm
-  image: rootproject/root-conda:6.18.04
-  script: 
-    - pwd
-    - ls
-    - cd tests
-    - pwd
-    - ls
-    - python histograms.py ../scripts/testRun/data-tree/files.root hists.root
-    - mkdir plots
-    - python plots.py hists.root plots
-  artifacts: 
-    paths: 
-      - tests/hists.root
-      - tests/plots
     expire_in: 1 week
