@@ -292,6 +292,7 @@ for augstr in AugmentationVersionStrings:
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,
         "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
+        "m_doTruth"                         : True,
         #------------------------ Lepton Matching ------------------------------#
         "m_doLeptons"                       : True,
         "m_inMuContainerName"               : "Muons",
@@ -306,6 +307,7 @@ if o.altVSIstr != "None":
     Dict_VertexMatcher_Alt = {
         "m_name"                            : "VertexMatch"+o.altVSIstr ,
         "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr , 
+        "m_doTruth"                         : True,
         #------------------------ Lepton Matching ------------------------------#
         "m_doLeptons"                       : True,
         "m_inMuContainerName"               : "Muons",
