@@ -47,6 +47,28 @@ private:
     std::vector<double> m_electron_pz;
     std::vector<double> m_electron_ptC30;
 
+    std::vector<bool> m_track_toSave;
+    std::vector<unsigned long long> m_track_eventNumber;
+    std::vector<std::uint32_t> m_track_runNumber;
+    std::vector<int> m_track_type;
+    std::vector<int> m_track_quality;
+    std::vector<bool> m_track_fromPV;
+
+    std::vector<float_t> m_track_vx;
+    std::vector<float_t> m_track_vy;
+    std::vector<float_t> m_track_vz;
+
+    std::vector<float_t> m_track_beamlineTiltX;
+    std::vector<float_t> m_track_beamlineTiltY;
+
+    std::vector<uint32_t> m_track_hitPattern;
+
+    std::vector<Double_t> m_track_px;
+    std::vector<Double_t> m_track_py;
+    std::vector<Double_t> m_track_pz;
+    std::vector<Double_t> m_track_e;
+
+
     float m_weight;
 
 
@@ -97,6 +119,12 @@ public:
 
     void ClearSecondaryVerts(const std::string secVtxName = "secVtx");
 
+
+    void AddTracksUser(const std::string &detailStr, const std::string &trkName);
+
+    void FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName);
+
+    void ClearTracksUser(const std::string &trkName);
 protected:
     std::map<std::string, DVs::TruthVertexContainer *> m_truthVerts;
     std::map<std::string, DVs::SecondaryVertexContainer *> m_secVerts;

@@ -233,7 +233,8 @@ EL::StatusCode DHNLNtuple::execute() {
     ANA_MSG_DEBUG("execute() : Get Containers");
 
     const xAOD::EventInfo *eventInfo = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
+    if(not m_eventInfoContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
     if (eventInfo) { 
         m_myTrees[systName]->FillEvent(eventInfo, m_event);
         m_myTrees[systName]->FillTrigger(eventInfo);
@@ -247,7 +248,7 @@ EL::StatusCode DHNLNtuple::execute() {
     const xAOD::TrackParticleContainer *tracks = nullptr;
     if (not m_trackParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks(tracks); }
+    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
 
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty())
@@ -343,7 +344,7 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
     if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
     if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr);
+    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);

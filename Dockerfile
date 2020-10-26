@@ -1,4 +1,4 @@
-FROM atlas/analysisbase:21.2.90
+FROM atlas/analysisbase:21.2.121
 COPY --chown=atlas source /code/source
 RUN rm -rf /code/source/DHNLAlgorithm/deps/DVAnalysisBase/deps/FactoryTools/dep/ && \
     sudo mkdir /code/build && \
