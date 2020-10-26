@@ -6,7 +6,7 @@ stages:
   
 build_code:
   stage: build
-  image: atlas/analysisbase:21.2.90
+  image: atlas/analysisbase:21.2.121
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
