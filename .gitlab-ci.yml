@@ -1,6 +1,5 @@
 stages:
   - build
-  - package
   - run
   - test
   
@@ -31,9 +30,7 @@ build_code:
     expire_in: 1 day
 
 build_image:
-  stage: package
-  dependencies:
-    - build_code
+  stage: build
   variables:
     TO: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     GIT_SUBMODULE_STRATEGY: recursive
