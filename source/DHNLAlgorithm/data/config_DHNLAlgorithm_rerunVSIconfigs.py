@@ -221,6 +221,9 @@ c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+single_el_triggers = "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0,HLT_e300_etcut"
+single_el_triggers_minus_HLT_e300_etcut = "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0"
 ElectronSelectorDict = {
     "m_name"                      : "ElectronSelect",
     #----------------------- Container Flow ----------------------------#
@@ -243,7 +246,10 @@ ElectronSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0, HLT_e300_etcut",
+    # N.B. HLT_e300_etcut needs information that is currently missing from SUSY15 dont try to trigger match with this trigger! -DT
+    "m_singleElTrigChains"        : single_el_triggers if o.isSUSY15 else single_el_triggers_minus_HLT_e300_etcut,
+    
+   
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
