@@ -47,8 +47,8 @@ stages:
     
 run_DHNLAlgorithm:
   stage: run
-  dependencies:
-    - build_image
+  # dependencies:
+  #   - build_image
  # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:feature-add-ci-72841c16
   before_script:
