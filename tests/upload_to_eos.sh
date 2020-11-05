@@ -3,5 +3,5 @@ last_commit=$(git rev-parse --verify --short HEAD)
 uploaded_dir="tests_$last_commit"
 rsync -av -e ssh \
 --exclude='*.sh' --exclude='*.py'--exclude='*.txt' --exclude='*.swp' --exclude='*.pyc'  \
-../tests/ root://eosuser.cern.ch//eos/user/d/dhnl/ci-test-runs/tests_$last_commit
+../tests/ /eos/user/d/dhnl/ci-test-runs/tests_$last_commit
 
