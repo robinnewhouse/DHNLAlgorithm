@@ -73,7 +73,6 @@ run_tests:
     - python histograms.py testRun/data-tree/files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
-    - bash upload_to_eos.sh
   artifacts: 
     paths: 
       - tests/hists.root
