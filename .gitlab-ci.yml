@@ -55,11 +55,11 @@ run_DHNLAlgorithm:
   script:
     - source /release_setup.sh
     - source /code/build/*/setup.sh
-    - cd scripts
+    - cd tests 
     - bash test_run.sh
   artifacts:
     paths:
-      - scripts/testRun
+      - tests/testRun
     expire_in: 1 week
 
 run_tests: 
@@ -67,15 +67,14 @@ run_tests:
   dependencies: 
     - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
+  before_script:
+    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
-    - pwd
-    - ls
     - cd tests
-    - pwd
-    - ls
-    - python histograms.py ../scripts/testRun/data-tree/files.root hists.root
+    - python histograms.py testRun/data-tree/files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
+    - bash upload_to_eos.sh
   artifacts: 
     paths: 
       - tests/hists.root
