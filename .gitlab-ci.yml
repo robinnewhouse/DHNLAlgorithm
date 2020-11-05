@@ -3,7 +3,7 @@ stages:
   - package
   - run
   - test
-  
+  - upload  
 # build_code:
 #   stage: build
 #   image: atlas/analysisbase:21.2.90
@@ -47,8 +47,8 @@ stages:
     
 run_DHNLAlgorithm:
   stage: run
-  # dependencies:
-  #   - build_image
+  dependencies:
+    - build_image
  # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:feature-add-ci-72841c16
   before_script:
@@ -68,8 +68,6 @@ run_tests:
   dependencies: 
     - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
-  before_script:
-    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
     - cd tests
     - python histograms.py testRun/data-tree/files.root hists.root
@@ -81,3 +79,14 @@ run_tests:
       - tests/hists.root
       - tests/plots
     expire_in: 1 week
+
+upload_tests:
+  stage: upload
+  dependencies: 
+    - run_DHNLAlgorithm
+    - run_tests
+  before_script:
+    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
+  script:
+    - cd tests
+    - bash upload_to_eos.sh
