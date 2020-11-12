@@ -101,16 +101,17 @@ upload_tests:
 
 upload_tests2:
   stage: upload
-  image: cern/c8-base:latest
+  image: cern/slc6-base
   dependencies: 
     - run_DHNLAlgorithm
     - test_run
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
+    - yum install -y xrootd xrootd-client
   script:
     - compgen -c > c8-image-commands.txt
     - cd tests
-    #- bash upload_to_eos.sh
+    - bash upload_to_eos.sh
   artifacts:
     paths:
       - c8-image-commands.txt
