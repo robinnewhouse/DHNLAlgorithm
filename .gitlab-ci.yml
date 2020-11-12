@@ -63,7 +63,7 @@ run_DHNLAlgorithm:
       - tests/testRun
     expire_in: 1 week
 
-run_tests: 
+test_run: 
   stage: test
   dependencies: 
     - run_DHNLAlgorithm
@@ -87,5 +87,28 @@ upload_tests:
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
+    - compgen -c > default-image-commands.txt
     - cd tests
     - bash upload_to_eos.sh
+  artifacts:
+    paths:
+      - default-image-commands.txt
+    expire_in: 1 day
+      
+
+upload_tests2:
+  stage: upload
+  image: cern/c8-base:latest
+  dependencies: 
+    - run_DHNLAlgorithm
+    - run_tests
+  before_script:
+    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
+  script:
+    - compgen -c > c8-image-commands.txt
+    - cd tests
+    - bash upload_to_eos.sh
+  artifacts:
+    paths:
+      - c8-image-commands.txt
+    expire_in: 1 day
