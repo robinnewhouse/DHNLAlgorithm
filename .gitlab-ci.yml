@@ -89,7 +89,10 @@ upload_tests:
   script:
     - compgen -c > default-image-commands.txt
     - cd tests
-    - bash upload_to_eos.sh
+    - cd 
+    - pwd
+    - ls
+    #- bash upload_to_eos.sh
   artifacts:
     paths:
       - default-image-commands.txt
@@ -107,7 +110,7 @@ upload_tests2:
   script:
     - compgen -c > c8-image-commands.txt
     - cd tests
-    - bash upload_to_eos.sh
+    #- bash upload_to_eos.sh
   artifacts:
     paths:
       - c8-image-commands.txt
