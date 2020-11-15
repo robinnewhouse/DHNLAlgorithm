@@ -740,12 +740,48 @@ prw_files_cvmfs.extend(ttbar_pileup)
 
 import os.path
 dijet_pileup = [
-    # "/data/hnl/KShort/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.NTUP_PILEUP.e3668_s3126_r10848_r10706_p3384_p3385/NTUP_PILEUP.15780199._000001.pool.root.1",
-    # "/data/hnl/KShort/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.NTUP_PILEUP.e3668_s3126_r11568_r11319_p3604_p3605/NTUP_PILEUP.18800017._000002.pool.root.1",
-    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID361xxx/pileup_mc16a_dsid361024_FS.root",
-    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID361xxx/pileup_mc16d_dsid361024_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364700_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364701_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364702_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364703_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364704_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364705_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364706_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364707_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364708_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364709_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364710_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364711_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16a_dsid364712_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364700_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364701_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364702_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364703_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364704_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364705_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364706_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364707_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364708_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364709_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364710_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364711_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16d_dsid364712_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364700_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364701_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364702_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364703_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364704_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364705_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364706_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364707_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364708_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364709_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364710_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364711_FS.root",
+"/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID364xxx/pileup_mc16e_dsid364712_FS.root",
 ]
+
 for f in dijet_pileup:
     if os.path.isfile(f):
         prw_files_cvmfs.append(f)
-        prw_files_local.append(f)
+        # prw_files_local.append(f)
