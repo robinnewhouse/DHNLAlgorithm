@@ -5,3 +5,8 @@ build/
 tests/*pdf
 tests/*root
 *.sw?
+tests/__pycache__/
+notebooks/
+tests/plots
+tests/ /
+
