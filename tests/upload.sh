@@ -1,5 +1,4 @@
 #this script uploads results and files from ci tests and uploads them to eos
-cd tests
 echo "Uploading test run of current commit to eos"
 #removing unnecessary files 
 rm *.py
