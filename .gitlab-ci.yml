@@ -81,26 +81,6 @@ test_run:
 
 upload_tests:
   stage: upload
-  dependencies: 
-    - run_DHNLAlgorithm
-    - test_run 
-  before_script:
-    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
-  script:
-    - compgen -c > default-image-commands.txt
-    - cd tests
-    - cd 
-    - pwd
-    - ls
-    #- bash upload_to_eos.sh
-  artifacts:
-    paths:
-      - default-image-commands.txt
-    expire_in: 1 day
-      
-
-upload_tests2:
-  stage: upload
   image: cern/slc6-base
   dependencies: 
     - run_DHNLAlgorithm
@@ -109,10 +89,4 @@ upload_tests2:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
     - yum install -y xrootd xrootd-client
   script:
-    - compgen -c > c8-image-commands.txt
-    - cd tests
-    - bash upload_to_eos.sh
-  artifacts:
-    paths:
-      - c8-image-commands.txt
-    expire_in: 1 day
+    - bash upload.sh

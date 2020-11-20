@@ -4,3 +4,4 @@ build/
 .idea/
 tests/*pdf
 tests/*root
+*.sw?
