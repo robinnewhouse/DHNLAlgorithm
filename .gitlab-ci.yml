@@ -72,6 +72,7 @@ test_run:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
     - cd tests
+    - bash import_checkpoint.sh
     - xrdcp root://eosuser.cern.ch//eos/user/d/dhnl/ci-test-runs/tests_4cf84a5/testRun/data-tree/files.root .
     - python histograms.py files.root hists.root
     - mkdir plots

@@ -5,6 +5,7 @@ rm *.py
 rm *.sh
 rm *.pyc
 rm *.pw?
+rm *.txt
 #make a copy to upload to eos, labelled by git commit hash
 last_commit=$(git rev-parse --verify --short HEAD)
 upload_dir="tests_$last_commit"
