@@ -22,26 +22,33 @@ def writeHistogram(h, name):
     h.SetName(name)
     h.Write()
 
-def main(sample, output):
+def main(sample, reference, output):
     #create output file (and overwrite it if filename already exists)
     tfile = ROOT.TFile(output, "RECREATE")
     variables = ranges.keys()
-    
-    #load data (where outTree is name of df object and is arbirtary)
-    df = ROOT.ROOT.RDataFrame("outTree", sample)
-    
+
+    #load data (where outTree is name of df object and is arbirtary) 
+    #for some reason, outTree is not arbitary 25/11
+    df1 = ROOT.ROOT.RDataFrame("outTree", sample)
+    df2 = ROOT.ROOT.RDataFrame("outTree", reference)
+
     hists = {}
     for variable in variables:
-        #book histograms
-        hists[variable] = bookHistogram(df, variable, labels[variable], ranges[variable])
-        #write histograms
+        #book histograms for sample and reference
+        hists[variable] = bookHistogram(df1, variable, labels[variable], ranges[variable])
+        hists[variable + "_reference"] = bookHistogram(df2, variable, labels[variable], ranges[variable])
+
+        #write histograms for sample and reference
         writeHistogram(hists[variable], variable)
-    
+        writeHistogram(hists[variable + "_reference"], variable + "_reference")
+
     tfile.Close()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("sample", type=str, help="Full path to the inputed DHNL sample files")
+    parser.add_argument("reference", type=str, help="Full path to the inputed DHNL reference files to compare with sample")
     parser.add_argument("output", type=str, help="Name of outputed file with histograms")
     args = parser.parse_args()
     main(args.sample, args.output)
