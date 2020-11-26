@@ -51,4 +51,4 @@ if __name__ == "__main__":
     parser.add_argument("reference", type=str, help="Full path to the inputed DHNL reference files to compare with sample")
     parser.add_argument("output", type=str, help="Name of outputed file with histograms")
     args = parser.parse_args()
-    main(args.sample, args.output)
+    main(args.sample, args.reference, args.output)
