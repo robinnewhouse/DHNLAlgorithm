@@ -2,6 +2,7 @@ stages:
   - build
   - package
   - run
+  - histograms
   - test
   - upload  
 # build_code:
@@ -56,22 +57,22 @@ stages:
 #  script:
 #    - source /release_setup.sh
 #    - source /code/build/*/setup.sh
-#    - cd tests 
-#    - bash test_run.sh
+#    - cd ci
+#    - bash run.sh
 #  artifacts:
 #    paths:
-#      - tests/testRun
+#      - ci/testRun
 #    expire_in: 1 week
 
-test_run: 
-  stage: test
+histograms: 
+  stage: histograms
   dependencies: 
    # - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
-    - cd tests
+    - cd ci
     - bash import_checkpoint.sh
     - xrdcp root://eosuser.cern.ch//eos/user/d/dhnl/ci-test-runs/tests_checkpoint/testRun/data-tree/files.root .
     - python histograms.py files.root checkpoint_files.root hists.root
@@ -79,8 +80,8 @@ test_run:
     - python plots.py hists.root plots
   artifacts: 
     paths: 
-      - tests/hists.root
-      - tests/plots
+      - ci/hists.root
+      - ci/plots
     expire_in: 1 week
 
 upload_tests:
@@ -92,5 +93,5 @@ upload_tests:
   before_script:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
-    - cd tests
+    - cd ci
     - bash upload.sh
