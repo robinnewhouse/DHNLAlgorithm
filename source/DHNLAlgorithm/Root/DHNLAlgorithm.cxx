@@ -346,12 +346,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
 
-            // Decorate ID track with type and filter info.
-            track->auxdecor<float_t>("be_qOverP") = track->qOverP();
-            track->auxdecor<float_t>("be_theta")  = track->theta();
-            track->auxdecor<float_t>("be_phi")  = track->phi();
-            track->auxdecor<float_t>("be_d0")  = track->d0();
-            track->auxdecor<float_t>("be_z0")  = track->z0();
 
             track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
@@ -405,12 +399,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
             track->auxdecor<int>("be_quality") = -999;
 
-            // Decorate ID track with type and filter info.
-            track->auxdecor<float_t>("be_qOverP") = track->qOverP();
-            track->auxdecor<float_t>("be_theta")  = track->theta();
-            track->auxdecor<float_t>("be_phi")  = track->phi();
-            track->auxdecor<float_t>("be_d0")  = track->d0();
-            track->auxdecor<float_t>("be_z0")  = track->z0();
 
             track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
