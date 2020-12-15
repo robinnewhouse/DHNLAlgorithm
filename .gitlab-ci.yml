@@ -91,7 +91,7 @@ test_emptiness:
   image: rootproject/root-conda:6.18.04
   script:
     - cd ci/tests
-    - python test_emptiness ../hists.root
+    - python test_emptiness.py ../hists.root
 
 upload_tests:
   stage: upload
