@@ -90,7 +90,7 @@ test_emptiness:
     - histograms
   image: rootproject/root-conda:6.18.04
   script:
-    - cd ci/test
+    - cd ci/tests
     - python test_emptiness ../hists.root
 
 upload_tests:
