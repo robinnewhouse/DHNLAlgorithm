@@ -84,6 +84,15 @@ histograms:
       - ci/plots
     expire_in: 1 week
 
+test_emptiness:
+  stage: test
+  dependencies:
+    - histograms
+  image: rootproject/root-conda:6.18.04
+  script:
+    - cd ci/test
+    - python test_emptiness ../hists.root
+
 upload_tests:
   stage: upload
   dependencies: 
