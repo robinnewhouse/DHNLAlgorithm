@@ -1,10 +1,11 @@
 #ci test script to check if any of the histograms made were empty
 from ROOT import TFile
-from ..histogram import ranges #ranges is dict with dict_keys being variables that were histogrammed 
 
 def test_emptiness(hists):
     #read in the hists
     f = TFile(hists, "READ")
+    #obtain list of variables that were histogrammed
+    variables = [key.GetName() for key in f.GetListOfKeys()]
     #find (if any) the histograms that are empty
     variables = ranges.keys()
     empty_variables = [variable for variable in variables if sum(f.Get(variable))<=0]
