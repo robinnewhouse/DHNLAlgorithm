@@ -1,4 +1,5 @@
 #ci test script to check if any of the histograms made were empty
+import argparse
 from ROOT import TFile
 
 def test_emptiness(hists):
