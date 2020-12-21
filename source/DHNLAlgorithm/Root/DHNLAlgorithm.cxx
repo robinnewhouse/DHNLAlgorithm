@@ -254,6 +254,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if(m_backgroundEstimationBranches){
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
+            // susy15 derivation does not keep sufficient track information for SiliconAssociatedForwardMuon types
+            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) continue;
+
             const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
 
             if (track == nullptr) continue;
@@ -371,7 +374,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
         if(primaryVertex){
             for( size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++ ) {
                 auto* pvtrk = primaryVertex->trackParticle( iv );
-                pvtrk->auxdecor<bool>("be_fromPV") = true;
+                if (pvtrk)
+                    pvtrk->auxdecor<bool>("be_fromPV") = true;
             }
         }
     }
