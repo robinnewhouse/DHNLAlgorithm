@@ -15,6 +15,8 @@
 #include <xAODTruth/TruthVertex.h>
 #include "xAODTracking/TrackParticle.h"
 #include "xAODTracking/TrackParticlexAODHelpers.h"
+#include <PMGTools/PMGCrossSectionTool.h>
+#include <SampleHandler/MetaFields.h>
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODEgamma/ElectronxAODHelpers.h>
 
@@ -33,6 +35,7 @@ static float GeV = 1000.;
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(DHNLAlgorithm)
+
 
 DHNLAlgorithm::DHNLAlgorithm() :
         m_cutflowHist(nullptr),
@@ -74,7 +77,33 @@ EL::StatusCode DHNLAlgorithm::initialize() {
     // trees.  This method gets called before any input files are
     // connected.
 
-    // Calculate cross-section weight
+    m_event = wk()->xaodEvent();
+    m_store = wk()->xaodStore();
+    // m_eventCounter = -1;
+
+    const xAOD::EventInfo* eventInfo(nullptr);
+    ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
+
+    // if ( this->configure() == EL::StatusCode::FAILURE ) {
+    //     ANA_MSG_ERROR("initialize() : Failed to properly configure. Exiting." );
+    //     return EL::StatusCode::FAILURE;
+    // }
+
+    // m_truthLevelOnly is set in config so need to do this after configure is called
+    if( m_truthLevelOnly ) { m_isMC = true; }
+    else {
+        m_isMC = ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) ) ? true : false;
+    }
+
+    uint32_t dsid= m_isMC ? eventInfo->mcChannelNumber() : -1;
+
+    //
+    // x-sec tool
+    ANA_CHECK( ASG_MAKE_ANA_TOOL(m_PMGCrossSectionTool_handle, PMGTools::PMGCrossSectionTool) );
+    ANA_CHECK( m_PMGCrossSectionTool_handle.retrieve() );
+    m_PMGCrossSectionTool_handle->readInfosFromDir(PathResolverFindCalibDirectory("dev/PMGTools"));
+    std::vector<int> loadedDSIDs=m_PMGCrossSectionTool_handle->getLoadedDSIDs();
+    
     m_weight_xs = 1.;
     if (m_isMC) {
         double xs;
@@ -91,7 +120,7 @@ EL::StatusCode DHNLAlgorithm::initialize() {
         }
         m_weight_xs = xs * eff * kfactor;
     }
-    
+
     return EL::StatusCode::SUCCESS;
 }
 
@@ -137,7 +166,7 @@ EL::StatusCode DHNLAlgorithm::eventSelection() {
             }
         } // for (const xAOD::Muon *muon : *inMuons)
 
-        ANA_MSG_DEBUG ("in eventSelection:m_doInverseLeptonControlRegion. Inspecting muons.");
+        ANA_MSG_DEBUG ("in eventSelection:m_doInverseLeptonControlRegion. Inspecting electrons.");
         const xAOD::ElectronContainer *inElectrons = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
         for (const xAOD::Electron *electron : *inElectrons) {
@@ -188,8 +217,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     // histograms and trees.  This is where most of your actual analysis
     // code will go.
 
-    m_event = wk()->xaodEvent();
-    m_store = wk()->xaodStore();
+    ANA_MSG_DEBUG("execute() : Get Containers");
 
     // retrieve the eventInfo object from the event store
     const xAOD::EventInfo *eventInfo = nullptr;
@@ -197,6 +225,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     // print out run and event number from retrieved object
     ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    if (eventInfo->eventNumber() % 100 == 0)
+        ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Apply event selection including control region if requested //////////////////////
     ANA_CHECK(eventSelection());

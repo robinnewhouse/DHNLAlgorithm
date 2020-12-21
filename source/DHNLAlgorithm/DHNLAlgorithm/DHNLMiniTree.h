@@ -70,6 +70,7 @@ private:
 
 
     float m_weight;
+    float m_weight_xs;
 
 
     //Likelihood tools: */
