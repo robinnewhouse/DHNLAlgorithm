@@ -45,6 +45,8 @@ DHNLAlgorithm::DHNLAlgorithm() :
 
 
     ANA_MSG_INFO("DHNLAlgorithm() : Calling constructor");
+	
+
 
     m_inJetContainerName = "";
     m_inputAlgo = "";
@@ -52,6 +54,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
+    m_inVSIContainerName = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -191,7 +194,14 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::ElectronContainer *inElectrons = nullptr;
     if(!m_inElContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
-
+    
+    const xAOD::VertexContainer *inVSIVertices = nullptr;
+    if(!m_inVSIContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
+	
+	int MuonsPerEvent = 0;
+    int ElectronsPerEvent = 0;
+    
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
@@ -214,6 +224,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+		    MuonsPerEvent+=1;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
             if (not(m_inMuContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
@@ -241,6 +252,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
             electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
             electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+			ElectronsPerEvent+=1;
             if (not(m_inElContainerName == "Electrons")) {
                 electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
                 electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
@@ -250,7 +262,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     //////////////////// Store track information (for Background Estimation) //////////////////////
 
-    TLorentzVector p4;
+    TLorentzVector p4;    
     if(m_backgroundEstimationBranches){
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
@@ -283,7 +295,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
+        
+            //MuonsPerEvent+=1;
         }
+		
 
         // electron tracks
         for (const xAOD::Electron *electron : *inElectrons) {
@@ -316,6 +331,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
+        
+            //ElectronsPerEvent+=1;
         }
 
         // non-lepton tracks
@@ -349,8 +366,21 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
 
+        }   
+	}
+	if (inVSIVertices){
+        for (const xAOD::Vertex *vertex: *inVSIVertices){
+            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
+            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+            ANA_MSG_INFO ("Mouns per event is: ");
+			ANA_MSG_INFO (vertex->auxdecor<int>("Muons_Per_Event"));
+			//ANA_MSG_INFO ("Electron per event is: ");
+			//ANA_MSG_INFO (ElectronsPerEvent);
+			}
         }
-    }
+    	
+
+
     //////////////////// Store primary vertex information //////////////////////
 
     SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");

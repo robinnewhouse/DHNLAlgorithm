@@ -325,6 +325,7 @@ DHNLDict = {
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_inVSIContainerName"      : "VrtSecInclusive_SecondaryVertices",
     # "m_inMETContainerName"      : "MET",
     # "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
