@@ -1,5 +1,4 @@
 #include <DHNLAlgorithm/DHNLAlgorithm.h>
-#include <DHNLAlgorithm/DHNLTrackType.h>
 
 #include <EventLoop/Job.h>
 #include <EventLoop/Worker.h>
@@ -10,7 +9,7 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODMissingET/MissingETContainer.h"
-//#include <DHNLAlgorithm/DHNLFunctions.h>
+#include <DHNLAlgorithm/DHNLFunctions.h>
 #include "DVAnalysisBase/DVHelperFunctions.h"
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODTruth/TruthVertex.h>
@@ -46,14 +45,16 @@ DHNLAlgorithm::DHNLAlgorithm() :
 
 
     ANA_MSG_INFO("DHNLAlgorithm() : Calling constructor");
+	
+
 
     m_inJetContainerName = "";
     m_inputAlgo = "";
     m_allJetContainerName = "";
     m_allJetInputAlgo = "";
-    m_inVSIContainerName="";
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
+    m_inVSIContainerName = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -66,8 +67,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
     m_metCut = 0;
-    
-    
+
 }
 
 
@@ -194,10 +194,13 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::ElectronContainer *inElectrons = nullptr;
     if(!m_inElContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
-        
-    const xAOD::Vertex *vertex = nullptr;
-    if (!m_inVSIContainerName.empty())
-        ANA_CHECK(HelperFunctions::retrieve(vertex, m_inVSIContainerName, m_event, m_store, msg()));
+    
+    const xAOD::VertexContainer *inVSIVertices = nullptr;
+    if(!m_inVSIContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
+	
+	int MuonsPerEvent = 0;
+    int ElectronsPerEvent = 0;
     
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
@@ -213,7 +216,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::TrackParticleContainer *tracks = nullptr;
     if(!m_backgroundEstimationNoParticleData)
         ANA_CHECK (HelperFunctions::retrieve(tracks, m_inDetTrackParticlesContainerName, m_event, m_store));
-    
+
     if(inMuons){
         for (const xAOD::Muon *muon : *inMuons) {
             muon->auxdecor<int>("index") = muon->index();
@@ -221,6 +224,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+		    MuonsPerEvent+=1;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
             if (not(m_inMuContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
@@ -239,14 +243,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             if (muon->primaryTrackParticle()->isAvailable<unsigned long>("patternRecoInfo") )
                 muon->auxdecor<bool>("isLRT") = muon->primaryTrackParticle()->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0);
-            
-
-            
         }
     }
-    
-    
-    
 
     if(inElectrons){
         for (const xAOD::Electron *electron : *inElectrons) {
@@ -254,6 +252,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
             electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
             electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+			ElectronsPerEvent+=1;
             if (not(m_inElContainerName == "Electrons")) {
                 electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
                 electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
@@ -263,17 +262,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     //////////////////// Store track information (for Background Estimation) //////////////////////
 
-    uint8_t PixelHits = 0;
-    uint8_t SCTHits   = 0;
-    uint8_t BLayHits  = 0;
-    uint8_t PixShare  = 0;
-    uint8_t SCTShare  = 0;
-    uint8_t TRTHits   = 0;    
-    int MuonsPerEvent = 0;     //Counts of Muons per events
-    int ElectronsPerEvent = 0;     //Counts of Electrons per events
-
-    TLorentzVector p4;
-
+    TLorentzVector p4;    
     if(m_backgroundEstimationBranches){
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
@@ -286,39 +275,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
-            // Decorate ID track with type and filter info.
-            track->auxdecor<float_t>("be_qOverP") = track->qOverP();
-            track->auxdecor<float_t>("be_theta")  = track->theta();
-            track->auxdecor<float_t>("be_phi")  = track->phi();
-            track->auxdecor<float_t>("be_d0")  = track->d0();
-            track->auxdecor<float_t>("be_z0")  = track->z0();
 
             track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_vx")  = track->vx();
             track->auxdecor<float_t>("be_vy")  = track->vy();
-            track->auxdecor<float_t>("be_vz")  = track->vz();
 
             track->auxdecor<float_t>("be_beamlineTiltX")  = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY")  = track->beamlineTiltY();
 
-            track->auxdecor<float_t>("be_numberDoF") = track->numberDoF();
-            track->auxdecor<float_t>("be_chiSquared") = track->chiSquared();
-
-            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
-            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
-            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
-            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
-            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
-            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
-            track->auxdecor<uint8_t>("be_PixelHits") = PixelHits;
-            track->auxdecor<uint8_t>("be_SCTHits") = SCTHits;
-            track->auxdecor<uint8_t>("be_BLayHits") = BLayHits;
-            track->auxdecor<uint8_t>("be_PixShare") = PixShare;
-            track->auxdecor<uint8_t>("be_SCTShare") = SCTShare;
-            track->auxdecor<uint8_t>("be_TRTHits") = TRTHits;
-
             track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
+
             p4 = muon->p4();
             track->auxdecor<Double_t>("be_px") = p4.Px();
             track->auxdecor<Double_t>("be_py") = p4.Py();
@@ -328,11 +295,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
-            
-            MuonsPerEvent+=1    
-        }
         
-        vertex->auxdecorator<int>("NumofMuos") = MuonsPerEvent;
+            //MuonsPerEvent+=1;
+        }
+		
 
         // electron tracks
         for (const xAOD::Electron *electron : *inElectrons) {
@@ -346,33 +312,16 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
 
-
             track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_vx")  = track->vx();
             track->auxdecor<float_t>("be_vy")  = track->vy();
-            track->auxdecor<float_t>("be_vz")  = track->vz();
 
             track->auxdecor<float_t>("be_beamlineTiltX")  = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY")  = track->beamlineTiltY();
 
-            track->auxdecor<float_t>("be_numberDoF") = track->numberDoF();
-            track->auxdecor<float_t>("be_chiSquared") = track->chiSquared();
-
-            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
-            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
-            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
-            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
-            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
-            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
-            track->auxdecor<uint8_t>("be_PixelHits") = PixelHits;
-            track->auxdecor<uint8_t>("be_SCTHits") = SCTHits;
-            track->auxdecor<uint8_t>("be_BLayHits") = BLayHits;
-            track->auxdecor<uint8_t>("be_PixShare") = PixShare;
-            track->auxdecor<uint8_t>("be_SCTShare") = SCTShare;
-            track->auxdecor<uint8_t>("be_TRTHits") = TRTHits;
-
             track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
+
             p4 = electron->p4();
             track->auxdecor<Double_t>("be_px") = p4.Px();
             track->auxdecor<Double_t>("be_py") = p4.Py();
@@ -382,11 +331,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
-            
-            ElectronsPerEvent+=1;
-        }
         
-        vertex->auxdecorator<int>("NumofElectrons") = ElectronsPerEvent;
+            //ElectronsPerEvent+=1;
+        }
 
         // non-lepton tracks
         for (const xAOD::TrackParticle *track : *tracks) {
@@ -399,33 +346,16 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
             track->auxdecor<int>("be_quality") = -999;
 
-
             track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_vx")  = track->vx();
             track->auxdecor<float_t>("be_vy")  = track->vy();
-            track->auxdecor<float_t>("be_vz")  = track->vz();
 
             track->auxdecor<float_t>("be_beamlineTiltX")  = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY")  = track->beamlineTiltY();
 
-            track->auxdecor<float_t>("be_numberDoF") = track->numberDoF();
-            track->auxdecor<float_t>("be_chiSquared") = track->chiSquared();
-
-            if( !(track->summaryValue( PixelHits, xAOD::numberOfPixelHits               ) ) ) PixelHits =0;
-            if( !(track->summaryValue( SCTHits,   xAOD::numberOfSCTHits                 ) ) ) SCTHits   =0;
-            if( !(track->summaryValue( BLayHits,  xAOD::numberOfInnermostPixelLayerHits ) ) ) BLayHits  =0;
-            if( !(track->summaryValue( PixShare,  xAOD::numberOfPixelSharedHits         ) ) ) PixShare  =0;
-            if( !(track->summaryValue( SCTShare,  xAOD::numberOfSCTSharedHits           ) ) ) SCTShare  =0;
-            if( !(track->summaryValue( TRTHits,   xAOD::numberOfTRTHits                 ) ) ) TRTHits   =0;
-            track->auxdecor<uint8_t>("be_PixelHits") = PixelHits;
-            track->auxdecor<uint8_t>("be_SCTHits") = SCTHits;
-            track->auxdecor<uint8_t>("be_BLayHits") = BLayHits;
-            track->auxdecor<uint8_t>("be_PixShare") = PixShare;
-            track->auxdecor<uint8_t>("be_SCTShare") = SCTShare;
-            track->auxdecor<uint8_t>("be_TRTHits") = TRTHits;
-
             track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
+
             p4 = track->p4();
             track->auxdecor<Double_t>("be_px") = p4.Px();
             track->auxdecor<Double_t>("be_py") = p4.Py();
@@ -436,8 +366,21 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
 
+        }   
+	}
+	if (inVSIVertices){
+        for (const xAOD::Vertex *vertex: *inVSIVertices){
+            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
+            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+            ANA_MSG_INFO ("Mouns per event is: ");
+			ANA_MSG_INFO (vertex->auxdecor<int>("Muons_Per_Event"));
+			//ANA_MSG_INFO ("Electron per event is: ");
+			//ANA_MSG_INFO (ElectronsPerEvent);
+			}
         }
-    }
+    	
+
+
     //////////////////// Store primary vertex information //////////////////////
 
     SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
