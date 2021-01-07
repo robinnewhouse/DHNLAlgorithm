@@ -14,9 +14,14 @@ c = Config()
 
 
 # vertex container information (by default run VSI & VSI Leptons)
-secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod"]
-secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
-AugmentationVersionStrings = ["_LeptonsMod"]
+if o.isSUSY15:
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod"]
+    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
+    AugmentationVersionStrings = ["_LeptonsMod"]
+else:
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
+    secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
+    AugmentationVersionStrings = ["_Leptons"]
 
 # Good Run Lists
 # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
