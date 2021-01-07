@@ -324,6 +324,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
+            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();
@@ -355,6 +356,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
+            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();
@@ -385,6 +387,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
+            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
 
             track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
             track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();

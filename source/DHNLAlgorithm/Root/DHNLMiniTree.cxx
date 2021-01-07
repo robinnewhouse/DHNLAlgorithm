@@ -122,6 +122,8 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
 
+    m_tree->Branch((name+ "definingParametersCovMatrixVec").c_str(), &m_track_definingParametersCovMatrixVec);
+
     m_tree->Branch((name+ "vx").c_str(), &m_track_vx);
     m_tree->Branch((name+ "vy").c_str(), &m_track_vy);
 
@@ -371,6 +373,9 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     
     // Missing track details
 
+    if (track->isAvailable<std::vector< float >>("be_definingParametersCovMatrixVec"))
+        m_track_definingParametersCovMatrixVec.push_back(track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec"));
+
     if (track->isAvailable<float_t>("be_vx"))
         m_track_vx.push_back(track->auxdecor<float_t>("be_vx"));
     if (track->isAvailable<float_t>("be_vy"))
@@ -404,6 +409,8 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
+
+    m_track_definingParametersCovMatrixVec.clear();
 
     m_track_vy.clear();
     m_track_vz.clear();

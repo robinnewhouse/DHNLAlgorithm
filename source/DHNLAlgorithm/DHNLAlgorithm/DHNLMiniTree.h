@@ -54,6 +54,9 @@ private:
     std::vector<int> m_track_quality;
     std::vector<bool> m_track_fromPV;
 
+
+    std::vector<std::vector< float >> m_track_definingParametersCovMatrixVec;
+
     std::vector<float_t> m_track_vx;
     std::vector<float_t> m_track_vy;
     std::vector<float_t> m_track_vz;
