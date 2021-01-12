@@ -303,7 +303,7 @@ TruthVertexSelectorDict = {
     "m_outContainerName"          : "SelectedTruthVertices",
     "m_createSelectedContainer"   : True,
     #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "50, 24",
+    "m_pdgIdList"               : "9900012, 50, 24, 443",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 
