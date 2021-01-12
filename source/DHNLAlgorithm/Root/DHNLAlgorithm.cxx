@@ -225,8 +225,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     // print out run and event number from retrieved object
     ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
-    if (eventInfo->eventNumber() % 100 == 0)
-        ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+    // if (eventInfo->eventNumber() % 100 == 0)
+    //     ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Apply event selection including control region if requested //////////////////////
     ANA_CHECK(eventSelection());
