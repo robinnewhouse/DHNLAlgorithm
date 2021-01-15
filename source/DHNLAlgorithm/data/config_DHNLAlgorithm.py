@@ -82,7 +82,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : False,
+    "m_applyTriggerCut"           : True,
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
