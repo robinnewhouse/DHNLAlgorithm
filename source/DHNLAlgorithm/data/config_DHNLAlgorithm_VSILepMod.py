@@ -4,34 +4,34 @@ import shlex
 import argparse
 
 
+
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+parser.add_argument('--rerunVSI_d0test', dest='rerunVSI_d0test', action="store_true", default=False)
+parser.add_argument('--rerunVSI_LRTR3test', dest='rerunVSI_LRTR3test', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
 
 
-# vertex container information (by default run VSI & VSI Leptons)
-if o.isSUSY15:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
-    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
-else:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
-    secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
-    AugmentationVersionStrings = ["_Leptons"]
+# secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0","VrtSecInclusive_SecondaryVertices_LRTR3_1p0"]
+# secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod_LRTR3_1p0","secVtx_VSI_LRTR3_1p0"]
+# AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0","_LRTR3_1p0"]
+
+secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
+secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod_LRTR3_1p0"]
+AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
+
 
 # Good Run Lists
-# https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
 GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/data15_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns.xml'
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/data16_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_WITH_IGNORES.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/data17_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/data18_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
 ]
-
 
 
 # Pileup Reweighting
@@ -53,16 +53,13 @@ from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
 # in the git repository for now. You may need to copy them from cvmfs
 # and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
 lumicalcList = [
-    # mc16a 
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_276262-284484_OflLumi-13TeV-010.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_267638-271744_OflLumi-13TeV-010.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/ilumicalc_histograms_None_297730-311481_OflLumi-13TeV-010.root',
-    # mc16d
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_325713-340453_OflLumi-13TeV-010.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_341294-341649_OflLumi-13TeV-001.root',
-    # mc16e 
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_354396-355468_OflLumi-13TeV-001.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
+    # mc16a (r-tag r10740)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root',
+    # mc16d (r-tag r10739)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',
+    # mc16e (r-tag r10790)
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
 ]
 
 GRL       = ",".join(GRLList)
@@ -82,8 +79,8 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : False,
-    "m_doPUreweighting"           : False if o.noPRW else True,
+    "m_applyTriggerCut"           : True,
+    "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
     "m_autoconfigPRW"             : False,
@@ -243,10 +240,11 @@ c.algorithm("ElectronSelector", ElectronSelectorDict )
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 SecondaryVertexSelectorDict = {
-    "m_name"                 : "SecVtxSel_VSI",
+    "m_name"                 : "SecVtxSel_VSI_LepMod",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_outContainerName"     : "VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_sel",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -266,13 +264,13 @@ SecondaryVertexSelectorDict = {
 c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 
 for augstr in AugmentationVersionStrings: 
-
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,
         "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
@@ -314,7 +312,7 @@ TruthVertexSelectorDict = {
     "m_outContainerName"          : "SelectedTruthVertices",
     "m_createSelectedContainer"   : True,
     #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "9900012, 50, 24, 443",
+    "m_pdgIdList"               : "50, 24, 443", # HNL W J/Psi
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
 
@@ -344,7 +342,6 @@ DHNLDict = {
     "m_jetMultiplicity"         : 2,
     "m_useMCPileupCheck"        : False,
     "m_metCut"                  : 20000,
-    "m_doInverseLeptonControlRegion"   : False,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
@@ -352,6 +349,7 @@ DHNLDict = {
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
 
+print (secondaryVertexContainerNames)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
