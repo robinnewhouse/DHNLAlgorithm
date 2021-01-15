@@ -18,6 +18,7 @@ if o.isSUSY15:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
     AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
+    # VrtSecInclusive_SecondaryVertices_FixedExtroplator in SUSY15
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
     secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
@@ -82,7 +83,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : True,
+    "m_applyTriggerCut"           : not args.is_MC,
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -246,7 +247,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel_VSI",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : secondaryVertexContainerNames[0],
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
