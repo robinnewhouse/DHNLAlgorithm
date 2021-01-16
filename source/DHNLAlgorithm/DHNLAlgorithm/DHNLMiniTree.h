@@ -71,8 +71,8 @@ private:
     std::vector<Double_t> m_track_pz;
     std::vector<Double_t> m_track_e;
 
-    std::vector<int> m_muons_per_event;
-    std::vector<int> m_electrons_per_event;
+    std::map<std::string,std::vector<int>> m_secVerts_muons_per_event;
+    std::map<std::string,std::vector<int>> m_secVerts_electrons_per_event;
     
     float m_weight;
 

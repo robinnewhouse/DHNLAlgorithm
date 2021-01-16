@@ -54,7 +54,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
-    m_inVSIContainerName = "";
+    m_secondaryVertexContainerNameList = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -195,9 +195,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if(!m_inElContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
     
-    const xAOD::VertexContainer *inVSIVertices = nullptr;
+    /*const xAOD::VertexContainer *inVSIVertices = nullptr;
     if(!m_inVSIContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
+	*/
+	
 	
 	int MuonsPerEvent = 0;
     int ElectronsPerEvent = 0;
@@ -368,18 +370,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
         }   
 	}
-	if (inVSIVertices){
-        for (const xAOD::Vertex *vertex: *inVSIVertices){
+    
+	std::string secondaryVertexContainerName_token;
+    std::istringstream sv(m_secondaryVertexContainerNameList);
+	while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+		const xAOD::VertexContainer *inVSIVertices = nullptr;
+		ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
+		for (const xAOD::Vertex *vertex: *inVSIVertices){
             vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
             vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
-            ANA_MSG_INFO ("Mouns per event is: ");
-			ANA_MSG_INFO (vertex->auxdecor<int>("Muons_Per_Event"));
-			//ANA_MSG_INFO ("Electron per event is: ");
-			//ANA_MSG_INFO (ElectronsPerEvent);
-			}
-        }
-    	
-
+		}
+	}
 
     //////////////////// Store primary vertex information //////////////////////
 

@@ -42,6 +42,7 @@ DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::
       std::cout << "Veryvery loose electron likelihood tool initialize() failed!" << std::endl;
     if(lhvvls.isFailure())
       std::cout << "Veryvery loose si electron likelihood tool initialize() failed!" << std::endl;
+  
 
 
 }
@@ -328,8 +329,11 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     thisSecVtx->setBranches(m_tree);
 
     std::string name = secVtxName + "_";
-    m_tree->Branch((name + "NumberofMuons").c_str(), &m_muons_per_event);
-    m_tree->Branch((name + "NumberofElectron").c_str(), &m_electrons_per_event);
+	m_secVerts_muons_per_event.insert({secVtxName,{}});
+	m_secVerts_electrons_per_event.insert({secVtxName,{}});
+	
+    m_tree->Branch((name + "NumberofMuons").c_str(), &m_secVerts_muons_per_event[secVtxName]);
+    m_tree->Branch((name + "NumberofElectron").c_str(), &m_secVerts_electrons_per_event[secVtxName]);
 }
 
 
@@ -346,24 +350,21 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->FillSecondaryVertex(secVtx, "", treeName, suppressFilter);
 	
-    if (secVtx->isAvailable<int>("Muons_Per_Event")){	
-		//if ((secVtx->auxdecor<int>("Muons_Per_Event"))!=0)
-			//Info ("In MiniTreecxx "," Mouns per event is not 0####");
-		//Info("In MiniTreecxx","Been here MiniTreeELECTRONS####");		
-		m_muons_per_event.push_back(secVtx->auxdecor<int>("Muons_Per_Event"));
-		}
+    if (secVtx->isAvailable<int>("Muons_Per_Event")){			
+		m_secVerts_muons_per_event[secVtxName].push_back(secVtx->auxdecor<int>("Muons_Per_Event"));
+	}
     if (secVtx->isAvailable<int>("Electrons_Per_Event")){
-		//Info("######Been here MiniTreeELECTRONS### ","####");		
-        m_electrons_per_event.push_back(secVtx->auxdecor<int>("Electrons_Per_Event"));
-		}
+        m_secVerts_electrons_per_event[secVtxName].push_back(secVtx->auxdecor<int>("Electrons_Per_Event"));
+	}
+	
 }	
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->clear();
-
-    m_electrons_per_event.clear();
-    m_muons_per_event.clear();
+		
+	m_secVerts_muons_per_event[secVtxName].clear();
+	m_secVerts_electrons_per_event[secVtxName].clear();
 }
 
 
@@ -379,7 +380,7 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
         m_track_type.push_back(track->auxdecor<int>("be_type"));
 
     if (track->isAvailable<int>("be_quality"))
-        m_track_quality.push_back(track->auxdecor<int>("be_quality"));
+        .push_back(track->auxdecor<int>("be_quality"));
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
