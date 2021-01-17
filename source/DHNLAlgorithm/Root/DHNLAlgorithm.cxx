@@ -255,7 +255,15 @@ EL::StatusCode DHNLAlgorithm::execute() {
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
             // susy15 derivation does not keep sufficient track information for SiliconAssociatedForwardMuon types
-            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) continue;
+            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) {
+                const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
+                if (track == nullptr) continue;
+
+                track->auxdecor<bool>("be_toSave") = false;
+                track->auxdecor<int>("be_type") = (int) TrackType::MUON;
+
+                continue;
+            };
 
             const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
 
