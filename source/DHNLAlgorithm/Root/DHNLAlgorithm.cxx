@@ -312,6 +312,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (m_backgroundEstimationBranches) {
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
+            // susy15 derivation does not keep sufficient track information for SiliconAssociatedForwardMuon types
+            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) {
+                const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
+                if (track == nullptr) continue;
+
+                track->auxdecor<bool>("be_toSave") = false;
+                track->auxdecor<int>("be_type") = (int) TrackType::MUON;
+
+                continue;
+            };
+
             const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
 
             if (track == nullptr) continue;
@@ -423,10 +434,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (m_backgroundEstimationBranches) {
         // This logic is similar to https://gitlab.cern.ch/dtrischu/athena/-/blob/vrtSecInclusive-21.2-hnl/Reconstruction/VKalVrt/VrtSecInclusive/src/Utilities.cxx#L37 so we could later filter only tracks that are not from PV before shuffling
         const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
-        if (primaryVertex) {
-            for (size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++) {
-                auto *pvtrk = primaryVertex->trackParticle(iv);
-                pvtrk->auxdecor<bool>("be_fromPV") = true;
+        if(primaryVertex){
+            for( size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++ ) {
+                auto* pvtrk = primaryVertex->trackParticle( iv );
+                if (pvtrk)
+                    pvtrk->auxdecor<bool>("be_fromPV") = true;
             }
         }
     }
