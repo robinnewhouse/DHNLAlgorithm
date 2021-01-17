@@ -18,9 +18,9 @@
 #include "xAODEgamma/ElectronContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 #include <xAODAnaHelpers/JetHists.h>
-//#include "DHNLAlgorithm/DHNLMiniTree.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODTruth/TruthParticleContainer.h"
+#include "PMGAnalysisInterfaces/IPMGCrossSectionTool.h"
 
 // ROOT include(s):
 #include "TH1D.h"
@@ -62,6 +62,13 @@ private:
     TH1D *m_cutflowHistW;   //!
     StatusCode eventSelection();
 
+    asg::AnaToolHandle<PMGTools::IPMGCrossSectionTool> m_PMGCrossSectionTool_handle{"PMGCrossSectionTool", this}; //!
+    float m_mcEventWeight;  //!
+    std::string m_comEnergy; //!
+
+    float m_weight;  //!
+    float m_weight_xs;  //!
+
 public:
     // this is a standard constructor
     DHNLAlgorithm();
@@ -77,8 +84,6 @@ ClassDef(DHNLAlgorithm, 1);
     const xAOD::Muon *matchTrackToMuon(const xAOD::TrackParticle *track, const xAOD::MuonContainer *inMuons);
 
     const xAOD::Electron *matchTrackToElectron(const xAOD::TrackParticle *track, const xAOD::ElectronContainer *inElectrons);
-
-    StatusCode calculateIsolation(const xAOD::TrackParticleContainer *tracks, const xAOD::Muon *muon) const;
 
 };
 
