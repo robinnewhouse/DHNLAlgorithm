@@ -331,9 +331,11 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     std::string name = secVtxName + "_";
 	m_secVerts_muons_per_event.insert({secVtxName,{}});
 	m_secVerts_electrons_per_event.insert({secVtxName,{}});
-	
+    m_secVerts_shuffled.insert({secVtxName,{}});
+
     m_tree->Branch((name + "NumberofMuons").c_str(), &m_secVerts_muons_per_event[secVtxName]);
     m_tree->Branch((name + "NumberofElectron").c_str(), &m_secVerts_electrons_per_event[secVtxName]);
+    m_tree->Branch((name + "shuffled").c_str(), &m_secVerts_shuffled[secVtxName]);
 }
 
 
@@ -356,7 +358,9 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
     if (secVtx->isAvailable<int>("Electrons_Per_Event")){
         m_secVerts_electrons_per_event[secVtxName].push_back(secVtx->auxdecor<int>("Electrons_Per_Event"));
 	}
-	
+    if (secVtx->isAvailable<bool>("shuffled")){
+        m_secVerts_shuffled[secVtxName].push_back(secVtx->auxdecor<bool>("shuffled"));
+    }
 }	
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
@@ -365,6 +369,7 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 		
 	m_secVerts_muons_per_event[secVtxName].clear();
 	m_secVerts_electrons_per_event[secVtxName].clear();
+    m_secVerts_shuffled[secVtxName].clear();
 }
 
 
