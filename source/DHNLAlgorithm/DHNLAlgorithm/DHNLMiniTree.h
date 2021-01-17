@@ -73,7 +73,8 @@ private:
 
     std::map<std::string,std::vector<int>> m_secVerts_muons_per_event;
     std::map<std::string,std::vector<int>> m_secVerts_electrons_per_event;
-    
+    std::map<std::string,std::vector<bool>> m_secVerts_shuffled;
+
     float m_weight;
 
 
