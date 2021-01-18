@@ -3,7 +3,7 @@ variables:
 
 
 stages:
-  - test
+  - preface 
   - build
   - package
   - run
@@ -11,7 +11,7 @@ stages:
   - test
   - upload  
 
-test:
+preface:
   script:
     - pwd
     - ls 
