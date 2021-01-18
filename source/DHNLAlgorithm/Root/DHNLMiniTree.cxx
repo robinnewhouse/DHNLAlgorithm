@@ -385,7 +385,7 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
         m_track_type.push_back(track->auxdecor<int>("be_type"));
 
     if (track->isAvailable<int>("be_quality"))
-        m_track_type.push_back(track->auxdecor<int>("be_quality"));
+        m_track_quality.push_back(track->auxdecor<int>("be_quality"));
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
