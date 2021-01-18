@@ -134,9 +134,9 @@ EL::StatusCode DHNLNtuple::initialize() {
        if ( m_secondaryVertexBranchNameList.empty() ) {
           ANA_MSG_ERROR("Empty secondaryVertexBranchName List!!!");
       }
-       if ( m_AugmentationVersionStringList.empty() ) {
+       /*if ( m_AugmentationVersionStringList.empty()) {
           ANA_MSG_ERROR("Empty AugmentationVersionString List!!!");
-      }
+      }*/
       std::string secondaryVertexContainerName_token;
       std::string secondaryVertexBranchName_token;
       std::string AugmentationVersionString_token;
@@ -146,15 +146,20 @@ EL::StatusCode DHNLNtuple::initialize() {
       std::istringstream augstr(m_AugmentationVersionStringList);
 
       while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+		ANA_MSG_INFO("secondaryVertexContainerName_token is: "<< secondaryVertexContainerName_token);
         m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
       }
 
       while ( std::getline(sb, secondaryVertexBranchName_token, ',') ) {
-        m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
+        ANA_MSG_INFO("secondaryVertexBranchName_token is: "<< secondaryVertexBranchName_token);
+		m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
       }
 
-      while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
-        m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
+      if (m_AugmentationVersionStringList.empty())
+		  m_AugmentationVersionStringKeys.push_back("");
+	  while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
+        ANA_MSG_INFO("AugmentationVersionString_token is: "<< AugmentationVersionString_token);
+		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
     ANA_MSG_INFO("initialize() : Successfully initialized! \n");
@@ -300,9 +305,10 @@ EL::StatusCode DHNLNtuple::execute() {
 
 
      // Fill the secondary vertices from the list
-    if (not m_secondaryVertexContainerNameKeys.empty() and not m_AugmentationVersionStringList.empty()) { 
+    if (m_secondaryVertexContainerNameKeys.size()>0 and not m_AugmentationVersionStringKeys.empty()) { 
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-            if (m_AugmentationVersionStringList[i] == m_AltAugmentationVersionString) continue; // check you do not fill same as alt VSI twice
+			ANA_MSG_INFO("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]<<" m_AltAugmentationVersionString is : "<<m_AltAugmentationVersionString);
+            if (m_AugmentationVersionStringKeys[i] == m_AltAugmentationVersionString and not m_AltAugmentationVersionString.empty()) continue; // check you do not fill same as alt VSI twice
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
             if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchNameKeys[i], m_suppressTrackFilter);
@@ -349,9 +355,11 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
-    if (not m_AugmentationVersionStringList.empty() and not m_secondaryVertexDetailStr.empty()) { 
+    if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
+		
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-             miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
+             ANA_MSG_INFO("Adding m_secondaryVertexContainerNameKeys");
+			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
     if (m_AltAugmentationVersionString != "None" ) { 
         miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
     if (m_isMC){ 
