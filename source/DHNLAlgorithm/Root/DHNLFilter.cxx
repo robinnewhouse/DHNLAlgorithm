@@ -42,7 +42,7 @@ DHNLFilter::DHNLFilter() : Algorithm("DHNLFilter") {
 // initialization code will go into histInitialize() and
 // initialize().
 
-    ANA_MSG_INFO("DHNLFilter() : Calling constructor");
+    ANA_MSG_DEBUG("DHNLFilter() : Calling constructor");
 
     m_allJetContainerName = "AntiKt4EMTopoJets";
     m_inMuContainerName = "Muons";
