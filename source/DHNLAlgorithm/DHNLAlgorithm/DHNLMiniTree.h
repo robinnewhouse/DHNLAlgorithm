@@ -76,6 +76,7 @@ private:
     std::map<std::string,std::vector<bool>> m_secVerts_shuffled;
 
     float m_weight;
+    float m_weight_xs;
 
 
     //Likelihood tools: */

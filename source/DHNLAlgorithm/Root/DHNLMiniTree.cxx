@@ -65,6 +65,7 @@ void DHNLMiniTree::AddEventUser(const std::string &detailStr) {
 
     // weights
     m_tree->Branch("weight", &m_weight, "weight/F");
+    // m_tree->Branch("weight_xs", &m_weight_xs, "weight_xs/F");
 
     m_tree->Branch("passesHnlMuMuFilter", &m_passesHnlMuMuFilter);
     m_tree->Branch("passesHnlElMuFilter", &m_passesHnlElMuFilter);
@@ -73,8 +74,6 @@ void DHNLMiniTree::AddEventUser(const std::string &detailStr) {
     m_tree->Branch("passesVH4bFilter", &m_passesVH4bFilter);
 
     // weights
-//    m_tree->Branch("weight", &m_weight, "weight/F");
-//    m_tree->Branch("weight_xs", &m_weight_xs, "weight_xs/F");
 //    m_tree->Branch("weight_prescale", &m_weight_prescale, "weight_prescale/F");
 //    m_tree->Branch("weight_resonanceKFactor", &m_weight_resonanceKFactor, "weight_resonanceKFactor/F");
 
