@@ -1,10 +1,21 @@
+variables:
+  CERN_BOX_URL: "root://eosuser.cern.ch//eos/user/d/dhnl/algorithm-ci"
+
+
 stages:
+  - test
   - build
   - package
   - run
   - histograms
   - test
   - upload  
+
+test:
+  script:
+    - pwd
+    - ls 
+    - echo "${!DIR*}" 
 # build_code:
 #   stage: build
 #   image: atlas/analysisbase:21.2.90
@@ -74,7 +85,6 @@ histograms:
   script: 
     - cd ci
     - bash import_checkpoint.sh
-    - xrdcp root://eosuser.cern.ch//eos/user/d/dhnl/ci-test-runs/tests_checkpoint/testRun/data-tree/files.root .
     - python histograms.py files.root checkpoint_files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
