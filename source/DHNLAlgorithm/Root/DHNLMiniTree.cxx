@@ -5,6 +5,7 @@
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
 
+
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
         HelpTreeBase(event, tree, file, 1e3) {
     Info("DHNLMiniTree", "Creating output TTree");
@@ -41,6 +42,7 @@ DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::
       std::cout << "Veryvery loose electron likelihood tool initialize() failed!" << std::endl;
     if(lhvvls.isFailure())
       std::cout << "Veryvery loose si electron likelihood tool initialize() failed!" << std::endl;
+  
 
 
 }
@@ -324,6 +326,15 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     m_secVerts[secVtxName] = new DVs::SecondaryVertexContainer(secVtxName, detailStr, m_units, m_isMC, false, false, AugmentationVersionString);
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->setBranches(m_tree);
+
+    std::string name = secVtxName + "_";
+	m_secVerts_muons_per_event.insert({secVtxName,{}});
+	m_secVerts_electrons_per_event.insert({secVtxName,{}});
+    m_secVerts_shuffled.insert({secVtxName,{}});
+
+    m_tree->Branch((name + "NumberofMuons").c_str(), &m_secVerts_muons_per_event[secVtxName]);
+    m_tree->Branch((name + "NumberofElectron").c_str(), &m_secVerts_electrons_per_event[secVtxName]);
+    m_tree->Branch((name + "shuffled").c_str(), &m_secVerts_shuffled[secVtxName]);
 }
 
 
@@ -339,12 +350,25 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
     std::string treeName = m_tree->GetName();
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->FillSecondaryVertex(secVtx, "", treeName, suppressFilter);
-
-}
+	
+    if (secVtx->isAvailable<int>("Muons_Per_Event")){			
+		m_secVerts_muons_per_event[secVtxName].push_back(secVtx->auxdecor<int>("Muons_Per_Event"));
+	}
+    if (secVtx->isAvailable<int>("Electrons_Per_Event")){
+        m_secVerts_electrons_per_event[secVtxName].push_back(secVtx->auxdecor<int>("Electrons_Per_Event"));
+	}
+    if (secVtx->isAvailable<bool>("shuffled")){
+        m_secVerts_shuffled[secVtxName].push_back(secVtx->auxdecor<bool>("shuffled"));
+    }
+}	
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
     DVs::SecondaryVertexContainer *thisSecVtx = m_secVerts[secVtxName];
     thisSecVtx->clear();
+		
+	m_secVerts_muons_per_event[secVtxName].clear();
+	m_secVerts_electrons_per_event[secVtxName].clear();
+    m_secVerts_shuffled[secVtxName].clear();
 }
 
 
