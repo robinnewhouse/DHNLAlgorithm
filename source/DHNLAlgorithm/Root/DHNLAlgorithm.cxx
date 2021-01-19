@@ -48,6 +48,8 @@ DHNLAlgorithm::DHNLAlgorithm() :
 
 
     ANA_MSG_INFO("DHNLAlgorithm() : Calling constructor");
+	
+
 
     m_inJetContainerName = "";
     m_inputAlgo = "";
@@ -55,6 +57,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_allJetInputAlgo = "";
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
+    m_secondaryVertexContainerNameList = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -248,8 +251,18 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (!m_inMuContainerName.empty()) ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
 
     const xAOD::ElectronContainer *inElectrons = nullptr;
-    if (!m_inElContainerName.empty()) ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
-
+    if(!m_inElContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
+    
+    /*const xAOD::VertexContainer *inVSIVertices = nullptr;
+    if(!m_inVSIContainerName.empty())
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
+	*/
+	
+	
+    int MuonsPerEvent = 0;
+    int ElectronsPerEvent = 0;
+    
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
@@ -269,6 +282,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
+		    MuonsPerEvent+=1;
 //        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
             if (not(m_inMuContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
@@ -299,6 +313,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
             electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
             electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
+			ElectronsPerEvent+=1;
             if (not(m_inElContainerName == "Electrons")) {
                 electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
                 electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
@@ -312,6 +327,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (m_backgroundEstimationBranches) {
         // muon tracks
         for (const xAOD::Muon *muon : *inMuons) {
+            // susy15 derivation does not keep sufficient track information for SiliconAssociatedForwardMuon types
+            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) {
+                const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
+                if (track == nullptr) continue;
+
+                track->auxdecor<bool>("be_toSave") = false;
+                track->auxdecor<int>("be_type") = (int) TrackType::MUON;
+
+                continue;
+            };
+
             const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
 
             if (track == nullptr) continue;
@@ -340,7 +366,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
+        
+            //MuonsPerEvent+=1;
         }
+		
 
         // electron tracks
         for (const xAOD::Electron *electron : *inElectrons) {
@@ -372,6 +401,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
+        
+            //ElectronsPerEvent+=1;
         }
 
         // non-lepton tracks
@@ -404,8 +435,36 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
             track->auxdecor<bool>("be_fromPV") = false;
 
-        }
-    }
+        }   
+	}
+    
+	std::string secondaryVertexContainerName_token;
+    std::istringstream sv(m_secondaryVertexContainerNameList);
+	while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+		const xAOD::VertexContainer *inVSIVertices = nullptr;
+		ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
+		for (const xAOD::Vertex *vertex: *inVSIVertices){
+            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
+            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+
+            // check if this vertex contains tracks from different original events (shuffled vertex)
+            vertex->auxdecor<bool>("shuffled") = false;
+            if (vertex->trackParticle(0)->isAvailable<int>("trackOriginalRun") &&
+                vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent") &&
+                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun") &&
+                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent")) {
+
+                int runNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalRun");
+                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent");
+
+                int runNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun");
+                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent");
+
+                vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+            }
+		}
+	}
+
     //////////////////// Store primary vertex information //////////////////////
 
     SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
@@ -423,10 +482,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if (m_backgroundEstimationBranches) {
         // This logic is similar to https://gitlab.cern.ch/dtrischu/athena/-/blob/vrtSecInclusive-21.2-hnl/Reconstruction/VKalVrt/VrtSecInclusive/src/Utilities.cxx#L37 so we could later filter only tracks that are not from PV before shuffling
         const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
-        if (primaryVertex) {
-            for (size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++) {
-                auto *pvtrk = primaryVertex->trackParticle(iv);
-                pvtrk->auxdecor<bool>("be_fromPV") = true;
+        if(primaryVertex){
+            for( size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++ ) {
+                auto* pvtrk = primaryVertex->trackParticle( iv );
+                if (pvtrk)
+                    pvtrk->auxdecor<bool>("be_fromPV") = true;
             }
         }
     }

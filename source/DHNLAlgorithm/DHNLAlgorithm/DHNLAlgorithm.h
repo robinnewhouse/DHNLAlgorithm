@@ -42,6 +42,7 @@ public:
     std::string m_inMETTrkContainerName;  // input METTrk container name
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
+    std::string m_secondaryVertexContainerNameList;   // input Secondary Vertices container name
     std::string m_inDetTrackParticlesContainerName; // Track container
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
