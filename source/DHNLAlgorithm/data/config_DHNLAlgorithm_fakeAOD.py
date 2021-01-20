@@ -342,6 +342,7 @@ DHNLDict = {
     "m_inDetTrackParticlesContainerName": "TracksForVSI",
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     # "m_inMETContainerName"      : "MET",
     # "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#

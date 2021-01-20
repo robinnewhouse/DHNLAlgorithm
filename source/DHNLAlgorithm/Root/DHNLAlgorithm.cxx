@@ -436,34 +436,34 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<bool>("be_fromPV") = false;
 
         }   
-	}
+    }
     
-	std::string secondaryVertexContainerName_token;
+    std::string secondaryVertexContainerName_token;
     std::istringstream sv(m_secondaryVertexContainerNameList);
-	while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
-		const xAOD::VertexContainer *inVSIVertices = nullptr;
-		ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
-		for (const xAOD::Vertex *vertex: *inVSIVertices){
-            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
-            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+    while (std::getline(sv, secondaryVertexContainerName_token, ',')) {
+        const xAOD::VertexContainer *inVSIVertices = nullptr;
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
+        for (const xAOD::Vertex *vertex: *inVSIVertices) {
+        vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
+        vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
 
-            // check if this vertex contains tracks from different original events (shuffled vertex)
-            vertex->auxdecor<bool>("shuffled") = false;
-            if (vertex->trackParticle(0)->isAvailable<int>("trackOriginalRun") &&
-                vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent") &&
-                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun") &&
-                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent")) {
+        // check if this vertex contains tracks from different original events (shuffled vertex)
+        vertex->auxdecor<bool>("shuffled") = false;
+        if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
+            vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
+            vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
+            vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
 
-                int runNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalRun");
-                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent");
+                int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
+                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                int runNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun");
-                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent");
+                int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
+                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
                 vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+                }
             }
-		}
-	}
+        }
 
     //////////////////// Store primary vertex information //////////////////////
 
