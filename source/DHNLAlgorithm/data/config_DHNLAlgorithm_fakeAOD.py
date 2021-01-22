@@ -16,9 +16,10 @@ c = Config()
 
 # vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
 if o.isSUSY15:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
-    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_LRTR3_1p0_fake"]
+    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons","secVtx_VSI"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_LRTR3_1p0_fake","_LRTR3_1p0_fake"]
+
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
     secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
@@ -67,7 +68,6 @@ lumicalcList = [
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
 lumicalcs = ",".join(lumicalcList)
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% BasicEventSelection %%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -248,7 +248,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel_VSI",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -340,11 +340,12 @@ DHNLDict = {
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inDetTrackParticlesContainerName": "TracksForVSI",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_inMuContainerName"       : "",
+    "m_inElContainerName"       : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     # "m_inMETContainerName"      : "MET",
     # "m_inMETTrkContainerName"   : "METTrk",
+    "m_backgroundEstimationNoParticleData" : True, 
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,
@@ -354,7 +355,7 @@ DHNLDict = {
     "m_doInverseLeptonControlRegion"   : False,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Info",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -368,8 +369,8 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "Muons",
+    "m_inElContainerName"            : "Electrons",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
@@ -377,11 +378,11 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
-    "m_truthVertexContainerName"     : "SelectedTruthVertices",
-    "m_truthVertexBranchName"        : "truthVtx",
-    "m_inTruthParticleContainerName" : "MuonTruthParticles",
+    "m_truthVertexContainerName"     : "",
+    "m_truthVertexBranchName"        : "",
+    "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
-    "m_eventDetailStr"               : "truth pileup", #shapeEM
+    "m_eventDetailStr"               : "pileup", #shapeEM
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
