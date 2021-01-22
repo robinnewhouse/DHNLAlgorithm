@@ -247,7 +247,7 @@ TrackSelectorDict = {
     "m_outContainerName"          : "InDetTrackParticles_Selected",
     "m_createSelectedContainer"   : True,
     #---------------------- Selections ---------------------------#
-    "m_pT_min"               : 26, # want this selected track to simulate our triggers. (26 GeV threshold in 2018)
+    "m_pT_min"               : 26000, # in MeV. want this selected track to simulate our triggers. (26 GeV threshold in 2018)
     "m_chi2NdofCut_max"      : 8, # tight muon have this req.
     "m_d0_max"               : 3, 
     "m_z0sinT_max"           : 0.5, 
@@ -256,8 +256,8 @@ TrackSelectorDict = {
 
 }
 
-if args.is_MC:
-    c.algorithm("TrackSelector", TrackSelectorDict )
+
+c.algorithm("TrackSelector", TrackSelectorDict )
 
 
 
