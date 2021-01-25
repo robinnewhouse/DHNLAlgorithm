@@ -51,28 +51,28 @@ variables:
 #   script:
 #     - ignore
     
-#run_DHNLAlgorithm:
-#  stage: run
-#  dependencies:
-#  #  - build_image
-#  # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
-#  image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:feature-add-ci-72841c16
-#  before_script:
-#    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
-#  script:
-#    - source /release_setup.sh
-#    - source /code/build/*/setup.sh
-#    - cd ci
-#    - bash run.sh
-#  artifacts:
-#    paths:
-#      - ci/testRun
-#    expire_in: 1 week
+run_DHNLAlgorithm:
+  stage: run
+  dependencies:
+  #  - build_image
+  # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  image: gitlab-registry.cern.ch/atlas-phys/exot/ueh/exot-2017-19/dhnlalgorithm:feature-add-ci-72841c16
+  before_script:
+    - source /release_setup.sh
+    - source /code/build/*/setup.sh
+    - cd $WORKDIR/ci
+    - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
+  script:
+    - bash run.sh
+  artifacts:
+    paths:
+      - $WORKDIR/ci/testRun
+    expire_in: 1 week
 
 histograms: 
   stage: histograms
   dependencies: 
-   # - run_DHNLAlgorithm
+    - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
   before_script:
     - cd $WORKDIR/ci
@@ -101,7 +101,7 @@ test_emptiness:
 upload_tests:
   stage: upload
   dependencies: 
-    #- run_DHNLAlgorithm
+    - run_DHNLAlgorithm
     - histograms
   image: rootproject/root-conda:6.18.04
   before_script:
