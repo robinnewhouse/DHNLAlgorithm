@@ -1,8 +1,4 @@
-variables:
-  CERN_BOX_URL: "root://eosuser.cern.ch//eos/user/d/dhnl/algorithm-ci"
-
 stages:
-  - preface 
   - build
   - package
   - run
@@ -10,12 +6,10 @@ stages:
   - test
   - upload  
 
-preface:
-  stage: preface
-  script:
-    - pwd
-    - ls 
-    - echo "${!DIR*}" 
+variables:
+  WORKDIR: "/builds/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm"
+  CERN_BOX_URL: "root://eosuser.cern.ch//eos/user/d/dhnl/algorithm-ci"
+
 # build_code:
 #   stage: build
 #   image: atlas/analysisbase:21.2.90
@@ -81,17 +75,17 @@ histograms:
    # - run_DHNLAlgorithm
   image: rootproject/root-conda:6.18.04
   before_script:
+    - cd $WORKDIR/ci
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
-    - cd ci
     - bash import_checkpoint.sh
     - python histograms.py files.root checkpoint_files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
   artifacts: 
     paths: 
-      - ci/hists.root
-      - ci/plots
+      - $WORKDIR/ci/hists.root
+      - $WORKDIR/ci/plots
     expire_in: 1 week
 
 test_emptiness:
@@ -99,8 +93,9 @@ test_emptiness:
   dependencies:
     - histograms
   image: rootproject/root-conda:6.18.04
+  before_script:
+    - cd $WORKDIR/ci/test
   script:
-    - cd ci/tests
     - python test_emptiness.py ../hists.root
 
 upload_tests:
@@ -110,7 +105,7 @@ upload_tests:
     - histograms
   image: rootproject/root-conda:6.18.04
   before_script:
+    - cd $WORKDIR/ci
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script:
-    - cd ci
     - bash upload.sh
