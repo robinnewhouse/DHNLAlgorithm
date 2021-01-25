@@ -66,7 +66,7 @@ run_DHNLAlgorithm:
     - bash run.sh
   artifacts:
     paths:
-      - $WORKDIR/ci/testRun
+      - $WORKDIR/ci/testRun/data-tree/files.root
     expire_in: 1 week
 
 histograms: 
@@ -78,8 +78,9 @@ histograms:
     - cd $WORKDIR/ci
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
+    - ls 
     - bash import_checkpoint.sh
-    - python histograms.py testRun/files.root checkpoint_files.root hists.root
+    - python histograms.py testRun/data-tree/files.root checkpoint_files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
   artifacts: 
