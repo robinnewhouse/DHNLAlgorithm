@@ -79,7 +79,7 @@ histograms:
     - printf $SERVICE_PASS | kinit $CERN_USER@CERN.CH
   script: 
     - bash import_checkpoint.sh
-    - python histograms.py files.root checkpoint_files.root hists.root
+    - python histograms.py testRun/files.root checkpoint_files.root hists.root
     - mkdir plots
     - python plots.py hists.root plots
   artifacts: 
