@@ -30,8 +30,6 @@ private:
     std::vector<double> m_muon_px;
     std::vector<double> m_muon_py;
     std::vector<double> m_muon_pz;
-    std::vector<double> m_muon_myptcone30;
-    std::vector<double> m_muon_myptcone30noLRT;
     std::vector<double> m_muon_chi2;
     std::vector<int> m_muon_msInnerMatchDOF;
     std::vector<bool> m_muon_isLRT;
@@ -45,7 +43,6 @@ private:
     std::vector<double> m_electron_px;
     std::vector<double> m_electron_py;
     std::vector<double> m_electron_pz;
-    std::vector<double> m_electron_ptC30;
 
     std::vector<bool> m_track_toSave;
     std::vector<unsigned long long> m_track_eventNumber;

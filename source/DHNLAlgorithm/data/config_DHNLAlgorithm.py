@@ -8,7 +8,6 @@ parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--runAllSyst', dest='runAllSyst', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
@@ -80,7 +79,7 @@ basicEventSelectionDict = {
     #-------------------------- GRL --------------------------------------#
     "m_GRLxml"                    : GRL,
     #-------------------------- Derivation -------------------------------#
-    "m_derivationName"            : "SUSY15Kernel_skim",
+    # "m_derivationName"            : "SUSY15Kernel_skim",
     #-------------------------- PRW --------------------------------------#
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
@@ -95,7 +94,6 @@ basicEventSelectionDict = {
     "m_applyTriggerCut"           : not args.is_MC,
     #---------------------------- Cuts ----------------------------------#
     "m_checkDuplicatesData"       : False,
-    # "m_applyGRLCut"               : True,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
@@ -193,6 +191,34 @@ MuonSelectorDict = {
 # Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
 c.algorithm("MuonSelector", MuonSelectorDict )
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%%% MuonEfficiencyCorrector %%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+MuonEfficiencyCorrectorDict = {
+  "m_name"                      : "MuonEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "PLACEHOLDER_CONTAINER", # should be Muons_Signal
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesMuons"       : "MuonSelector_Syst",
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+  "m_systNameIso"               : "All",
+  "m_systValIso"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_MuTrigLegs"                : "2015:HLT_mu20_iloose_L1MU15_OR_HLT_mu50,2016:HLT_mu26_ivarmedium_OR_HLT_mu50,2017:HLT_mu26_ivarmedium_OR_HLT_mu50,2018:HLT_mu26_ivarmedium_OR_HLT_mu50",
+#  "m_MuTrigLegs"                : "HLT_mu26_ivarmedium_OR_HLT_mu50",
+#  "m_MuTrigLegs"                : "HLT_mu50",
+  #----------------------- Working Points ----------------------------#
+  "m_WorkingPointReco"          : "Medium",
+  "m_WorkingPointIso"           : "FCLoose",
+  #----------------------- Other ----------------------------#
+  "m_writeSystToMetadata"       : True,
+  "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("MuonEfficiencyCorrector", MuonEfficiencyCorrectorDict )
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -202,10 +228,11 @@ ElectronCalibratorDict = {
     "m_inContainerName"           : "Electrons",
     "m_outContainerName"          : "Electrons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "Nominal",            ## For data
-    "m_systVal"                   : 0,                    ## For data
-    "m_esModel"                   : "es2016PRE",
-    "m_decorrelationModel"        : "1NP_v1",
+    "m_systName"                  : "All" if o.runAllSyst else "",
+    "m_systVal"                   : 1.0,
+    "m_esModel"                   : "es2018_R21_v0", # recommendation as of May 11 2020
+    "m_decorrelationModel"        : "1NP_v1",        # likely sufficient for our needs (NPs summed in quadrature)
+    "m_outputAlgoSystNames"       : "ElectronCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_sort"                      : True,
     "m_msgLevel"                  : "Info"
@@ -225,6 +252,9 @@ ElectronSelectorDict = {
     #----------------------- PID ------------- ----------------------------#
     "m_doLHPIDcut"                : False,
     "m_LHOperatingPoint"          : "Medium",
+    #----------------------- Systematics ----------------------------#
+    "m_inputAlgoSystNames"        : "ElectronCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "ElectronSelector_Syst",
     #----------------------- configurable cuts ----------------------------#
     "m_pass_max"                  : -1,
     "m_pass_min"                  : -1,
@@ -240,7 +270,6 @@ ElectronSelectorDict = {
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
-    # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
 }
 # Annoyingly, we must run the ElectronSelector algorithm in order to store quality parameters even in the input container.
@@ -294,22 +323,6 @@ for augstr in AugmentationVersionStrings:
         "m_msgLevel"             : "Info",
     }
     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
-
-if o.altVSIstr != "None":
-    Dict_VertexMatcher_Alt = {
-        "m_name"                            : "VertexMatch"+o.altVSIstr ,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr , 
-        "m_doTruth"                         : True,
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-        "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-        }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
-
 
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -372,20 +385,18 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inputAlgos"                    : ",".join(["MuonSelector_Syst", "ElectronSelector_Syst"]) if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
-    "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "SelectedTruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton effSF PIDSF_Medium TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",

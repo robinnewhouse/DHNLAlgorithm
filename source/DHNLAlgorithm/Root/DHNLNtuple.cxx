@@ -52,6 +52,7 @@ DHNLNtuple::DHNLNtuple() :
     m_inMuContainerName = "";
     m_inElContainerName = "";
     m_inTruthParticleContainerName = "";
+    m_inputAlgos = "";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
     m_writeTree = true;
@@ -71,7 +72,6 @@ DHNLNtuple::DHNLNtuple() :
     m_truthVertexContainerName = "";
     m_truthVertexDetailStr = "";
     m_truthParticleDetailString = "";
-    m_AltAugmentationVersionString = "";
     m_suppressTrackFilter = true;
 
 }
@@ -125,9 +125,8 @@ EL::StatusCode DHNLNtuple::initialize() {
     }
 
 
-      // Parse altVSIstr list, split by comma, and put into a vector for later use
+      // Parse m_secondaryVertexContainerNameList list, split by comma, and put into a vector for later use
       // Make sure it's not empty!
-      //
       if ( m_secondaryVertexContainerNameList.empty() ) {
           ANA_MSG_ERROR("Empty secondaryVertexContainerName List!!!");
       }
@@ -231,45 +230,57 @@ EL::StatusCode DHNLNtuple::execute() {
 //    if (doCutflow)
 //        DHNLFunctions::passCut(m_cutflowHist, m_cutflowHistW, m_iCutflow, m_mcEventWeight); //TriggerEfficiency
 
-    string m_inputAlgo = "";
-    if( m_inputAlgo == "" ) {
-      // executeAnalysis
-      ANA_MSG_INFO("IMPLEMENT FILL TREE. m_inputAlgo = " << m_inputAlgo);
-    }
-    else { // get the list of systematics to run over
-  
-      // get vector of strings giving the names
-      std::vector<std::string>* systNames = nullptr;
-      if ( m_store->contains< std::vector<std::string> >( m_inputAlgo ) )
-      {
-        if(!m_store->retrieve( systNames, m_inputAlgo ).isSuccess())
-        {
-          ANA_MSG_INFO("Cannot find vector from " << m_inputAlgo);
-          return StatusCode::FAILURE;
+    // Prepare systematic trees
+    std::vector<std::string> allSystematicTrees = {};
+    vector<string> systAlgs;
+    boost::split(systAlgs, m_inputAlgos, boost::is_any_of(","));
+
+//    m_store->print();
+    
+    for (auto alg : systAlgs) {
+        ANA_MSG_DEBUG("Will add systematics from algorithm: " << alg);
+        std::vector<std::string> *systNames = nullptr;
+        if (m_store->contains<std::vector<std::string> >(alg)) {
+            if (!m_store->retrieve(systNames, alg).isSuccess()) {
+                ANA_MSG_INFO("Cannot find vector from " << alg);
+                return StatusCode::FAILURE;
+            }
+            // Add every systematic for this object type to allSystematicTrees
+            for (auto sys : *systNames)
+                allSystematicTrees.push_back(sys);
         }
-      }
-  
-      for( auto systName : *systNames ) {
-        ANA_MSG_DEBUG("execute() : Systematic Loop " << systName);
 
-        ANA_MSG_INFO("IMPLEMENT FILL TREE. m_inputAlgo = " << m_inputAlgo);
-      }
-  
+    }
+    for (auto sys : allSystematicTrees)
+        ANA_MSG_DEBUG("Systematic added: " << sys);
+
+
+    if (m_inputAlgos.empty()) {
+        // executeAnalysis
+        fillTree(); // Fill nominal tree (no systematics)
+    } else {
+        for (auto systName : allSystematicTrees) {
+            ANA_MSG_DEBUG("execute() : Systematic Loop " << systName);
+            fillTree(systName);
+        }
     }
 
-  return EL::StatusCode::SUCCESS;
+    return EL::StatusCode::SUCCESS;
+}
 
-
-
-  std::string systName; // This is a placeholder to be modified when we start doing the analysis with systematics
-    if (m_myTrees.find(systName) == m_myTrees.end()) { AddTree(systName); } // Get tree or make a new one
+EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
+    
+    // Get the existing ttree associated with this systematic tree. If it can't be found, create a new one.
+    if (m_myTrees.find(systName) == m_myTrees.end()) {
+        AddTree(systName);
+    } 
 
     ANA_MSG_DEBUG("execute() : Get Containers");
 
     const xAOD::EventInfo *eventInfo = nullptr;
-    if(not m_eventInfoContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
-    if (eventInfo) { 
+    if (not m_eventInfoContainerName.empty()) ANA_CHECK (
+            HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
+    if (eventInfo) {
         m_myTrees[systName]->FillEvent(eventInfo, m_event);
         m_myTrees[systName]->FillTrigger(eventInfo);
     }
@@ -334,26 +345,15 @@ EL::StatusCode DHNLNtuple::execute() {
 
 
      // Fill the secondary vertices from the list
-    if (m_secondaryVertexContainerNameKeys.size()>0 and not m_AugmentationVersionStringKeys.empty()) { 
+    if (!m_secondaryVertexContainerNameKeys.empty() and not m_AugmentationVersionStringKeys.empty()) { 
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-			ANA_MSG_DEBUG("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]<<" m_AltAugmentationVersionString is : "<<m_AltAugmentationVersionString);
-            if (m_AugmentationVersionStringKeys[i] == m_AltAugmentationVersionString and not m_AltAugmentationVersionString.empty()) continue; // check you do not fill same as alt VSI twice
+			ANA_MSG_DEBUG("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]);
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
             if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchNameKeys[i], m_suppressTrackFilter);
         }
-       
     }
-
-    // Fill the alternative secondary vertex container from command line if required 
-    if (not m_secondaryVertexContainerNameAlt.empty() and m_AltAugmentationVersionString != "None" ) { 
-        const xAOD::VertexContainer *inSecVertsAlt = nullptr;
-        ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
-        if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
-    }
-
-
-
+    
     ANA_MSG_DEBUG("Event # " << m_eventCounter);
     m_myTrees[systName]->Fill();
     ANA_MSG_DEBUG("Tree Written");
@@ -366,31 +366,45 @@ void DHNLNtuple::AddTree(std::string name) {
 
     ANA_MSG_DEBUG("AddTree");
 
+    // Set up tree with systematic suffix. Can be empty suffix.
     std::string treeName("outTree");
     // naming convention
     treeName += name; // add systematic
     auto *outTree = new TTree(treeName.c_str(), treeName.c_str());
     TFile *treeFile = wk()->getOutputFile(m_treeStream);
     outTree->SetDirectory(treeFile);
-
+    
     DHNLMiniTree *miniTree = new DHNLMiniTree(m_event, outTree, treeFile, m_store); //!!j
 
+    // Event
     if (not m_eventDetailStr.empty()) miniTree->AddEvent(m_eventDetailStr);
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
-    if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
-    if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
-    if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
+    
+    // Leptons
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
+
+    // Tracks
+    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
+
+    // MET
+    if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
+    if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
+    
+    // Jets
+    if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
-    if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
-		
+    
+    // Secondary Vertices
+    if (!m_secondaryVertexBranchNameKeys.empty() and not m_secondaryVertexDetailStr.empty()) {
+		// loop over multiple SV containers
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-             ANA_MSG_INFO("Adding m_secondaryVertexContainerNameKeys");
-			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
-    if (m_AltAugmentationVersionString != "None" ) { 
-        miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
+             ANA_MSG_INFO("Adding secondary vertex container: " << m_secondaryVertexBranchNameKeys[i]);
+			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); 
+        } 
+    }
+    
+    // Truth
     if (m_isMC){ 
         miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
         miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName); 

@@ -283,7 +283,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
 		    MuonsPerEvent+=1;
-//        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
+
             if (not(m_inMuContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
                 muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");

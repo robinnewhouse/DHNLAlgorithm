@@ -27,6 +27,9 @@
 
 #include <sstream>
 
+// Other includes
+#include <boost/algorithm/string.hpp>
+
 class DHNLNtuple : public xAH::Algorithm {
 public:
 
@@ -34,6 +37,7 @@ public:
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
     bool m_writeTree;                 // true will write out a TTree
+    std::string m_inputAlgos;           // input algos for when running systs, separated by ","
     std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
     bool m_useMCPileupCheck;          // determined by name of MCPileupCheckContainer
     float m_leadingJetPtCut;          // Leading jet Pt cut
@@ -71,21 +75,16 @@ public:
     std::string m_secondaryVertexDetailStr;
     std::string m_truthParticleDetailString;
 
-    //std::string m_secondaryVertexContainerName;
-    //std::string m_secondaryVertexBranchName;
-    std::string m_AltAugmentationVersionString;
-    std::string m_secondaryVertexContainerNameAlt;
-    std::string m_secondaryVertexBranchNameAlt;
     bool m_suppressTrackFilter; // turn on and off VSI bonsai track filter
 
 
-    std::string m_secondaryVertexContainerNameList = ""; // list of secondary vertex container names 
+    std::string m_secondaryVertexContainerNameList; // list of secondary vertex container names 
     std::vector<std::string> m_secondaryVertexContainerNameKeys;
 
-    std::string m_secondaryVertexBranchNameList = ""; // list of secondary vertex branch names 
+    std::string m_secondaryVertexBranchNameList; // list of secondary vertex branch names 
     std::vector<std::string> m_secondaryVertexBranchNameKeys;
 
-    std::string m_AugmentationVersionStringList = ""; // list of the agumentation strings for each vertex container (used by VSI bonsai)
+    std::string m_AugmentationVersionStringList; // list of the agumentation strings for each vertex container (used by VSI bonsai)
     std::vector<std::string> m_AugmentationVersionStringKeys;
 
 
@@ -114,32 +113,20 @@ public:
 
     EL::StatusCode execute() override;
 
-    EL::StatusCode finalize() override;
-    
-    virtual EL::StatusCode histFinalize ();
+    EL::StatusCode fillTree(std::string systName = "");
 
+    EL::StatusCode finalize() override;
+
+    virtual EL::StatusCode histFinalize();
 
     void AddTree(std::string name);
 
     // these are the functions not inherited from Algorithm
     virtual EL::StatusCode configure();
 
-//    bool fillTree(const xAOD::EventInfo *eventInfo,
-//                  const xAOD::JetContainer *signalJets,
-//                  const xAOD::JetContainer *truthJets,
-//                  const xAOD::JetContainer *allJets,
-//                  const xAOD::MuonContainer *allMuons,
-//                  const xAOD::ElectronContainer *allElectrons,
-//                  const xAOD::VertexContainer *vertices,
-//                  const xAOD::TrackParticleContainer *tracks,
-//                  const xAOD::TruthParticleContainer *TruthPart,
-//                  const xAOD::MissingETContainer *Met,
-//                  const xAOD::MissingETContainer *MetTrk,
-//                  bool count,
-//                  std::string systName = "");
-
     // this is needed to distribute the algorithm to the workers
 ClassDef(DHNLNtuple, 1);
+
 };
 
 #endif //DHNL_DHNLNTUPLE_H
