@@ -94,14 +94,8 @@ test_emptiness:
     - histograms
   image: rootproject/root-conda:6.18.04
   before_script:
-    - cd $WORKDIR/ci/test
-    - pwd
-    - ls
+    - cd $WORKDIR/ci/tests
   script:
-    - cd $WORKDIR/ci/test
-    - pwd
-    - ls
-    - cd /builds/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm/ci/test
     - python test_emptiness.py ../hists.root
 
 upload_tests:
