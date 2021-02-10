@@ -201,11 +201,6 @@ EL::StatusCode VSITrackSelection::histFinalize() {
     return EL::StatusCode::SUCCESS;
 }
 
-bool VSITrackSelection::PassCuts( const xAOD::TrackParticle* trk) {
-    
-}
-
-
 //____________________________________________________________________________________________________
 bool VSITrackSelection::selectTrack_d0Cut       ( const xAOD::TrackParticle* trk ) const { return ( fabs( trk->d0() ) > m_jp_d0TrkPVDstMinCut && fabs( trk->d0() ) < m_jp_d0TrkPVDstMaxCut ); }
 bool VSITrackSelection::selectTrack_z0Cut       ( const xAOD::TrackParticle* trk ) const { return ( fabs( trk->z0() ) > m_jp_z0TrkPVDstMinCut && fabs( trk->z0() ) < m_jp_z0TrkPVDstMaxCut ); }

@@ -131,8 +131,6 @@ public:
     virtual EL::StatusCode histFinalize ();
 
     // added functions not from Algorithm
-    bool PassCuts( const xAOD::TrackParticle* jet);
-
 
     /** track-by-track selection strategies */
     bool selectTrack_notPVassociated ( const xAOD::TrackParticle* ) const;
