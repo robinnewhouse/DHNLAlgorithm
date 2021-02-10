@@ -19,6 +19,23 @@
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 
+namespace VKalVrtAthena {
+
+    extern bool isAssociatedToVertices( const xAOD::TrackParticle *trk, const xAOD::VertexContainer* vertices );
+
+    extern double vtxVtxDistance( const Amg::Vector3D& v1, const Amg::Vector3D& v2 );
+
+}
+
+namespace AlgConsts {
+    constexpr double infinitesimal            =  1.e-9;
+    constexpr double maxValue                 =  1.e10;
+    constexpr double chi2PerTrackInitValue    =  1.e5;
+    constexpr double minVertexChi2Probability =  1.e-3;
+    constexpr double invalidFloat             = -9999.;
+    constexpr int    invalidInt               = -9999;
+    constexpr unsigned invalidUnsigned        =  9999;
+}
 
 class VSITrackSelection : public xAH::Algorithm
 {
@@ -94,6 +111,10 @@ private:
 
     using TrackSelectionAlg = StatusCode (VSITrackSelection::*)();
     std::vector<TrackSelectionAlg> m_trackSelectionAlgs; //!
+
+    /** track selection */
+    using CutFunc = bool (VSITrackSelection::*) ( const xAOD::TrackParticle* ) const;
+    std::vector<CutFunc> m_trackSelectionFuncs;
 
     const xAOD::VertexContainer*  m_primaryVertices;
 

@@ -12,6 +12,17 @@
 #include "DHNLAlgorithm/VSITrackSelection.h"
 
 #include "xAODEgamma/ElectronxAODHelpers.h"
+#include <EventLoop/Job.h>
+#include <EventLoop/Worker.h>
+#include "EventLoop/OutputStream.h"
+#include "xAODTracking/TrackParticle.h"
+#include "xAODTracking/TrackParticlexAODHelpers.h"
+#include "xAODMuon/MuonContainer.h"
+#include "xAODEgamma/ElectronContainer.h"
+
+#include "DVAnalysisBase/DVHelperFunctions.h"
+#include <xAODAnaHelpers/HelperFunctions.h>
+#include <xAODAnaHelpers/HelperFunctions.h>
 
 #include <iostream>
 
@@ -113,13 +124,11 @@ EL::StatusCode VSITrackSelection::initialize() {
 
 
     // Track selection algorithm configuration
-    if( m_jp_doSelectTracksFromMuons )     { m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksFromMuons );     }
-    if( m_jp_doSelectTracksFromElectrons ) { m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksFromElectrons ); }
+    if( m_jp_doSelectTracksFromMuons )     { m_trackSelectionAlgs.emplace_back( &VSITrackSelection::selectTracksFromMuons );     }
+    if( m_jp_doSelectTracksFromElectrons ) { m_trackSelectionAlgs.emplace_back( &VSITrackSelection::selectTracksFromElectrons ); }
     // if none of the above two flags are activated, use ID tracks (default)
-    if( !m_jp.doSelectTracksFromMuons && !m_jp.doSelectTracksFromElectrons ) {
-
-        m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksInDet );
-
+    if( !m_jp_doSelectTracksFromMuons && !m_jp_doSelectTracksFromElectrons ) {
+        m_trackSelectionAlgs.emplace_back( &VSITrackSelection::selectTracksInDet );
     }
 
 
