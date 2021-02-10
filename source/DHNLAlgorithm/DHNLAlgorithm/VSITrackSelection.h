@@ -8,6 +8,10 @@
 // ROOT include(s):
 #include "TH1D.h"
 
+// Framework include(s)
+#include <EventLoop/StatusCode.h>
+#include <EventLoop/Algorithm.h>
+
 //algorithm wrapper
 #include "xAODAnaHelpers/Algorithm.h"
 
@@ -104,6 +108,7 @@ public:
     VSITrackSelection ();
 
     // these are the functions inherited from Algorithm
+    virtual EL::StatusCode VSITrackSelection::configure();
     virtual EL::StatusCode setupJob (EL::Job& job);
     virtual EL::StatusCode fileExecute ();
     virtual EL::StatusCode histInitialize ();
@@ -139,6 +144,10 @@ public:
     StatusCode selectTracksFromElectrons();
 
 
+    /// @cond
+    // this is needed to distribute the algorithm to the workers
+    ClassDef(VSITrackSelection, 1);
+    /// @endcond
 };
 
 #endif //DHNL_VSITRACKSELECTION_H

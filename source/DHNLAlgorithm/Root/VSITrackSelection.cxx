@@ -54,7 +54,8 @@ EL::StatusCode VSITrackSelection::setupJob(EL::Job &job) {
     // sole advantage of putting it here is that it gets automatically
     // activated/deactivated when you add/remove the algorithm from your
     // job, which may or may not be of value to you.
-    job.useXAOD();
+
+    job.useXAOD ();;
     xAOD::Init("VSITrackSelection").ignore(); // call before opening first file
 
     return EL::StatusCode::SUCCESS;
@@ -114,8 +115,12 @@ EL::StatusCode VSITrackSelection::initialize() {
     // Track selection algorithm configuration
     if( m_jp_doSelectTracksFromMuons )     { m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksFromMuons );     }
     if( m_jp_doSelectTracksFromElectrons ) { m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksFromElectrons ); }
-    // select leptons from fake tracks for shuffled bkg estimate in HNL analysis
-    if( m_jp_doSelectLeptonsFromFakeTracks ) { m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectFakeLeptons ); }
+    // if none of the above two flags are activated, use ID tracks (default)
+    if( !m_jp.doSelectTracksFromMuons && !m_jp.doSelectTracksFromElectrons ) {
+
+        m_trackSelectionAlgs.emplace_back( &VrtSecInclusive::selectTracksInDet );
+
+    }
 
 
     return EL::StatusCode::SUCCESS;
