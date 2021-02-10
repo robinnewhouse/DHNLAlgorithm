@@ -91,14 +91,14 @@ private:
 
     ConstDataVector<xAOD::TrackParticleContainer>* m_selectedTracks = 0; //!
 
-    using TrackSelectionAlg = StatusCode (VSITrackSelection::*)();
+    using TrackSelectionAlg = StatusCode (VSITrackSelection::*)();  //!
     std::vector<TrackSelectionAlg> m_trackSelectionAlgs; //!
 
     /** track selection */
-    using CutFunc = bool (VSITrackSelection::*) ( const xAOD::TrackParticle* ) const;
-    std::vector<CutFunc> m_trackSelectionFuncs;
+    using CutFunc = bool (VSITrackSelection::*) ( const xAOD::TrackParticle* ) const;  //!
+    std::vector<CutFunc> m_trackSelectionFuncs;  //!
 
-    const xAOD::VertexContainer*  m_primaryVertices;
+    const xAOD::VertexContainer*  m_primaryVertices;  //!
 
 
     // variables that don't get filled at submission time should be
@@ -108,41 +108,41 @@ public:
 
 
     // this is a standard constructor
-    VSITrackSelection ();
+    VSITrackSelection ();  //!
 
     // these are the functions inherited from Algorithm
-    virtual EL::StatusCode configure();
-    virtual EL::StatusCode setupJob (EL::Job& job);
-    virtual EL::StatusCode fileExecute ();
-    virtual EL::StatusCode histInitialize ();
-    virtual EL::StatusCode changeInput (bool firstFile);
-    virtual EL::StatusCode initialize ();
-    virtual EL::StatusCode execute ();
-    virtual EL::StatusCode postExecute ();
-    virtual EL::StatusCode finalize ();
-    virtual EL::StatusCode histFinalize ();
+    virtual EL::StatusCode configure();  //!
+    virtual EL::StatusCode setupJob (EL::Job& job);  //!
+    virtual EL::StatusCode fileExecute ();  //!
+    virtual EL::StatusCode histInitialize ();  //!
+    virtual EL::StatusCode changeInput (bool firstFile);  //!
+    virtual EL::StatusCode initialize ();  //!
+    virtual EL::StatusCode execute ();  //!
+    virtual EL::StatusCode postExecute ();  //!
+    virtual EL::StatusCode finalize ();  //!
+    virtual EL::StatusCode histFinalize ();  //!
 
     // added functions not from Algorithm
 
     /** track-by-track selection strategies */
-    bool selectTrack_notPVassociated ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_pTCut           ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_chi2Cut         ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_hitPattern      ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_hitPatternTight ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_d0Cut           ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_z0Cut           ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_d0errCut        ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_z0errCut        ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_d0signifCut     ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_z0signifCut     ( const xAOD::TrackParticle* ) const;
-    bool selectTrack_LRTR3Cut        ( const xAOD::TrackParticle* ) const;
+    bool selectTrack_notPVassociated ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_pTCut           ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_chi2Cut         ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_hitPattern      ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_hitPatternTight ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_d0Cut           ( const xAOD::TrackParticle* ) const;  //!
+    bool selectTrack_z0Cut           ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_d0errCut        ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_z0errCut        ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_d0signifCut     ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_z0signifCut     ( const xAOD::TrackParticle* ) const; //!
+    bool selectTrack_LRTR3Cut        ( const xAOD::TrackParticle* ) const; //!
 
     /** select tracks which become seeds for vertex finding */
-    void selectTrack( const xAOD::TrackParticle* );
-    StatusCode selectTracksInDet();
-    StatusCode selectTracksFromMuons();
-    StatusCode selectTracksFromElectrons();
+    void selectTrack( const xAOD::TrackParticle* ); //!
+    StatusCode selectTracksInDet(); //!
+    StatusCode selectTracksFromMuons(); //!
+    StatusCode selectTracksFromElectrons(); //!
 
 
     /// @cond
