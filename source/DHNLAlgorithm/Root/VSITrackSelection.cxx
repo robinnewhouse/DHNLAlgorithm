@@ -9,7 +9,7 @@
 */
 
 // Header include
-#include "VSITrackSelection.h"
+#include "DHNLAlgorithm/VSITrackSelection.h"
 
 #include "xAODEgamma/ElectronxAODHelpers.h"
 
