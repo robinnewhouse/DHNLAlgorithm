@@ -87,6 +87,8 @@ private:
     int m_numEvent;         //!
 
     ConstDataVector<xAOD::TrackParticleContainer>* m_selectedTracks = 0; //!
+
+    using TrackSelectionAlg = StatusCode (VSITrackSelection::*)();
     std::vector<TrackSelectionAlg> m_trackSelectionAlgs; //!
 
     const xAOD::VertexContainer*  m_primaryVertices;
