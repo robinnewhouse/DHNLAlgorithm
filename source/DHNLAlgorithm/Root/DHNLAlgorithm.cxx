@@ -334,7 +334,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
                 track->auxdecor<bool>("be_toSave") = false;
                 track->auxdecor<int>("be_type") = (int) TrackType::MUON;
-
+                track->auxdecor<int>("be_muonType") = muon->muonType();
                 continue;
             };
 
@@ -347,6 +347,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::MUON;
+            track->auxdecor<int>("be_muonType") = muon->muonType();
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
@@ -382,6 +383,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
+            track->auxdecor<int>("be_muonType") = -999;
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
@@ -415,6 +417,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
             track->auxdecor<int>("be_quality") = -999;
+            track->auxdecor<int>("be_muonType") = -999;
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();
