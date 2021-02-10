@@ -13,5 +13,6 @@
 #pragma link C++ class DHNLAlgorithm+;
 #pragma link C++ class DHNLFilter+;
 #pragma link C++ class DHNLNtuple+;
+#pragma link C++ class VSITrackSelection+;
 #pragma link C++ class DVNtuple+;
 #endif

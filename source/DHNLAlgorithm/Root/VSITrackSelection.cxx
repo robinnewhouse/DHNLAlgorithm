@@ -9,9 +9,7 @@
 */
 
 // Header include
-#include "VrtSecInclusive/VrtSecInclusive.h"
-#include "VrtSecInclusive/NtupleVars.h"
-#include "VrtSecInclusive/Tools.h"
+#include "VSITrackSelection.h"
 
 #include "xAODEgamma/ElectronxAODHelpers.h"
 
