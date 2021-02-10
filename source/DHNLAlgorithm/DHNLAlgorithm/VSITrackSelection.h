@@ -27,16 +27,6 @@ namespace VKalVrtAthena {
 
 }
 
-namespace AlgConsts {
-    constexpr double infinitesimal            =  1.e-9;
-    constexpr double maxValue                 =  1.e10;
-    constexpr double chi2PerTrackInitValue    =  1.e5;
-    constexpr double minVertexChi2Probability =  1.e-3;
-    constexpr double invalidFloat             = -9999.;
-    constexpr int    invalidInt               = -9999;
-    constexpr unsigned invalidUnsigned        =  9999;
-}
-
 class VSITrackSelection : public xAH::Algorithm
 {
     // put your configuration variables here as public variables.

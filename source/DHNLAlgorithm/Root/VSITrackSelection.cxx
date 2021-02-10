@@ -24,6 +24,8 @@
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODAnaHelpers/HelperFunctions.h>
 
+#include "FactoryTools/AlgConsts.h"
+
 #include <iostream>
 
 #include "TH1D.h"
