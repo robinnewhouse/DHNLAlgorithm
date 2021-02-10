@@ -19,14 +19,6 @@
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 
-namespace VKalVrtAthena {
-
-    extern bool isAssociatedToVertices( const xAOD::TrackParticle *trk, const xAOD::VertexContainer* vertices );
-
-    extern double vtxVtxDistance( const Amg::Vector3D& v1, const Amg::Vector3D& v2 );
-
-}
-
 class VSITrackSelection : public xAH::Algorithm
 {
     // put your configuration variables here as public variables.

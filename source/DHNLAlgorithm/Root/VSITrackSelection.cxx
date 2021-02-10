@@ -35,10 +35,34 @@
 
 //-------------------------------------------------
 
+namespace VKalVrtAthena {
+
+    //____________________________________________________________________________________________________
+    bool isAssociatedToVertices(const xAOD::TrackParticle *trk, const xAOD::VertexContainer *vertices) {
+
+        bool is_pv_associated = false;
+
+        for (auto *vtx : *vertices) {
+            for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) {
+                auto *pvtrk = vtx->trackParticle(iv);
+                if (trk == pvtrk) {
+                    is_pv_associated = true;
+                    break;
+                }
+            }
+        }
+        return is_pv_associated;
+    }
+
+    //____________________________________________________________________________________________________
+    double vtxVtxDistance(const Amg::Vector3D &v1, const Amg::Vector3D &v2) {
+        return (v1 - v2).norm();
+    }
+}
+
 using namespace std;
 
-
-// this is needed to distribute the algorithm to the workers
+    // this is needed to distribute the algorithm to the workers
 ClassImp(VSITrackSelection)
 
 VSITrackSelection::VSITrackSelection() : Algorithm("VSITrackSelection") {
