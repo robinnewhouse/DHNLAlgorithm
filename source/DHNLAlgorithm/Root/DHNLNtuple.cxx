@@ -250,6 +250,11 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
+    const xAOD::ElectronContainer *allElectrons = nullptr;
+    if (not m_inElContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
+    if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
+	
     const xAOD::TrackParticleContainer *tracks = nullptr;
     if (not m_trackParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
@@ -280,10 +285,7 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
     if (allMuons) m_myTrees[systName]->FillMuons(allMuons, HelperFunctions::getPrimaryVertex(vertices));
 
-    const xAOD::ElectronContainer *allElectrons = nullptr;
-    if (not m_inElContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
-    if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
+// the place where the fill function of the electron was
 
     const xAOD::JetContainer *allJets = nullptr;
     if (not m_allJetContainerName.empty()) 

@@ -367,7 +367,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             if (track == nullptr) continue;
 
             // Quality data
-            track->auxdecor<int>("be_quality") = -998;
+            //track->auxdecor<int>("be_quality") = -998;
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
@@ -403,7 +403,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             track->auxdecor<bool>("be_toSave") = true;
             track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
-            track->auxdecor<int>("be_quality") = -999;
+            //track->auxdecor<int>("be_quality") = -999;
 
             track->auxdecor<float_t>("be_vx") = track->vx();
             track->auxdecor<float_t>("be_vy") = track->vy();

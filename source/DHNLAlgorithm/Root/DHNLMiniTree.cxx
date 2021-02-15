@@ -4,6 +4,8 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
+#include <xAODEgamma/ElectronxAODHelpers.h>
+
 
 
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
@@ -211,19 +213,32 @@ void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::
     val_vloose = (bool)m_LHToolVeryLoose->accept(electron);
     val_vvloose = (bool)m_LHToolVeryVeryLoose->accept(electron);
     val_vvloosesi = (bool)m_LHToolVeryVeryLooseSi->accept(electron);
+	
+	const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
+	// if electron->empty...?
 
-   if(val_vloose)
-      m_electron_isVeryLoose.push_back(val_vvloose);
-    else m_electron_isVeryLoose.push_back(false);
-
-   if(val_vvloose)
+	
+   if(val_vloose){
+      m_electron_isVeryLoose.push_back(val_vloose);
+	  track->auxdecor<int>("be_quality") = 1;
+	  Info("fillElectron VAL_LOOSE", "BEEN HERE!!!!!");
+   }
+	else m_electron_isVeryLoose.push_back(false);
+   
+   if(val_vvloose){
       m_electron_isVeryVeryLoose.push_back(val_vvloose);
-    else m_electron_isVeryVeryLoose.push_back(false);
-
-   if(val_vvloosesi)
+	  track->auxdecor<int>("be_quality") = 2;	
+	  Info("fillElectron VAL_VERY_LOOSE", "BEEN HERE!!!!");
+	}
+	else m_electron_isVeryVeryLoose.push_back(false);
+	
+   if(val_vvloosesi){
       m_electron_isVeryVeryLooseSi.push_back(val_vvloosesi);
-    else m_electron_isVeryVeryLooseSi.push_back(false);
-
+	  track->auxdecor<int>("be_quality") = 3;
+	  Info("fillElectron VAL_VERY_LOOSE", "BEEN HERE!!!!");
+   }
+	else m_electron_isVeryVeryLooseSi.push_back(false);
+   
     if (electron->isAvailable<int>("index"))
         m_electron_index.push_back(electron->auxdecor<int>("index"));
 
