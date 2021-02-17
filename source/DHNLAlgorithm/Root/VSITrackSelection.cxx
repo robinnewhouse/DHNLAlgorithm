@@ -450,6 +450,7 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
 
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
     }
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total ID tracks   = " << trackParticleContainer->size() );
@@ -506,6 +507,7 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
 
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
 
 
         m_selectedTracks->emplace_back( trk );
@@ -561,6 +563,7 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
 
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
 
         selectTrack( trk );
         
@@ -615,6 +618,7 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
 
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
 
         selectTrack( trk );
 
