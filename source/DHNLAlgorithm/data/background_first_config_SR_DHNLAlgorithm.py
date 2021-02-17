@@ -74,7 +74,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : True,
+    "m_applyTriggerCut"           : False,
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -312,35 +312,6 @@ TruthVertexSelectorDict = {
 #     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-DHNLDict = {
-    "m_name"                    : "DHNLAlgo",
-    #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"      : "SignalJets",
-    "m_inputAlgo"               : "SignalJets_Algo",
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
-    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
-    #----------------------- Selections ----------------------------#
-    "m_leadingJetPtCut"         : 20,
-    "m_subleadingJetPtCut"      : 20,
-    "m_jetMultiplicity"         : 2,
-    "m_useMCPileupCheck"        : False,
-    "m_metCut"                  : 20000,
-    "m_doInverseLeptonControlRegion"   : False,
-    "m_backgroundEstimationBranches"   : True,
-    #----------------------- Other ----------------------------#
-    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
-}
-
-c.algorithm("DHNLAlgorithm", DHNLDict )
-
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection (LepMod) %%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -388,12 +359,46 @@ VSITrackSelectionDict = {
     "m_jp_doRemoveCaloTaggedMuons": True,
     "m_jp_doSelectTracksFromElectrons": True,
     "m_jp_doSelectTracksWithLRTCuts": True,
+    "m_jp_addInDetHadrons" : True,
 
     #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
+    "m_msgLevel"             : "Debug",
 }
 
 c.algorithm("VSITrackSelection", VSITrackSelectionDict )
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+DHNLDict = {
+    "m_name"                    : "DHNLAlgo",
+    #----------------------- Container Flow ----------------------------#
+    "m_inJetContainerName"      : "SignalJets",
+    "m_inputAlgo"               : "SignalJets_Algo",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
+    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_inMuContainerName"       : "Muons_Calibrate",
+    "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_inDetTrackParticlesContainerName" : "InDetTrackParticles_Selected",
+    # "m_inMETContainerName"      : "MET",
+    # "m_inMETTrkContainerName"   : "METTrk",
+    #----------------------- Selections ----------------------------#
+    "m_leadingJetPtCut"         : 20,
+    "m_subleadingJetPtCut"      : 20,
+    "m_jetMultiplicity"         : 2,
+    "m_useMCPileupCheck"        : False,
+    "m_metCut"                  : 20000,
+    "m_doInverseLeptonControlRegion"   : False,
+    "m_backgroundEstimationBranches"   : True,
+    #----------------------- Other ----------------------------#
+    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
+    "m_msgLevel"                : "Info",
+}
+
+c.algorithm("DHNLAlgorithm", DHNLDict )
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
