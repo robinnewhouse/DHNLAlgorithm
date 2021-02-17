@@ -186,7 +186,7 @@ EL::StatusCode VSITrackSelection::execute() {
         ATH_CHECK( (this->*alg)() );
     }
 
-    for( auto trk = m_selectedTracks.begin(); trk != m_selectedTracks.end(); ++trk ) {
+    for( auto trk = m_selectedTracks->begin(); trk != m_selectedTracks->end(); ++trk ) {
         trk->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
         trk->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
     }
