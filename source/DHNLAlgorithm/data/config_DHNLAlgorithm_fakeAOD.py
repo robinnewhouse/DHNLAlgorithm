@@ -16,9 +16,9 @@ c = Config()
 
 # vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
 if o.isSUSY15:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_fake", "VrtSecInclusive_SecondaryVertices_LRTR3_1p0_fake"]
-    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons","secVtx_VSIMod"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_LRTR3_1p0_fake","_LRTR3_1p0_fake"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_fake"]
+    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_fake"]
 
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
