@@ -16,6 +16,7 @@
 #include <EventLoop/Worker.h>
 #include "EventLoop/OutputStream.h"
 #include "xAODTracking/TrackParticle.h"
+#include "xAODTracking/TrackParticleContainer.h"
 #include "xAODTracking/TrackParticlexAODHelpers.h"
 #include "xAODMuon/MuonContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
@@ -155,6 +156,9 @@ EL::StatusCode VSITrackSelection::initialize() {
     // if none of the above two flags are activated, use ID tracks (default)
     if( !m_jp_doSelectTracksFromMuons && !m_jp_doSelectTracksFromElectrons ) {
         m_trackSelectionAlgs.emplace_back( &VSITrackSelection::selectTracksInDet );
+    }
+    if (m_jp_addInDetHadrons) {
+         m_trackSelectionAlgs.emplace_back( &VSITrackSelection::selectTracksInDetHadronOverlay ); // add hadrons only to track selection
     }
 
 
@@ -336,6 +340,12 @@ bool VSITrackSelection::selectTrack_LRTR3Cut( const xAOD::TrackParticle* trk ) c
 //____________________________________________________________________________________________________
 void VSITrackSelection::selectTrack( const xAOD::TrackParticle* trk ) {
 
+    if( !m_decor_isSelected ) {
+        m_decor_isSelected = std::make_unique< SG::AuxElement::Decorator< char > >( "DHNLAlg_is_selected");
+        ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": making unique DHNLAlg_is_selected decorator for the tracks" );
+    }
+
+
     // Setup cut functions
     if( 0 == m_trackSelectionFuncs.size() && !m_jp_passThroughTrackSelection ) {
 
@@ -367,7 +377,18 @@ void VSITrackSelection::selectTrack( const xAOD::TrackParticle* trk ) {
     bool isGood_standard = ( std::find( cutBits.begin(), cutBits.end(), false ) == cutBits.end() );
 
     if( isGood_standard ) {
-
+        (*m_decor_isSelected)( *trk ) = true;
+        if (m_jp_doSelectTracksFromElectrons) {  
+            const xAOD::TrackParticle *id_tr;
+            id_tr = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+            if (id_tr != nullptr){
+                if (!id_tr->isAvailable<char>("DHNLAlg_is_selected")) { // do not decorte inner detector particle again if the muon was already decorated.
+                ATH_MSG_DEBUG( " > " << __FUNCTION__ << ":  Decorating the ID track matched to selected GSF track!" );
+                (*m_decor_isSelected)( *id_tr ) = true; 
+                }
+            }
+        }
+        
         // Store the selected track to the new m_selectedTracks
         // Here we firstly need to register the empty pointer to the m_selectedTracks,
         // then need to do deep copy after then. This is the feature of xAOD.
@@ -402,6 +423,42 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
 
 
 //____________________________________________________________________________________________________
+StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
+
+    ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": begin"  );
+
+    //--------------------------------------------------------
+    //  Extract tracks from xAOD::TrackParticle container
+    //
+
+    const xAOD::TrackParticleContainer* trackParticleContainer ( nullptr );
+    ATH_CHECK( evtStore()->retrieve( trackParticleContainer, m_inDetTrackParticlesContainerName) );
+    ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Retrieving Track Collection =" << m_inDetTrackParticlesContainerName );
+
+    ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Extracted xAOD::TrackParticle number=" << trackParticleContainer->size() );
+
+    // Loop over tracks
+    for( auto *trk : *trackParticleContainer ) { 
+        // xAOD::TrackParticle::ConstAccessor<char>  trackPass("DHNLAlg_is_selected");
+        // if (trackPass.isAvailable(trk) and trackPass(trk) ) {
+        ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Skipping Already Selected InDetTrack (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
+        continue;
+        // } 
+        if(  std::find( m_selectedTracks->begin(), m_selectedTracks->end(), trk ) != m_selectedTracks->end() ) continue;
+        m_selectedTracks->emplace_back( trk );
+        ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Added Hadron (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
+        
+    }
+
+
+    ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total ID tracks   = " << trackParticleContainer->size() );
+    ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of selected tracks   = " << m_selectedTracks->size() );
+
+    return StatusCode::SUCCESS;
+}
+
+
+//____________________________________________________________________________________________________
 StatusCode  VSITrackSelection::selectTracksFromMuons() {
 
     const xAOD::MuonContainer* muons ( nullptr );
@@ -417,6 +474,14 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
             if (muon->muonType() == xAOD::Muon::CaloTagged) continue;
         }
         selectTrack( trk );
+        
+        if (trk->isAvailable<char>("DHNLAlg_is_selected")) {
+            if (trk->auxdataConst<char>("DHNLAlg_is_selected")) {
+                ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected Muon (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
+
+            }
+        } 
+        
 
     }
 
@@ -441,7 +506,20 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
 
         if( !trk ) continue;
         selectTrack( trk );
+
+        if (trk->isAvailable<char>("DHNLAlg_is_selected")) {
+            if (trk->auxdataConst<char>("DHNLAlg_is_selected")) {
+                ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected GSF Electron (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
+                const xAOD::TrackParticle *id_tr;
+                id_tr = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+                ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected InDet Electron (pt,eta,phi) = " << id_tr->pt() << " , "<< id_tr->eta() <<" , " << id_tr->phi());
+                ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Does the InDetTrack Track have a decoration? " << id_tr->isAvailable<char>("DHNLAlg_is_selected") );
+
+            }
+        }     
     }
+
+    
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total electrons   = " << electrons->size() );
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of selected tracks   = " << m_selectedTracks->size() );
