@@ -359,7 +359,7 @@ VSITrackSelectionDict = {
     "m_jp_doRemoveCaloTaggedMuons": True,
     "m_jp_doSelectTracksFromElectrons": True,
     "m_jp_doSelectTracksWithLRTCuts": True,
-    "m_jp_addInDetHadrons" : True,
+    "m_jp_addInDetHadrons" : False,
 
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Debug",
