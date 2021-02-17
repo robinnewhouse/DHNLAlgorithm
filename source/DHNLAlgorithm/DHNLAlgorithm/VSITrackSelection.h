@@ -79,12 +79,15 @@ public:
     bool m_jp_doSelectTracksFromMuons;
     bool m_jp_doRemoveCaloTaggedMuons;
     bool m_jp_doSelectTracksFromElectrons;
+    bool m_jp_addInDetHadrons;
 
     // When doSelectTracksWithLRTCuts is set to true, the addtional track cuts
     // be applied to the selected tracks to reduce the number of fake tracks in
     // the selected track collected. These cuts are inspired by the improvments that
     // were implmented for LRT Run 3.
     bool m_jp_doSelectTracksWithLRTCuts ;
+
+
 
 private:
     int m_numEvent;         //!
@@ -104,6 +107,11 @@ private:
     // variables that don't get filled at submission time should be
     // protected from being send from the submission node to the worker
     // node (done by the //!)
+
+    // Track selection decorator for track after the track is decorated
+    std::unique_ptr< SG::AuxElement::Decorator< char > > m_decor_isSelected;
+
+
 public:
 
 
@@ -143,6 +151,8 @@ public:
     StatusCode selectTracksInDet(); //!
     StatusCode selectTracksFromMuons(); //!
     StatusCode selectTracksFromElectrons(); //!
+    StatusCode selectTracksInDetHadronOverlay(); //!
+    
 
 
     /// @cond
