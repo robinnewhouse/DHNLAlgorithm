@@ -16,9 +16,9 @@ c = Config()
 
 # vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
 if o.isSUSY15:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_LRTR3_1p0_fake"]
-    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons","secVtx_VSI"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_LRTR3_1p0_fake","_LRTR3_1p0_fake"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_fake"]
+    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_fake"]
 
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
@@ -121,7 +121,7 @@ DHNLFilterDict = {
     "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
 
     #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
@@ -141,7 +141,7 @@ MuonCalibratorDict = {
     #----------------------- Other ----------------------------#
     "m_forceDataCalib"            : False,
     "m_sort"                      : True,
-    "m_msgLevel"                  : "Debug"
+    "m_msgLevel"                  : "Info"
 }
 
 c.algorithm("MuonCalibrator", MuonCalibratorDict )
@@ -287,7 +287,7 @@ for augstr in AugmentationVersionStrings:
         "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
         "m_inTrackParticleContainerName"   : "TracksForVSI",
         #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Debug",
+        "m_msgLevel"             : "Info",
     }
     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
 
@@ -303,7 +303,7 @@ if o.altVSIstr != "None":
         "m_inElContainerName"               : "Electrons",
         "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
         #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Debug",
+        "m_msgLevel"             : "Info",
         }
     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
 
@@ -355,7 +355,7 @@ DHNLDict = {
     "m_doInverseLeptonControlRegion"   : False,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -386,13 +386,13 @@ DHNLNtupleDict = {
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons fakeAOD", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )

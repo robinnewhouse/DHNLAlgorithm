@@ -146,19 +146,16 @@ EL::StatusCode DHNLNtuple::initialize() {
       std::istringstream augstr(m_AugmentationVersionStringList);
 
       while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
-		ANA_MSG_INFO("secondaryVertexContainerName_token is: "<< secondaryVertexContainerName_token);
         m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
       }
 
       while ( std::getline(sb, secondaryVertexBranchName_token, ',') ) {
-        ANA_MSG_INFO("secondaryVertexBranchName_token is: "<< secondaryVertexBranchName_token);
 		m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
       }
 
       if (m_AugmentationVersionStringList.empty())
 		  m_AugmentationVersionStringKeys.push_back("");
 	  while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
-        ANA_MSG_INFO("AugmentationVersionString_token is: "<< AugmentationVersionString_token);
 		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
@@ -307,7 +304,6 @@ EL::StatusCode DHNLNtuple::execute() {
      // Fill the secondary vertices from the list
     if (m_secondaryVertexContainerNameKeys.size()>0 and not m_AugmentationVersionStringKeys.empty()) { 
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-			ANA_MSG_DEBUG("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]<<" m_AltAugmentationVersionString is : "<<m_AltAugmentationVersionString);
             if (m_AugmentationVersionStringKeys[i] == m_AltAugmentationVersionString and not m_AltAugmentationVersionString.empty()) continue; // check you do not fill same as alt VSI twice
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
@@ -358,7 +354,6 @@ void DHNLNtuple::AddTree(std::string name) {
     if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
 		
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-             ANA_MSG_INFO("Adding m_secondaryVertexContainerNameKeys");
 			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
     if (m_AltAugmentationVersionString != "None" ) { 
         miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
