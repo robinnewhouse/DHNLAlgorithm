@@ -189,9 +189,6 @@ EL::StatusCode VSITrackSelection::execute() {
         ATH_CHECK( (this->*alg)() );
     }
 
-    for( const xAOD::TrackParticle* trk = m_selectedTracks->begin(); trk != m_selectedTracks->end(); ++trk ) {
-    }
-
     // add output container to TStore
     ANA_CHECK( m_store->record( m_selectedTracks, m_outContainerName ));
 
