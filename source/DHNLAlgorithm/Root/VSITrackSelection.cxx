@@ -174,6 +174,9 @@ EL::StatusCode VSITrackSelection::execute() {
 
     const xAOD::EventInfo* eventInfo(nullptr);
     ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
+    m_runNumber =  eventInfo->runNumber();
+    m_eventNumber =  eventInfo->eventNumber();
+
 
     // get primary vertex
     ANA_CHECK( HelperFunctions::retrieve(m_primaryVertices, m_vertexContainerName, m_event, m_store, msg()) );
@@ -187,8 +190,6 @@ EL::StatusCode VSITrackSelection::execute() {
     }
 
     for( const xAOD::TrackParticle* trk = m_selectedTracks->begin(); trk != m_selectedTracks->end(); ++trk ) {
-        trk->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
-        trk->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
     }
 
     // add output container to TStore
@@ -430,6 +431,9 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
         trk->auxdecor<Double_t>("be_py") = p4.Py();
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
+
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
     }
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total ID tracks   = " << trackParticleContainer->size() );
@@ -477,6 +481,8 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
 
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
 
         selectTrack( trk );
 
@@ -500,6 +506,7 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
 
         // The first track is the best-matched track
         const auto* trk = electron->trackParticle(0);
+        if( !trk ) continue;
 
         // Quality data
         trk->auxdecor<int>("be_quality") = -998;
@@ -523,7 +530,9 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
 
-        if( !trk ) continue;
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+
         selectTrack( trk );
     }
 
