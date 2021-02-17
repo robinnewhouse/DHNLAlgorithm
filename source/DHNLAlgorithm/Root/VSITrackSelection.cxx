@@ -18,8 +18,11 @@
 #include "xAODTracking/TrackParticle.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODTracking/TrackParticlexAODHelpers.h"
+#include "xAODEventInfo/EventInfo.h"
 #include "xAODMuon/MuonContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
+
+#include <DHNLAlgorithm/DHNLFunctions.h>
 
 #include "DVAnalysisBase/DVHelperFunctions.h"
 #include <xAODAnaHelpers/HelperFunctions.h>
@@ -172,6 +175,12 @@ EL::StatusCode VSITrackSelection::execute() {
     // code will go.
 
     ++m_numEvent;
+
+    const xAOD::EventInfo* eventInfo(nullptr);
+    ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
+    m_runNumber =  eventInfo->runNumber();
+    m_eventNumber =  eventInfo->eventNumber();
+
 
     // get primary vertex
     ANA_CHECK( HelperFunctions::retrieve(m_primaryVertices, m_vertexContainerName, m_event, m_store, msg()) );
@@ -413,7 +422,37 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Extracted xAOD::TrackParticle number=" << trackParticleContainer->size() );
 
     // Loop over tracks
-    for( auto *trk : *trackParticleContainer ) { selectTrack( trk ); }
+    for( auto *trk : *trackParticleContainer ) {
+        selectTrack( trk );
+
+        if (trk->isAvailable<bool>("be_toSave") && trk->auxdecor<bool>("be_toSave")) {
+            // This is either a muon or an electron, which were already added.
+            continue;
+        }
+
+        trk->auxdecor<bool>("be_toSave") = true;
+        trk->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
+        trk->auxdecor<int>("be_quality") = -999;
+        trk->auxdecor<int>("be_muonType") = -999;
+
+        trk->auxdecor<float_t>("be_vx") = trk->vx();
+        trk->auxdecor<float_t>("be_vy") = trk->vy();
+        trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
+
+        trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
+        trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
+
+        trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
+
+        TLorentzVector p4 = trk->p4();
+        trk->auxdecor<Double_t>("be_px") = p4.Px();
+        trk->auxdecor<Double_t>("be_py") = p4.Py();
+        trk->auxdecor<Double_t>("be_pz") = p4.Pz();
+        trk->auxdecor<Double_t>("be_e") = p4.E();
+
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+    }
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total ID tracks   = " << trackParticleContainer->size() );
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of selected tracks   = " << m_selectedTracks->size() );
@@ -473,6 +512,32 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         if (m_jp_doRemoveCaloTaggedMuons) {
             if (muon->muonType() == xAOD::Muon::CaloTagged) continue;
         }
+
+        // Quality data
+        trk->auxdecor<int>("be_quality") = (int) muon->quality();
+
+        trk->auxdecor<bool>("be_toSave") = true;
+        trk->auxdecor<int>("be_type") = (int) TrackType::MUON;
+        trk->auxdecor<int>("be_muonType") = muon->muonType();
+
+        trk->auxdecor<float_t>("be_vx") = trk->vx();
+        trk->auxdecor<float_t>("be_vy") = trk->vy();
+        trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
+
+        trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
+        trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
+
+        trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
+
+        TLorentzVector p4 = muon->p4();
+        trk->auxdecor<Double_t>("be_px") = p4.Px();
+        trk->auxdecor<Double_t>("be_py") = p4.Py();
+        trk->auxdecor<Double_t>("be_pz") = p4.Pz();
+        trk->auxdecor<Double_t>("be_e") = p4.E();
+
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+
         selectTrack( trk );
         
         if (trk->isAvailable<char>("DHNLAlg_is_selected")) {
@@ -503,8 +568,33 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
 
         // The first track is the best-matched track
         const auto* trk = electron->trackParticle(0);
-
         if( !trk ) continue;
+
+        // Quality data
+        trk->auxdecor<int>("be_quality") = -998;
+
+        trk->auxdecor<bool>("be_toSave") = true;
+        trk->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
+        trk->auxdecor<int>("be_muonType") = -999;
+
+        trk->auxdecor<float_t>("be_vx") = trk->vx();
+        trk->auxdecor<float_t>("be_vy") = trk->vy();
+        trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
+
+        trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
+        trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
+
+        trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
+
+        TLorentzVector p4 = electron->p4();
+        trk->auxdecor<Double_t>("be_px") = p4.Px();
+        trk->auxdecor<Double_t>("be_py") = p4.Py();
+        trk->auxdecor<Double_t>("be_pz") = p4.Pz();
+        trk->auxdecor<Double_t>("be_e") = p4.E();
+
+        trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
+        trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
+
         selectTrack( trk );
 
         if (trk->isAvailable<char>("DHNLAlg_is_selected")) {

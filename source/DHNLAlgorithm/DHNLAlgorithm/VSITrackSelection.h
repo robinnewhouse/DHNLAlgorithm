@@ -91,6 +91,8 @@ public:
 
 private:
     int m_numEvent;         //!
+    uint32_t m_runNumber; //!
+    unsigned long long m_eventNumber; //!
 
     ConstDataVector<xAOD::TrackParticleContainer>* m_selectedTracks = 0; //!
 
