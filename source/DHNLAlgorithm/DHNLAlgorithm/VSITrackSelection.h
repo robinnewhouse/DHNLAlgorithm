@@ -19,10 +19,6 @@
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 
-#include "xAODAnaHelpers/ParticlePIDManager.h"
-#include "EgammaAnalysisInterfaces/IAsgElectronLikelihoodTool.h"
-#include "ElectronPhotonSelectorTools/AsgElectronLikelihoodTool.h"
-
 class VSITrackSelection : public xAH::Algorithm
 {
     // put your configuration variables here as public variables.
@@ -116,13 +112,6 @@ private:
 
     // Track selection decorator for track after the track is decorated
     std::unique_ptr< SG::AuxElement::Decorator< char > > m_decor_isSelected;
-
-    //Likelihood tools: */
-    
-    ElectronLHPIDManager*      m_el_LH_PIDManager = nullptr;        //!
-    AsgElectronLikelihoodTool* m_LHToolVeryLoose; //
-    AsgElectronLikelihoodTool* m_LHToolVeryVeryLoose; // 
-    AsgElectronLikelihoodTool* m_LHToolVeryVeryLooseSi; // 
 
 
 public:

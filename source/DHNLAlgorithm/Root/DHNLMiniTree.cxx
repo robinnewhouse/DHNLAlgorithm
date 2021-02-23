@@ -4,7 +4,6 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
-#include <DHNLAlgorithm/DHNLFunctions.h>
 
 
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
@@ -126,15 +125,6 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
-
-    m_tree->Branch((name + "isTight").c_str(), &m_track_isTight);
-    m_tree->Branch((name + "isMedium").c_str(), &m_track_isMedium);
-    m_tree->Branch((name + "isLoose").c_str(), &m_track_isLoose);
-
-    m_tree->Branch((name + "isLHVeryLoose").c_str(), &m_track_isVeryLoose);
-    m_tree->Branch((name + "isLHVeryLoose_mod1").c_str(), &m_track_isVeryVeryLoose);
-    m_tree->Branch((name + "isLHVeryLoose_modSi").c_str(), &m_track_isVeryVeryLooseSi);
-    
 
     m_tree->Branch((name+ "definingParametersCovMatrixVec").c_str(), &m_track_definingParametersCovMatrixVec);
 
@@ -388,26 +378,6 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 
 void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::string &trackName) {
     (void) trackName; // suppress warning
-
-    if (track->isAvailable<int>("be_isTight")) {
-        std::cout << track->auxdecor<int>("be_isTight") << std::endl;
-        m_track_isTight.push_back(track->auxdecor<int>("be_isTight") );}
-    
-    if (track->isAvailable<int>("be_isMedium"))
-        m_track_isMedium.push_back(track->auxdecor<int>("be_isMedium") );
-    
-    if (track->isAvailable<int>("be_isLoose"))
-        m_track_isLoose.push_back(track->auxdecor<int>("be_isLoose") );
-    
-    if (track->isAvailable<int>("be_isLHVeryLoose"))
-        m_track_isVeryLoose.push_back(track->auxdecor<int>("be_isLHVeryLoose") );
-
-    if (track->isAvailable<int>("be_isLHVeryLoose_mod1")) {
-        std::cout << track->auxdecor<int>("be_isLHVeryLoose_mod1") << std::endl;
-        m_track_isVeryVeryLoose.push_back(track->auxdecor<int>("be_isLHVeryLoose_mod1") );}
-    
-    if (track->isAvailable<int>("be_isLHVeryLoose_modSi"))
-        m_track_isVeryVeryLooseSi.push_back(track->auxdecor<int>("be_isLHVeryLoose_modSi") );
 
     if (track->isAvailable<bool>("be_toSave"))
         m_track_toSave.push_back(track->auxdecor<bool>("be_toSave"));
