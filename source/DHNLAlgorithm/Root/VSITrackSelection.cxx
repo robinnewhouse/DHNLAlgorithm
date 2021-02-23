@@ -80,6 +80,36 @@ VSITrackSelection::VSITrackSelection() : Algorithm("VSITrackSelection") {
 // initialization code will go into histInitialize() and
 // initialize().
     ANA_MSG_INFO("VSITrackSelection() : Calling constructor");
+    m_LHToolVeryLoose  = new AsgElectronLikelihoodTool ("m_LHToolVeryLoose_VSITrkSel");
+    m_LHToolVeryVeryLoose  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLoose_VSITrkSel");
+    m_LHToolVeryVeryLooseSi  = new AsgElectronLikelihoodTool ("m_LHToolVeryVeryLooseSi_VSITrkSel");
+    
+    std::string configFileVL = "$WorkDir_DIR/data/DHNLAlgorithm/ELEWP/ElectronLikelihoodVeryLooseOfflineConfig2017_Smooth.conf";
+    std::string configFileVVL = "$WorkDir_DIR/data/DHNLAlgorithm/ELEWP/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_Smooth.conf";
+    std::string configFileVVLS = "$WorkDir_DIR/data/DHNLAlgorithm/ELEWP/ElectronLikelihoodVeryLooseOfflineConfig2017_nod0_plusSi_Smooth.conf";
+
+    if((m_LHToolVeryLoose->setProperty("ConfigFile",configFileVL)).isFailure())
+      std::cout << "Failure loading ConfigFile in very loose electron likelihood tool."  <<  std::endl;
+    if((m_LHToolVeryVeryLoose->setProperty("ConfigFile",configFileVVL)).isFailure())
+      std::cout << "Failure loading ConfigFile in very very loose electron likelihood tool."  <<  std::endl;
+    if((m_LHToolVeryVeryLooseSi->setProperty("ConfigFile",configFileVVLS)).isFailure())
+      std::cout << "Failure loading ConfigFile in very very loose Si electron likelihood tool."  <<  std::endl;
+
+    m_LHToolVeryLoose->setProperty("ConfigFile",configFileVL);
+    m_LHToolVeryVeryLoose->setProperty("ConfigFile",configFileVVL);
+    m_LHToolVeryVeryLooseSi->setProperty("ConfigFile",configFileVVLS);
+
+    StatusCode lhvl = m_LHToolVeryLoose->initialize();
+    StatusCode lhvvl = m_LHToolVeryVeryLoose->initialize();
+    StatusCode lhvvls = m_LHToolVeryVeryLooseSi->initialize();
+
+     if(lhvl.isFailure())
+      std::cout << "Very loose electron likelihood tool initialize() failed!" << std::endl;
+    if(lhvvl.isFailure())
+      std::cout << "Veryvery loose electron likelihood tool initialize() failed!" << std::endl;
+    if(lhvvls.isFailure())
+      std::cout << "Veryvery loose si electron likelihood tool initialize() failed!" << std::endl;
+      
 }
 
 
@@ -139,7 +169,6 @@ EL::StatusCode VSITrackSelection::initialize() {
     // doesn't get called if no events are processed.  So any objects
     // you create here won't be available in the output if you have no
     // input events.
-
     if( m_inDetTrackParticlesContainerName.empty() || m_inElContainerName.empty() || m_inMuContainerName.empty() || m_vertexContainerName.empty() ) {
         ANA_MSG_ERROR( "InputContainer is empty!");
         return EL::StatusCode::FAILURE;
@@ -432,30 +461,34 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
         }
         const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = trk->patternRecoInfo();
         bool isLRT = patternReco.test(49) ;
+        TLorentzVector p4 = trk->p4();
 
         trk->auxdecor<bool>("be_isLRT") = isLRT;
         trk->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
         trk->auxdecor<int>("be_quality") = -999;
         trk->auxdecor<int>("be_muonType") = -999;
-
         trk->auxdecor<float_t>("be_vx") = trk->vx();
         trk->auxdecor<float_t>("be_vy") = trk->vy();
         trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
-
         trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
         trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
-
         trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
-
-        TLorentzVector p4 = trk->p4();
         trk->auxdecor<Double_t>("be_px") = p4.Px();
         trk->auxdecor<Double_t>("be_py") = p4.Py();
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
-
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
+
+        // track is not a lepton so no lepton quality information
+        trk->auxdecor<int>("be_isTight") = -999;
+        trk->auxdecor<int>("be_isMedium") = -999;
+        trk->auxdecor<int>("be_isLoose") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_modSi") = -999;
+        
     }
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total ID tracks   = " << trackParticleContainer->size() );
@@ -514,6 +547,13 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
+        // track is not a lepton so no lepton quality information
+        trk->auxdecor<int>("be_isTight") = -999;
+        trk->auxdecor<int>("be_isMedium") = -999;
+        trk->auxdecor<int>("be_isLoose") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_modSi") = -999;
     
         m_selectedTracks->emplace_back( trk );
         ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Added Hadron (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
@@ -565,6 +605,16 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
+        // Add quality information
+        ATH_MSG_DEBUG( " > " << __FUNCTION__ << "muon is tight: " << (int)muon->auxdataConst<char>("isTightQ") );
+        trk->auxdecor<int>("be_isTight") = ((int)muon->auxdataConst<char>("isTightQ") );
+        trk->auxdecor<int>("be_isMedium") = ((int)muon->auxdataConst<char>("isMediumQ") );
+        trk->auxdecor<int>("be_isLoose") = ((int)muon->auxdataConst<char>("isLooseQ") );
+        // track is not an electron so no custom quality 
+        trk->auxdecor<int>("be_isLHVeryLoose") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -999;
+        trk->auxdecor<int>("be_isLHVeryLoose_modSi") = -999;
+        
 
         selectTrack( trk );
         
@@ -617,6 +667,20 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
+        // Add default quality information
+        trk->auxdecor<int>("be_isTight") = (int)electron->auxdataConst<char>("LHTight");
+        trk->auxdecor<int>("be_isMedium") = (int)electron->auxdataConst<char>("LHMedium");
+        trk->auxdecor<int>("be_isLoose") = (int)electron->auxdataConst<char>("LHLoose");
+        // Add custom quality information
+        bool val_vloose(false),val_vvloose(false),val_vvloosesi(false);
+        val_vloose = (bool)m_LHToolVeryLoose->accept(electron);
+        val_vvloose = (bool)m_LHToolVeryVeryLoose->accept(electron);
+        val_vvloosesi = (bool)m_LHToolVeryVeryLooseSi->accept(electron);
+
+        ATH_MSG_DEBUG( " > " << __FUNCTION__ << "electron is vvl: " << int(val_vvloose) );
+        trk->auxdecor<int>("be_isLHVeryLoose") = int(val_vloose);
+        trk->auxdecor<int>("be_isLHVeryLoose_mod1") = int(val_vvloose);
+        trk->auxdecor<int>("be_isLHVeryLoose_modSi") = int(val_vvloosesi);
 
         selectTrack( trk );
 
