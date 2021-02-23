@@ -53,6 +53,7 @@ private:
     std::vector<int> m_track_type;
     std::vector<int> m_track_muonType;
     std::vector<int> m_track_quality;
+    std::vector<bool> m_track_isLRT;
     std::vector<bool> m_track_fromPV;
 
 

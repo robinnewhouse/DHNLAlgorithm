@@ -160,31 +160,9 @@ ElectronCalibratorDict = {
 
 c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 
-
-
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-TruthVertexSelectorDict = {
-    "m_name"                      : "TruthVtxSel",
-    #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "TruthVertices",
-    "m_outContainerName"          : "SelectedTruthVertices",
-    "m_createSelectedContainer"   : True,
-    #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "50, 24",
-    #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
-
-}
-
-# if args.is_MC:
-#     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
-
-
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection (LepMod) %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection (Leptons-Only: VSILep Mod + VSILep) %%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 VSITrackSelectionDict = {
     "m_name"                      : "VSITrackSelection",
     #----------------------- Container Flow ----------------------------#
@@ -194,7 +172,7 @@ VSITrackSelectionDict = {
     "m_vertexContainerName"         : "PrimaryVertices",
     "m_outContainerName"            : "InDetTrackParticles_Selected",
     #---------------------- Selections ---------------------------#
-    "m_jp_passThroughTrackSelection": False,
+    "m_jp_passThroughTrackSelection": True, # dont apply any track selection
     "m_jp_SAloneTRT": False,
 
     "m_jp_do_PVvetoCut": True,
@@ -226,13 +204,13 @@ VSITrackSelectionDict = {
     "m_jp_CutTightTRTHits": 20,
 
     "m_jp_doSelectTracksFromMuons": True,
-    "m_jp_doRemoveCaloTaggedMuons": True,
+    "m_jp_doRemoveCaloTaggedMuons": False, # don't remove away calo-tagged muons
     "m_jp_doSelectTracksFromElectrons": True,
     "m_jp_doSelectTracksWithLRTCuts": True,
-    "m_jp_addInDetHadrons" : False,
+    "m_jp_addInDetHadrons" : True, # add hadrons for to use original in VSI track atttchment
 
     #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Debug",
+    "m_msgLevel"             : "Info",
 }
 
 c.algorithm("VSITrackSelection", VSITrackSelectionDict )
@@ -251,8 +229,6 @@ DHNLDict = {
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_inDetTrackParticlesContainerName" : "InDetTrackParticles_Selected",
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,

@@ -121,6 +121,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "type").c_str(), &m_track_type);
     m_tree->Branch((name + "muonType").c_str(), &m_track_muonType);
     m_tree->Branch((name + "quality").c_str(), &m_track_quality);
+    m_tree->Branch((name + "isLRT").c_str(), &m_track_isLRT);
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
@@ -389,6 +390,9 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
     if (track->isAvailable<int>("be_quality"))
         m_track_quality.push_back(track->auxdecor<int>("be_quality"));
+    
+    if (track->isAvailable<bool>("be_isLRT"))
+        m_track_isLRT.push_back(track->auxdecor<bool>("be_isLRT"));
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
@@ -435,6 +439,7 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_type.clear();
     m_track_muonType.clear();
     m_track_quality.clear();
+    m_track_isLRT.clear();
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
