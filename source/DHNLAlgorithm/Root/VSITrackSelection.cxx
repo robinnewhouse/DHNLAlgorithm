@@ -2,7 +2,10 @@
 // Created by Sean Galantzan on 10/02/2021.
 // Copied from https://gitlab.cern.ch/dtrischu/athena/-/blob/be_framework_for_HNL/Reconstruction/VKalVrt/VrtSecInclusive/src/TrackSelectionAlgs.cxx
 // And from https://github.com/UCATLAS/xAODAnaHelpers/blob/master/Root/TrackSelector.cxx
-//
+// This algorithm allows the user to select tracks exactly as is done in the VSI track selection code
+// This algorithm is configurable to set up any vertex configuration that the user want to run
+// An addtional function has been added to save all non-lepton tracks to the output if you want to uses
+        // the original non-lepton tracks in the VSI track attatchment.
 
 /*
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
@@ -412,7 +415,7 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
 
     //--------------------------------------------------------
     //  Extract tracks from xAOD::TrackParticle container
-    //
+    //--------------------------------------------------------
 
     const xAOD::TrackParticleContainer* trackParticleContainer ( nullptr );
     ATH_CHECK( evtStore()->retrieve( trackParticleContainer, m_inDetTrackParticlesContainerName) );
@@ -427,8 +430,10 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
             // This is either a muon or an electron, which were already added.
             continue;
         }
+        const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = trk->patternRecoInfo();
+        bool isLRT = patternReco.test(49) ;
 
-        trk->auxdecor<bool>("be_toSave") = true;
+        trk->auxdecor<bool>("be_isLRT") = isLRT;
         trk->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
         trk->auxdecor<int>("be_quality") = -999;
         trk->auxdecor<int>("be_muonType") = -999;
@@ -467,7 +472,7 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
 
     //--------------------------------------------------------
     //  Extract tracks from xAOD::TrackParticle container
-    //
+    //--------------------------------------------------------
 
     const xAOD::TrackParticleContainer* trackParticleContainer ( nullptr );
     ATH_CHECK( evtStore()->retrieve( trackParticleContainer, m_inDetTrackParticlesContainerName) );
@@ -477,39 +482,39 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
 
     // Loop over tracks
     for( auto *trk : *trackParticleContainer ) { 
+
         if (trk->isAvailable<bool>("be_toSave") and trk->auxdecor<bool>("be_toSave") ) {
-             // This is either a muon or an electron, which were already added.
+            // This is either a muon or an electron, which were already added.
             ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Skipping Already Selected InDetTrack (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
             continue;
         } 
         // check to make sure you dont add a track already in the selected tracks function. 
         if(  std::find( m_selectedTracks->begin(), m_selectedTracks->end(), trk ) != m_selectedTracks->end() ) continue; 
+       
+        TLorentzVector p4 = trk->p4();
+        const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = trk->patternRecoInfo();
+        bool isLRT = patternReco.test(49) ;
 
-        trk->auxdecor<bool>("be_toSave") = true;
+        // decorate hadron tracks with the information we need in the background framework
+        trk->auxdecor<bool>("be_toSave") = true; // saving all hadrons if we're running this function!
+        trk->auxdecor<bool>("be_isLRT") = isLRT;
         trk->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
         trk->auxdecor<int>("be_quality") = -999;
         trk->auxdecor<int>("be_muonType") = -999;
-
         trk->auxdecor<float_t>("be_vx") = trk->vx();
         trk->auxdecor<float_t>("be_vy") = trk->vy();
         trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
-
         trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
         trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
-
         trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
-
-        TLorentzVector p4 = trk->p4();
         trk->auxdecor<Double_t>("be_px") = p4.Px();
         trk->auxdecor<Double_t>("be_py") = p4.Py();
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
-
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
-
-
+    
         m_selectedTracks->emplace_back( trk );
         ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Added Hadron (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
         
@@ -534,39 +539,36 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         const auto* trk = muon->trackParticle( xAOD::Muon::InnerDetectorTrackParticle );
 
         if( !trk ) continue;
-        // remove calo-tagged muons when selecting muons
+        // skip calo-tagged muons when selecting muons
         if (m_jp_doRemoveCaloTaggedMuons) {
             if (muon->muonType() == xAOD::Muon::CaloTagged) continue;
         }
-
-        // Quality data
+        const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = trk->patternRecoInfo();
+        bool isLRT = patternReco.test(49) ;
+        TLorentzVector p4 = muon->p4();
+        
+        // decorate the muon tracks with the information we need in the background framework
+        trk->auxdecor<bool>("be_isLRT") = isLRT;
         trk->auxdecor<int>("be_quality") = (int) muon->quality();
-
-        // trk->auxdecor<bool>("be_toSave") = true;
         trk->auxdecor<int>("be_type") = (int) TrackType::MUON;
         trk->auxdecor<int>("be_muonType") = muon->muonType();
-
         trk->auxdecor<float_t>("be_vx") = trk->vx();
         trk->auxdecor<float_t>("be_vy") = trk->vy();
         trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
-
         trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
         trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
-
         trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
-
-        TLorentzVector p4 = muon->p4();
         trk->auxdecor<Double_t>("be_px") = p4.Px();
         trk->auxdecor<Double_t>("be_py") = p4.Py();
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
-
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
 
         selectTrack( trk );
         
+        // if we selected the track then the toSave bool is true
         if (trk->isAvailable<bool>("be_toSave") and trk->auxdecor<bool>("be_toSave") ) {
             ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected Muon (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
         } 
@@ -593,47 +595,42 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
         // The first track is the best-matched track
         const auto* trk = electron->trackParticle(0);
         if( !trk ) continue;
+        const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = trk->patternRecoInfo();
+        bool isLRT = patternReco.test(49) ;
+        TLorentzVector p4 = electron->p4();
 
-        // Quality data
+        // decorate the electron tracks with the information we need in the background framework
+        trk->auxdecor<bool>("be_isLRT") = isLRT;
         trk->auxdecor<int>("be_quality") = -998;
-
-        // trk->auxdecor<bool>("be_toSave") = true;
         trk->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
         trk->auxdecor<int>("be_muonType") = -999;
-
         trk->auxdecor<float_t>("be_vx") = trk->vx();
         trk->auxdecor<float_t>("be_vy") = trk->vy();
         trk->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = trk->definingParametersCovMatrixVec();
-
         trk->auxdecor<float_t>("be_beamlineTiltX") = trk->beamlineTiltX();
         trk->auxdecor<float_t>("be_beamlineTiltY") = trk->beamlineTiltY();
-
         trk->auxdecor<uint32_t>("be_hitPattern") = trk->hitPattern();
-
-        TLorentzVector p4 = electron->p4();
         trk->auxdecor<Double_t>("be_px") = p4.Px();
         trk->auxdecor<Double_t>("be_py") = p4.Py();
         trk->auxdecor<Double_t>("be_pz") = p4.Pz();
         trk->auxdecor<Double_t>("be_e") = p4.E();
-
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
         trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices );
 
         selectTrack( trk );
 
+         // if we selected the track then the toSave bool is true
         if (trk->isAvailable<bool>("be_toSave") and trk->auxdecor<bool>("be_toSave") ) {
             ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected GSF Electron (pt,eta,phi) = " << trk->pt() << " , "<< trk->eta() <<" , " << trk->phi());
             const xAOD::TrackParticle *id_tr;
             id_tr = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
-            ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected InDet Electron (pt,eta,phi) = " << id_tr->pt() << " , "<< id_tr->eta() <<" , " << id_tr->phi());
-            ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Does the InDetTrack Track have a decoration? " << id_tr->isAvailable<bool>("be_toSave") );
-            ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Does the InDetTrack track already selected? " << id_tr->auxdecor<bool>("be_toSave") );
+            ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Selected InDetTrack matched GSF electron (pt,eta,phi) = " << id_tr->pt() << " , "<< id_tr->eta() <<" , " << id_tr->phi());
+            ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": InDetTrack matched to GSF electron is selected = " << id_tr->auxdecor<bool>("be_toSave") );
  
         }     
     }
 
-    
 
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of total electrons   = " << electrons->size() );
     ATH_MSG_DEBUG( " > " << __FUNCTION__ << ": Number of selected tracks   = " << m_selectedTracks->size() );
