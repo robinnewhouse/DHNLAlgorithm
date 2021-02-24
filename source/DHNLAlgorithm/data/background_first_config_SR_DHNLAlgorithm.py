@@ -119,7 +119,6 @@ DHNLFilterDict = {
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -141,6 +140,42 @@ c.algorithm("MuonCalibrator", MuonCalibratorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+MuonSelectorDict = {
+    "m_name"                      : "MuonSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Muons_Calibrate",
+    "m_outContainerName"          : "Muons_Signal",
+    "m_createSelectedContainer"   : True,
+    #----------------------- Systematics ----------------------------#
+    "m_systName"                  : "",        ## Data
+    "m_systVal"                   : 0,
+    #----------------------- configurable cuts ----------------------------#
+    "m_muonQualityStr"            : "VeryLoose",
+    "m_pass_max"                  : -1,
+    "m_pass_min"                  : -1,
+    "m_pT_max"                    : 1e8,
+    "m_pT_min"                    : 1,
+    "m_eta_max"                   : 1e8,
+    "m_d0_max"                    : 1e8,
+    "m_d0sig_max"                 : 1e8,
+    "m_z0sintheta_max"            : 1e8,
+    #----------------------- isolation stuff ----------------------------#
+    "m_MinIsoWPCut"               : "",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
+    #----------------------- trigger matching stuff ----------------------------#
+    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_imedium, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu60_0eta105_msonly",
+    #"m_minDeltaR"                 : 0.1,
+    #----------------------- Other ----------------------------#
+    "m_msgLevel"                  : "Info",
+    "m_removeEventBadMuon"        : False,
+}
+
+# Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
+c.algorithm("MuonSelector", MuonSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 ElectronCalibratorDict = {
@@ -160,6 +195,41 @@ ElectronCalibratorDict = {
 
 c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+ElectronSelectorDict = {
+    "m_name"                      : "ElectronSelect",
+    #----------------------- Container Flow ----------------------------#
+    "m_inContainerName"           : "Electrons_Calibrate",
+    "m_outContainerName"          : "Electrons_Signal",
+    "m_createSelectedContainer"   : True,
+    #----------------------- PID ------------- ----------------------------#
+    "m_doLHPIDcut"                : False,
+    "m_LHOperatingPoint"          : "Medium",
+    #----------------------- configurable cuts ----------------------------#
+    "m_pass_max"                  : -1,
+    "m_pass_min"                  : -1,
+    "m_pT_max"                    : 1e8,
+    "m_pT_min"                    : 1,
+    "m_eta_max"                   : 1e8,
+    "m_d0_max"                    : 1e8,
+    "m_d0sig_max"                 : 1e8,
+    "m_z0sintheta_max"            : 1e8,
+    #----------------------- isolation stuff ----------------------------#
+    "m_MinIsoWPCut"               : "",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
+    #----------------------- trigger matching stuff ----------------------------#
+    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
+    #----------------------- Other ----------------------------#
+    # "m_IsoWPList"                 : "Gradient",
+    "m_msgLevel"                  : "Info"
+}
+# Annoyingly, we must run the ElectronSelector algorithm in order to store quality parameters even in the input container.
+c.algorithm("ElectronSelector", ElectronSelectorDict )
+
+
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection (Leptons-Only: VSILep Mod + VSILep) %%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -167,8 +237,8 @@ VSITrackSelectionDict = {
     "m_name"                      : "VSITrackSelection",
     #----------------------- Container Flow ----------------------------#
     "m_inDetTrackParticlesContainerName"           : "InDetTrackParticles",
-    "m_inElContainerName"           : "Electrons",
-    "m_inMuContainerName"           : "Muons",
+    "m_inElContainerName"           : "Electrons_Calibrate",
+    "m_inMuContainerName"           : "Muons_Calibrate",
     "m_vertexContainerName"         : "PrimaryVertices",
     "m_outContainerName"            : "InDetTrackParticles_Selected",
     #---------------------- Selections ---------------------------#
@@ -210,7 +280,7 @@ VSITrackSelectionDict = {
     "m_jp_addInDetHadrons" : True, # add hadrons for to use original in VSI track atttchment
 
     #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
+    "m_msgLevel"             : "Debug",
 }
 
 c.algorithm("VSITrackSelection", VSITrackSelectionDict )
@@ -256,7 +326,7 @@ DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "",
-    "m_inElContainerName"            : "",
+    "m_inElContainerName"            : "Electrons_Calibrate",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexContainerNameList" : "",
@@ -271,7 +341,7 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_elDetailStr"                  : "",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
     "m_muDetailStr"                  : "",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.

@@ -247,11 +247,6 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
-    const xAOD::TrackParticleContainer *tracks = nullptr;
-    if (not m_trackParticleContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
-
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store));
@@ -281,6 +276,11 @@ EL::StatusCode DHNLNtuple::execute() {
     if (not m_inElContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
     if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
+
+    const xAOD::TrackParticleContainer *tracks = nullptr;
+    if (not m_trackParticleContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
+    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
 
     const xAOD::JetContainer *allJets = nullptr;
     if (not m_allJetContainerName.empty()) 
@@ -346,10 +346,10 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
     if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
     if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
+    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
     if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
 		

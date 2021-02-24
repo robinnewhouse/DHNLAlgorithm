@@ -56,6 +56,15 @@ private:
     std::vector<bool> m_track_isLRT;
     std::vector<bool> m_track_fromPV;
 
+    std::vector<int>m_track_isTight;
+    std::vector<int>m_track_isMedium;
+    std::vector<int>m_track_isLoose;
+
+    std::vector<int>m_track_isVeryLoose;
+    std::vector<int>m_track_isVeryVeryLoose;
+    std::vector<int>m_track_isVeryVeryLooseSi;
+
+
 
     std::vector<std::vector< float >> m_track_definingParametersCovMatrixVec;
 
