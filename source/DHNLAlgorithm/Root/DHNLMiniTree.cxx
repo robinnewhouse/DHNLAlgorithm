@@ -182,7 +182,7 @@ void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::
     val_vvloosesi = (bool)m_LHToolVeryVeryLooseSi->accept(electron);
 
    if(val_vloose)
-      m_electron_isVeryLoose.push_back(val_vvloose);
+      m_electron_isVeryLoose.push_back(val_vloose);
     else m_electron_isVeryLoose.push_back(false);
 
    if(val_vvloose)
