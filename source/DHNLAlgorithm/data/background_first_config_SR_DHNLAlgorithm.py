@@ -280,7 +280,7 @@ VSITrackSelectionDict = {
     "m_jp_addInDetHadrons" : True, # add hadrons for to use original in VSI track atttchment
 
     #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Debug",
+    "m_msgLevel"             : "Info",
 }
 
 c.algorithm("VSITrackSelection", VSITrackSelectionDict )

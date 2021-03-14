@@ -102,29 +102,29 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 ##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-DHNLFilterDict = {
-    "m_name"                    : "DHNLFilter",
-    #----------------------- Container Flow ----------------------------#
+# DHNLFilterDict = {
+#     "m_name"                    : "DHNLFilter",
+#     #----------------------- Container Flow ----------------------------#
 
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
-    "m_inMuContainerName"       : "Muons",
-    "m_inElContainerName"       : "Electrons",
-    "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : False,
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+#     "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+#     "m_inMuContainerName"       : "Muons",
+#     "m_inElContainerName"       : "Electrons",
+#     "m_vertexContainerName"     : "PrimaryVertices",
+#     "m_applyFilterCut"          : False,
+#     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
 
-    #----------------------- Selections ----------------------------#
+#     #----------------------- Selections ----------------------------#
 
-    # All selections are stored in default parameters in filter.
-    # they can still be modified here. e.g.:
-    # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
+#     # All selections are stored in default parameters in filter.
+#     # they can still be modified here. e.g.:
+#     # "m_AlphaMaxCut"             : 0.03,
+#     "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
 
-    #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Info",
-}
+#     #----------------------- Other ----------------------------#
+#     "m_msgLevel"                : "Info",
+# }
 
-c.algorithm("DHNLFilter", DHNLFilterDict )
+# c.algorithm("DHNLFilter", DHNLFilterDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -244,11 +244,22 @@ c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-SecondaryVertexSelectorDict = {
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+
+for augstr in AugmentationVersionStrings: 
+
+    SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel_VSI",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices"+augstr,
+    "m_outContainerName"      : "VrtSecInclusive_SecondaryVertices"+augstr+"_sel",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -263,17 +274,9 @@ SecondaryVertexSelectorDict = {
     "prop_vtx_suffix"        : "",
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
-}
+    }
 
-c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-
-
-for augstr in AugmentationVersionStrings: 
+    c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
 
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,

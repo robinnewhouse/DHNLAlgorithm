@@ -362,8 +362,7 @@ void VSITrackSelection::selectTrack( const xAOD::TrackParticle* trk ) {
         if( m_jp_do_d0errCut )              m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_d0errCut );
         if( m_jp_do_z0errCut )              m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_z0errCut );
         if (m_jp_doSelectTracksWithLRTCuts) m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_LRTR3Cut );
-        //if( m_jp_do_d0signifCut ) m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_d0signifCut ); // not implemented yet
-        //if( m_jp_do_z0signifCut ) m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_z0signifCut ); // not implemented yet
+       
 
         // These cuts are used by default
         m_trackSelectionFuncs.emplace_back( &VSITrackSelection::selectTrack_hitPattern );
