@@ -11,4 +11,4 @@ last_commit=$(git rev-parse --verify --short HEAD)
 upload_dir="tests_$last_commit"
 cp -r ../ci ../$upload_dir
 #upload to eos
-xrdcp -r ../$upload_dir root://eosuser.cern.ch//eos/user/d/dhnl/ci-test-runs/
+xrdcp -r ../$upload_dir $CERN_BOX_URL
