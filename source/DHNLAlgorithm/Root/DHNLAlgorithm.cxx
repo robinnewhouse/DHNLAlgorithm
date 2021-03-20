@@ -70,6 +70,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
     m_metCut = 0;
+    m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
 
 }
 
@@ -100,7 +101,7 @@ EL::StatusCode DHNLAlgorithm::initialize() {
 
     uint32_t dsid= m_isMC ? eventInfo->mcChannelNumber() : -1;
 
-    //
+    // ==============================================
     // x-sec tool
     ANA_CHECK( ASG_MAKE_ANA_TOOL(m_PMGCrossSectionTool_handle, PMGTools::PMGCrossSectionTool) );
     ANA_CHECK( m_PMGCrossSectionTool_handle.retrieve() );
@@ -123,6 +124,23 @@ EL::StatusCode DHNLAlgorithm::initialize() {
         }
         m_weight_xs = xs * eff * kfactor;
     }
+
+    // ==============================================
+    // tracking uncertainties
+
+    // Set random seed by time
+    srand (static_cast <unsigned> (time(nullptr)));
+
+    m_trkEffHistLooseGlobal = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSOverall_5_Loose");
+    m_trkEffHistLooseIBL = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSIBL_10_Loose");
+    m_trkEffHistLoosePP0 = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSPP0_25_Loose");
+    m_trkEffHistLoosePhysModel = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSQGS_BIC_Loose");
+    m_trkEffHistTightGlobal = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSOverall_5_TightPrimary");
+    m_trkEffHistTightIBL = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSIBL_10_TightPrimary");
+    m_trkEffHistTightPP0 = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSPP0_25_TightPrimary");
+    m_trkEffHistTightPhysModel = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSQGS_BIC_TightPrimary");
+
+
 
     return EL::StatusCode::SUCCESS;
 }
@@ -263,6 +281,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     int MuonsPerEvent = 0;
     int ElectronsPerEvent = 0;
     
+    // =======================================================================
+    // Filter
+    // =======================================================================
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
@@ -438,15 +459,22 @@ EL::StatusCode DHNLAlgorithm::execute() {
         }   
 	}
     
+    // =======================================================================
+    // Loop over secondary vertices
+    // =======================================================================
 	std::string secondaryVertexContainerName_token;
     std::istringstream sv(m_secondaryVertexContainerNameList);
 	while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
 		const xAOD::VertexContainer *inVSIVertices = nullptr;
 		ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
 		for (const xAOD::Vertex *vertex: *inVSIVertices){
+
+            // ===============================================
+            // Store number of leptons in each event
             vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
             vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
 
+            // ===============================================
             // check if this vertex contains tracks from different original events (shuffled vertex)
             vertex->auxdecor<bool>("shuffled") = false;
             if (vertex->trackParticle(0)->isAvailable<int>("trackOriginalRun") &&
@@ -462,6 +490,23 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
                 vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
             }
+
+            // ===============================================
+            // Use tracking systematic tool to drop some percent of tracks
+            std::vector< const xAOD::TrackParticle* > vtx_tracks;
+            DVHelper::getTracks( vertex, vtx_tracks, false ); // do not randomly drop vtx_tracks
+            for ( const auto& trk : vtx_tracks ) {
+                if ( trk->isAvailable<bool>( "drop_track" ) ){
+                    // This is not actually a problem, this is how dropping tracks would happen. Right? There would be a track that is lost to all vertices.
+//                    ANA_MSG_INFO("THIS IS A PROBLEM! this track has already been looked at and dropping has been determined. Check this out.");
+//                    ANA_MSG_INFO("drop_track " << trk->auxdataConst<bool>("drop_track"));
+//                    ANA_MSG_INFO ("eventNumber = " << eventInfo->eventNumber() << " -- Vertex number = " << vertex_number);
+                }
+                bool accept  = DHNLAlgorithm::acceptTrack(*trk);
+                ANA_MSG_INFO ("accept " << accept);
+                trk->auxdecor<bool>("drop_track") = !accept;
+            }
+            
 		}
 	}
 
@@ -493,6 +538,58 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     return EL::StatusCode::SUCCESS;
 }
+
+bool DHNLAlgorithm::acceptTrack(const xAOD::TrackParticle &trk) const {
+
+    float fTrkEffSyst = 0;
+    
+    // loose
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLooseGlobal, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLooseIBL, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLoosePP0, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLoosePhysModel, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    
+    // tight
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+
+    return true;
+}
+
+float DHNLAlgorithm::getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const {
+
+    if(histogram==nullptr) {
+        return fDefault;
+    }
+
+    pt *= 1.e-3; // unit conversion to GeV
+    if( pt >= histogram->GetXaxis()->GetXmax() ) pt = histogram->GetXaxis()->GetXmax() - 0.001;
+
+    float frac = histogram->GetBinContent(histogram->FindBin(pt, eta));
+    if( frac > 1. ) {
+        ATH_MSG_WARNING( "Fraction from histogram " << histogram->GetName()
+                                                    << " is greater than 1. Setting fraction to 1." );
+        frac = 1.;
+    }
+    if( frac < 0. ) {
+        ATH_MSG_WARNING( "Fraction from histogram " << histogram->GetName()
+                                                    << " is less than 0. Setting fraction to 0." );
+        frac = 0.;
+    }
+    return frac;
+}
+
+
 
 EL::StatusCode DHNLAlgorithm::finalize() {
     // This method is the mirror image of initialize(), meaning it gets

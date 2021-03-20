@@ -1,11 +1,16 @@
 #ifndef DHNL_DHNLFUNCTIONS_H
 #define DHNL_DHNLFUNCTIONS_H
+// Framework include(s)
+
+#include <iostream>
+#include <fstream>
+#include <string>
 
 
-class DHNLFunctions {
+namespace DHNLFunctions {
+    TH2 *getCalibHistogram(const std::string filename, const std::string histname);
 
-};
-
+}
 
 enum class TrackType {
     MUON = 0,
