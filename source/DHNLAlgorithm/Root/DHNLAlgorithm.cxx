@@ -19,6 +19,7 @@
 #include <SampleHandler/MetaFields.h>
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODEgamma/ElectronxAODHelpers.h>
+#include "DVAnalysisBase/DVertexContainer.h"
 
 #include "TFile.h"
 #include "TEnv.h"
@@ -58,6 +59,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
     m_secondaryVertexContainerNameList = "";
+    m_AugmentationVersionStringList = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -326,9 +328,19 @@ EL::StatusCode DHNLAlgorithm::execute() {
     
     std::string secondaryVertexContainerName_token;
     std::istringstream sv(m_secondaryVertexContainerNameList);
-    while (std::getline(sv, secondaryVertexContainerName_token, ',')) {
+    std::string AugmentationVersionString_token;
+    std::istringstream augstr(m_AugmentationVersionStringList);
+    while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+        m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
+    }
+    while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
+		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
+      }
+
+
+    for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
         const xAOD::VertexContainer *inVSIVertices = nullptr;
-        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
         for (const xAOD::Vertex *vertex: *inVSIVertices) {
             vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
             vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
@@ -352,7 +364,8 @@ EL::StatusCode DHNLAlgorithm::execute() {
             std::vector< const xAOD::TrackParticle* > vtx_tracks;
             DVHelper::getTracks( vertex, vtx_tracks ); // get tracks in the DV
             for ( const auto& trk : vtx_tracks ) { // loop over tracks in the DV
-                bool is_pv_associated = false; 
+                bool is_pv_associated = false;
+                bool dropTrack = false;
                 const xAOD::TrackParticle *id_trk;
                 id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
 
@@ -365,7 +378,14 @@ EL::StatusCode DHNLAlgorithm::execute() {
                             }
                     }
                 }
+                if (trk->isAvailable<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  )){ // check if the track is selected and also from a PV
+                    if (trk->auxdataConst<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  ) && trk->auxdecor<bool>("fromPV")){
+                        dropTrack = true;
+                    }
+                }
                 trk->auxdecor<bool>("fromPV") = is_pv_associated;
+                trk->auxdecor<bool>("dropTrack") = dropTrack;
+                std::cout << "dropTrack: " << dropTrack << std::endl;
             }
         }
     }

@@ -43,7 +43,10 @@ public:
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_secondaryVertexContainerNameList;   // input Secondary Vertices container name
+    std::string m_AugmentationVersionStringList; // string list of aug strings
     std::string m_inDetTrackParticlesContainerName; // Track container
+    std::vector<std::string> m_secondaryVertexContainerNameKeys;  // list of the secondary vertex in a vector
+    std::vector<std::string> m_AugmentationVersionStringKeys; // list of the aug strings in a vector
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
     std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
