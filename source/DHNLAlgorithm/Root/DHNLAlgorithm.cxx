@@ -254,6 +254,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if(!m_inElContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
     
+    const xAOD::VertexContainer *primaryVertices = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(primaryVertices, "PrimaryVertices", m_event, m_store, msg()));
+    
     /*const xAOD::VertexContainer *inVSIVertices = nullptr;
     if(!m_inVSIContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
@@ -327,26 +330,45 @@ EL::StatusCode DHNLAlgorithm::execute() {
         const xAOD::VertexContainer *inVSIVertices = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
         for (const xAOD::Vertex *vertex: *inVSIVertices) {
-        vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
-        vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
+            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
 
-        // check if this vertex contains tracks from different original events (shuffled vertex)
-        vertex->auxdecor<bool>("shuffled") = false;
-        if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
-            vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
-            vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
-            vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
+            // check if this vertex contains tracks from different original events (shuffled vertex)
+            vertex->auxdecor<bool>("shuffled") = false;
+            if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
+                vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
+                vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
+                vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
 
-                int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
-                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
+                    int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
+                    int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
-                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
+                    int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
+                    int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+                    vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+            }
+            
+            std::vector< const xAOD::TrackParticle* > vtx_tracks;
+            DVHelper::getTracks( vertex, vtx_tracks ); // get tracks in the DV
+            for ( const auto& trk : vtx_tracks ) { // loop over tracks in the DV
+                bool is_pv_associated = false; 
+                const xAOD::TrackParticle *id_trk;
+                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+
+                for (auto *vtx : *primaryVertices) { // loop over primary vertices
+                    for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) { // loop over each track in the PV
+                        auto *pvtrk = vtx->trackParticle(iv); // gets the track associated to the primary vertex
+                            if ( (id_trk == pvtrk) or (trk == pvtrk) ) { // when vertexing with electron tracks, need to compare the orginal track particle from GSF to the track in the PV
+                                is_pv_associated = true;
+                                break;
+                            }
+                    }
                 }
+                trk->auxdecor<bool>("fromPV") = is_pv_associated;
             }
         }
+    }
 
     //////////////////// Store primary vertex information //////////////////////
 
