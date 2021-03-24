@@ -385,7 +385,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 }
                 trk->auxdecor<bool>("fromPV") = is_pv_associated;
                 trk->auxdecor<bool>("dropTrack") = dropTrack;
-                std::cout << "dropTrack: " << dropTrack << std::endl;
             }
         }
     }
