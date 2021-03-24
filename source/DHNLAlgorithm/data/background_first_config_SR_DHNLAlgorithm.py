@@ -74,7 +74,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : False,
+    "m_applyTriggerCut"           : True,
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -84,7 +84,7 @@ basicEventSelectionDict = {
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
-    "m_applyPrimaryVertexCut"     : False,
+    "m_applyPrimaryVertexCut"     : True,
     "m_PVNTrack"                    : 2,
     "m_msgLevel"                  : "Info",
 }
