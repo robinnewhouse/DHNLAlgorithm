@@ -59,6 +59,8 @@ public:
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
+    bool m_doSkipTracks;
+    std::string m_trackingCalibFile; // calibration file for tracking systmeatics
 
 private:
 
@@ -66,12 +68,24 @@ private:
     TH1D *m_cutflowHistW;   //!
     StatusCode eventSelection();
 
+    bool acceptTrack(const xAOD::TrackParticle &trk) const;
+    float getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const;
+
     asg::AnaToolHandle<PMGTools::IPMGCrossSectionTool> m_PMGCrossSectionTool_handle{"PMGCrossSectionTool", this}; //!
     float m_mcEventWeight;  //!
     std::string m_comEnergy; //!
 
     float m_weight;  //!
     float m_weight_xs;  //!
+
+    TH2* m_trkEffHistLooseGlobal = nullptr;
+    TH2* m_trkEffHistLooseIBL = nullptr;
+    TH2* m_trkEffHistLoosePP0 = nullptr;
+    TH2* m_trkEffHistLoosePhysModel = nullptr;
+    TH2* m_trkEffHistTightGlobal = nullptr;
+    TH2* m_trkEffHistTightIBL = nullptr;
+    TH2* m_trkEffHistTightPP0 = nullptr;
+    TH2* m_trkEffHistTightPhysModel = nullptr;
 
 public:
     // this is a standard constructor
