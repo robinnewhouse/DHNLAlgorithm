@@ -391,7 +391,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 bool is_pv_associated = false;
                 bool dropTrack = false;
                 const xAOD::TrackParticle *id_trk;
-                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk); // this will be a nullptr is trk is not a GSF track
 
                 for (auto *vtx : *primaryVertices) { // loop over primary vertices
                     for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) { // loop over each track in the PV
@@ -404,14 +404,11 @@ EL::StatusCode DHNLAlgorithm::execute() {
                     }
                 }
                 trk->auxdecor<bool>("fromPV") = is_pv_associated;
-
-                if (trk->isAvailable<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  )){ // check if the track is selected and also from a PV
-                    if (trk->auxdataConst<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  ) && trk->auxdataConst<bool>("fromPV")){
-                        dropTrack = true;
-                    }
+                bool trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >=0 or trk->auxdataConst<int>("electronIndex") >= 0);
+                if (trk_is_lepton && trk->auxdataConst<bool>("fromPV")){
+                    dropTrack = true;
                 }
-                // drop the track if it is from a primary vertex
-                // this should have been done in VSI_Leptons but a bug was found. Can approximately fix in ntuple maker.
+                // drop the track if it is a lepton and is associated to a primary vertex
                 trk->auxdecor<bool>("dropTrack") = dropTrack;
                 
                 // Use tracking systematic tool to drop some percent of tracks
