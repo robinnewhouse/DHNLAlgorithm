@@ -345,7 +345,23 @@ EL::StatusCode DHNLAlgorithm::execute() {
             }
         }
     }
-    
+
+    // =======================================================================
+    // Make a vector of primary vertices
+    // =======================================================================
+    std::vector<const xAOD::TrackParticle *> pvTracks;
+    // loop over primary vertices
+    for (auto *vtx : *primaryVertices) {
+        // loop over each track in the PV
+        for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) {
+            // gets the track associated to the primary vertex
+            const xAOD::TrackParticle *pvTrack = vtx->trackParticle(iv);
+            if (pvTrack != nullptr) {
+                pvTracks.push_back(pvTrack);
+            }
+        }
+    }
+
     // =======================================================================
     // Loop over secondary vertices
     // =======================================================================
@@ -360,7 +376,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
-
+    // do this for each vertex collection
     for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
         const xAOD::VertexContainer *inVSIVertices = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
@@ -384,35 +400,35 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
                     vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
             }
-            
-            std::vector< const xAOD::TrackParticle* > vtx_tracks;
-            DVHelper::getTracks( vertex, vtx_tracks ); // get tracks in the DV
-            for ( const auto& trk : vtx_tracks ) { // loop over tracks in the DV
-                bool is_pv_associated = false;
+
+            std::vector<const xAOD::TrackParticle *> vtx_tracks;
+            DVHelper::getTracks(vertex, vtx_tracks); // get tracks in the DV
+            for (const xAOD::TrackParticle *trk : vtx_tracks) { // loop over tracks in the DV
+                bool fromPV = false;
                 bool dropTrack = false;
                 const xAOD::TrackParticle *id_trk;
-                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk); // this will be a nullptr is trk is not a GSF track
+                // this will be a nullptr is trk is not a GSF track
+                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
 
-                for (auto *vtx : *primaryVertices) { // loop over primary vertices
-                    for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) { // loop over each track in the PV
-                        auto *pvtrk = vtx->trackParticle(iv); // gets the track associated to the primary vertex
-                        if ((pvtrk != nullptr)
-                            and ((id_trk == pvtrk) or (trk == pvtrk))) { // when vertexing with electron tracks, need to compare the orginal track particle from GSF to the track in the PV
-                            is_pv_associated = true;
-                            break;
-                            }
-                    }
-                }
-                trk->auxdecor<bool>("fromPV") = is_pv_associated;
-                bool trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >=0 or trk->auxdataConst<int>("electronIndex") >= 0);
-                if (trk_is_lepton && trk->auxdataConst<bool>("fromPV")){
+                auto it = std::find(pvTracks.begin(), pvTracks.end(), trk);
+                if (it != pvTracks.end())
+                    fromPV = true;
+                auto it_id = std::find(pvTracks.begin(), pvTracks.end(), id_trk);
+                if (it_id != pvTracks.end())
+                    fromPV = true;
+                trk->auxdecor<bool>("fromPV") = fromPV;
+
+
+                bool trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or
+                                      trk->auxdataConst<int>("electronIndex") >= 0);
+                if (trk_is_lepton and trk->auxdataConst<bool>("fromPV")) {
                     dropTrack = true;
                 }
                 // drop the track if it is a lepton and is associated to a primary vertex
                 trk->auxdecor<bool>("dropTrack") = dropTrack;
-                
+
                 // Use tracking systematic tool to drop some percent of tracks
-                if (m_doSkipTracks && !dropTrack) { // only do this if the track has not been already dropped
+                if (m_doSkipTracks and !dropTrack) { // only do this if the track has not been already dropped
                     trk->auxdecor<bool>("dropTrack") = !DHNLAlgorithm::acceptTrack(*trk);
                 }
 
