@@ -70,6 +70,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
     m_metCut = 0;
+    m_doSkipTracks = false;
     m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
 
 }
@@ -496,15 +497,17 @@ EL::StatusCode DHNLAlgorithm::execute() {
             std::vector< const xAOD::TrackParticle* > vtx_tracks;
             DVHelper::getTracks( vertex, vtx_tracks, false ); // do not randomly drop vtx_tracks
             for ( const auto& trk : vtx_tracks ) {
-                if ( trk->isAvailable<bool>( "drop_track" ) ){
-                    // This is not actually a problem, this is how dropping tracks would happen. Right? There would be a track that is lost to all vertices.
-//                    ANA_MSG_INFO("THIS IS A PROBLEM! this track has already been looked at and dropping has been determined. Check this out.");
-//                    ANA_MSG_INFO("drop_track " << trk->auxdataConst<bool>("drop_track"));
-//                    ANA_MSG_INFO ("eventNumber = " << eventInfo->eventNumber() << " -- Vertex number = " << vertex_number);
+                if (m_doSkipTracks) {
+                    if ( trk->isAvailable<bool>( "drop_track" ) ){
+                        // This is not actually a problem, this is how dropping tracks would happen. Right? There would be a track that is lost to all vertices.
+    //                    ANA_MSG_INFO("THIS IS A PROBLEM! this track has already been looked at and dropping has been determined. Check this out.");
+    //                    ANA_MSG_INFO("drop_track " << trk->auxdataConst<bool>("drop_track"));
+    //                    ANA_MSG_INFO ("eventNumber = " << eventInfo->eventNumber() << " -- Vertex number = " << vertex_number);
+                    }
+                    bool accept = DHNLAlgorithm::acceptTrack(*trk);
+                    ANA_MSG_DEBUG ("accept " << accept);
+                    trk->auxdecor<bool>("drop_track") = !accept;
                 }
-                bool accept  = DHNLAlgorithm::acceptTrack(*trk);
-                ANA_MSG_INFO ("accept " << accept);
-                trk->auxdecor<bool>("drop_track") = !accept;
             }
             
 		}

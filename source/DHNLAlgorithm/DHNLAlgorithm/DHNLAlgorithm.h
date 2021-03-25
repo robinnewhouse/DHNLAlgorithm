@@ -56,6 +56,7 @@ public:
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
+    bool m_doSkipTracks;
     std::string m_trackingCalibFile; // calibration file for tracking systmeatics
     
 private:

@@ -345,7 +345,9 @@ DHNLDict = {
     "m_useMCPileupCheck"        : False,
     "m_metCut"                  : 20000,
     "m_doInverseLeptonControlRegion"   : False,
-    #----------------------- Other ----------------------------#
+    "m_doSkipTracks"   : False,
+    "m_trackingCalibFile" : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
+#----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
 }
