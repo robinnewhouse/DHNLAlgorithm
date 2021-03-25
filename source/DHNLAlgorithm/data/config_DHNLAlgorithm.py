@@ -330,7 +330,6 @@ DHNLDict = {
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
-    "m_doSkipTracks"            : True,
     "m_trackingCalibFile"       : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
 }
 
