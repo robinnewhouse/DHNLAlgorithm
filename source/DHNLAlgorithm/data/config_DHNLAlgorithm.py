@@ -7,7 +7,6 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
 
 c = Config()
@@ -238,40 +237,39 @@ ElectronSelectorDict = {
 c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-SecondaryVertexSelectorDict = {
-    "m_name"                 : "SecVtxSel_VSI",
-    "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-    "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : secondaryVertexContainerNames[0],
-    #---------------------- Selections ---------------------------#
-    "m_do_trackTrimming"     : False,
-    "m_do_matMapVeto"        : True,
-    "prop_chi2Cut"           : 5.0,
-    "prop_d0_wrtSVCut"       : 0.8,
-    "prop_z0_wrtSVCut"       : 1.2,
-    "prop_errd0_wrtSVCut"    : 999999,
-    "prop_errz0_wrtSVCut"    : 999999,
-    "prop_d0signif_wrtSVCut" : 5.0,
-    "prop_z0signif_wrtSVCut" : 5.0,
-    "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : "",
-    #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
-}
-
-c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 
 for augstr in AugmentationVersionStrings: 
 
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+    #%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+    SecondaryVertexSelectorDict = {
+        "m_name"                 : "SecVtxSel_VSI"+ augstr,
+        "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
+        "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
+        "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr,
+        #---------------------- Selections ---------------------------#
+        "m_do_trackTrimming"     : False,
+        "m_do_matMapVeto"        : True,
+        "prop_chi2Cut"           : 5.0,
+        "prop_d0_wrtSVCut"       : 0.8,
+        "prop_z0_wrtSVCut"       : 1.2,
+        "prop_errd0_wrtSVCut"    : 999999,
+        "prop_errz0_wrtSVCut"    : 999999,
+        "prop_d0signif_wrtSVCut" : 5.0,
+        "prop_z0signif_wrtSVCut" : 5.0,
+        "prop_chi2_toSVCut"      : 5.0,
+        "prop_vtx_suffix"        : "",
+        #------------------------ Other ------------------------------#
+        "m_msgLevel"             : "Info",
+    }
+    c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
+    # Annoyingly, we must run the SecondaryVertex Selector algorithm in order get the material map decorations on the vertices
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+    #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
     Dict_VertexMatcher = {
         "m_name"                            : "VertexMatch"+ augstr,
         "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
@@ -285,23 +283,6 @@ for augstr in AugmentationVersionStrings:
         "m_msgLevel"             : "Info",
     }
     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
-
-if o.altVSIstr != "None":
-    Dict_VertexMatcher_Alt = {
-        "m_name"                            : "VertexMatch"+o.altVSIstr ,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr , 
-        "m_doTruth"                         : True,
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-        "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-        }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
-
-
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -336,6 +317,7 @@ DHNLDict = {
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
+    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
     # "m_inMETContainerName"      : "MET",
     # "m_inMETTrkContainerName"   : "METTrk",
     #----------------------- Selections ----------------------------#
@@ -348,6 +330,7 @@ DHNLDict = {
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
+    "m_trackingCalibFile"       : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -366,17 +349,14 @@ DHNLNtupleDict = {
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
-    "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
     "m_truthVertexContainerName"     : "SelectedTruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",

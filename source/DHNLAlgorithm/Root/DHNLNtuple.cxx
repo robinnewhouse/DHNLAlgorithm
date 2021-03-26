@@ -146,19 +146,16 @@ EL::StatusCode DHNLNtuple::initialize() {
       std::istringstream augstr(m_AugmentationVersionStringList);
 
       while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
-		ANA_MSG_INFO("secondaryVertexContainerName_token is: "<< secondaryVertexContainerName_token);
         m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
       }
 
       while ( std::getline(sb, secondaryVertexBranchName_token, ',') ) {
-        ANA_MSG_INFO("secondaryVertexBranchName_token is: "<< secondaryVertexBranchName_token);
 		m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
       }
 
       if (m_AugmentationVersionStringList.empty())
 		  m_AugmentationVersionStringKeys.push_back("");
 	  while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
-        ANA_MSG_INFO("AugmentationVersionString_token is: "<< AugmentationVersionString_token);
 		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
@@ -250,11 +247,6 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
-    const xAOD::TrackParticleContainer *tracks = nullptr;
-    if (not m_trackParticleContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
-
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store));
@@ -285,6 +277,11 @@ EL::StatusCode DHNLNtuple::execute() {
         ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
     if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
 
+    const xAOD::TrackParticleContainer *tracks = nullptr;
+    if (not m_trackParticleContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
+    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
+
     const xAOD::JetContainer *allJets = nullptr;
     if (not m_allJetContainerName.empty()) 
         ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
@@ -307,7 +304,6 @@ EL::StatusCode DHNLNtuple::execute() {
      // Fill the secondary vertices from the list
     if (m_secondaryVertexContainerNameKeys.size()>0 and not m_AugmentationVersionStringKeys.empty()) { 
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-			ANA_MSG_DEBUG("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]<<" m_AltAugmentationVersionString is : "<<m_AltAugmentationVersionString);
             if (m_AugmentationVersionStringKeys[i] == m_AltAugmentationVersionString and not m_AltAugmentationVersionString.empty()) continue; // check you do not fill same as alt VSI twice
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
@@ -350,15 +346,14 @@ void DHNLNtuple::AddTree(std::string name) {
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
     if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
     if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
+    if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
     if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
 		
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-             ANA_MSG_INFO("Adding m_secondaryVertexContainerNameKeys");
 			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
     if (m_AltAugmentationVersionString != "None" ) { 
         miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }

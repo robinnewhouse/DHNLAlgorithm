@@ -51,8 +51,19 @@ private:
     std::vector<unsigned long long> m_track_eventNumber;
     std::vector<std::uint32_t> m_track_runNumber;
     std::vector<int> m_track_type;
+    std::vector<int> m_track_muonType;
     std::vector<int> m_track_quality;
+    std::vector<bool> m_track_isLRT;
     std::vector<bool> m_track_fromPV;
+
+    std::vector<int>m_track_isTight;
+    std::vector<int>m_track_isMedium;
+    std::vector<int>m_track_isLoose;
+
+    std::vector<int>m_track_isVeryLoose;
+    std::vector<int>m_track_isVeryVeryLoose;
+    std::vector<int>m_track_isVeryVeryLooseSi;
+
 
 
     std::vector<std::vector< float >> m_track_definingParametersCovMatrixVec;

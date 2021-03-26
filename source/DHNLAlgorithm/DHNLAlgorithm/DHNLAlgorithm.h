@@ -43,7 +43,10 @@ public:
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_secondaryVertexContainerNameList;   // input Secondary Vertices container name
+    std::string m_AugmentationVersionStringList; // string list of aug strings
     std::string m_inDetTrackParticlesContainerName; // Track container
+    std::vector<std::string> m_secondaryVertexContainerNameKeys;  // list of the secondary vertex in a vector
+    std::vector<std::string> m_AugmentationVersionStringKeys; // list of the aug strings in a vector
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
     std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
@@ -56,6 +59,8 @@ public:
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
     float m_metCut;
+    bool m_doSkipTracks;
+    std::string m_trackingCalibFile; // calibration file for tracking systmeatics
 
 private:
 
@@ -63,12 +68,24 @@ private:
     TH1D *m_cutflowHistW;   //!
     StatusCode eventSelection();
 
+    bool acceptTrack(const xAOD::TrackParticle &trk) const;
+    float getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const;
+
     asg::AnaToolHandle<PMGTools::IPMGCrossSectionTool> m_PMGCrossSectionTool_handle{"PMGCrossSectionTool", this}; //!
     float m_mcEventWeight;  //!
     std::string m_comEnergy; //!
 
     float m_weight;  //!
     float m_weight_xs;  //!
+
+    TH2* m_trkEffHistLooseGlobal = nullptr;
+    TH2* m_trkEffHistLooseIBL = nullptr;
+    TH2* m_trkEffHistLoosePP0 = nullptr;
+    TH2* m_trkEffHistLoosePhysModel = nullptr;
+    TH2* m_trkEffHistTightGlobal = nullptr;
+    TH2* m_trkEffHistTightIBL = nullptr;
+    TH2* m_trkEffHistTightPP0 = nullptr;
+    TH2* m_trkEffHistTightPhysModel = nullptr;
 
 public:
     // this is a standard constructor
