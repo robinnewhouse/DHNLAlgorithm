@@ -55,6 +55,7 @@ private:
     std::vector<int> m_track_quality;
     std::vector<bool> m_track_isLRT;
     std::vector<bool> m_track_fromPV;
+    std::vector<int> m_track_associatedSecVtx;
 
     std::vector<int>m_track_isTight;
     std::vector<int>m_track_isMedium;
@@ -85,6 +86,7 @@ private:
     std::map<std::string,std::vector<int>> m_secVerts_muons_per_event;
     std::map<std::string,std::vector<int>> m_secVerts_electrons_per_event;
     std::map<std::string,std::vector<bool>> m_secVerts_shuffled;
+    std::map<std::string,std::vector<bool>> m_secVerts_secondary_vtx_number;
 
     float m_weight;
     float m_weight_xs;

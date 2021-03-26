@@ -360,7 +360,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
-
+    int nSecVtx = 0;
     for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
         const xAOD::VertexContainer *inVSIVertices = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
@@ -371,6 +371,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
             // check if this vertex contains tracks from different original events (shuffled vertex)
             vertex->auxdecor<bool>("shuffled") = false;
+            vertex->auxdecor<int>("SecondaryVtxNumber") = nSecVtx;
             if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
                 vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
                 vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
@@ -404,6 +405,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
                     }
                 }
                 trk->auxdecor<bool>("fromPV") = is_pv_associated;
+                trk->auxdecor<int>("associatedSecVtx") = nSecVtx; 
 
                 if (trk->isAvailable<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  )){ // check if the track is selected and also from a PV
                     if (trk->auxdataConst<char>( "is_selected" + m_AugmentationVersionStringKeys[i]  ) && trk->auxdataConst<bool>("fromPV")){
@@ -420,6 +422,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 }
 
             }
+            nSecVtx++;
         }
     }
 

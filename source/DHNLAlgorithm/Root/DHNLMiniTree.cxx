@@ -125,6 +125,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
+    m_tree->Branch((name + "associatedSecVtx").c_str(), &m_track_associatedSecVtx);
 
     m_tree->Branch((name+ "definingParametersCovMatrixVec").c_str(), &m_track_definingParametersCovMatrixVec);
 
@@ -351,11 +352,13 @@ void DHNLMiniTree::AddSecondaryVerts(const std::string detailStr, const std::str
     std::string name = secVtxName + "_";
 	m_secVerts_muons_per_event.insert({secVtxName,{}});
 	m_secVerts_electrons_per_event.insert({secVtxName,{}});
-    m_secVerts_shuffled.insert({secVtxName,{}});
+        m_secVerts_shuffled.insert({secVtxName,{}});
+        m_secVerts_secondary_vtx_number.insert({secVtxName,{}});
 
     m_tree->Branch((name + "NumberofMuons").c_str(), &m_secVerts_muons_per_event[secVtxName]);
     m_tree->Branch((name + "NumberofElectron").c_str(), &m_secVerts_electrons_per_event[secVtxName]);
     m_tree->Branch((name + "shuffled").c_str(), &m_secVerts_shuffled[secVtxName]);
+    m_tree->Branch((name + "SecondaryVtxNumber").c_str(), &m_secVerts_secondary_vtx_number[secVtxName]);
 }
 
 
@@ -381,6 +384,9 @@ void DHNLMiniTree::FillSecondaryVertex(const xAOD::Vertex *secVtx, const std::st
     if (secVtx->isAvailable<bool>("shuffled")){
         m_secVerts_shuffled[secVtxName].push_back(secVtx->auxdecor<bool>("shuffled"));
     }
+    if (secVtx->isAvailable<int>("SecondaryVtxNumber")){
+        m_secVerts_secondary_vtx_number[secVtxName].push_back(secVtx->auxdecor<int>("SecondaryVtxNumber"));
+    }
 }	
 
 void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
@@ -389,7 +395,8 @@ void DHNLMiniTree::ClearSecondaryVerts(const std::string secVtxName) {
 		
 	m_secVerts_muons_per_event[secVtxName].clear();
 	m_secVerts_electrons_per_event[secVtxName].clear();
-    m_secVerts_shuffled[secVtxName].clear();
+        m_secVerts_shuffled[secVtxName].clear();
+        m_secVerts_secondary_vtx_number[secVtxName].clear();
 }
 
 
@@ -421,6 +428,9 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
     if (track->isAvailable<bool>("be_fromPV"))
         m_track_fromPV.push_back(track->auxdecor<bool>("be_fromPV"));
+
+    if (track->isAvailable<int>("associatedSecVtx"))
+        m_track_associatedSecVtx.push_back(track->auxdecor<int>("associatedSecVtx"));
     
     if (track->isAvailable<int>("be_isTight"))
         m_track_isTight.push_back(track->auxdecor<int>("be_isTight"));
@@ -481,6 +491,7 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
+    m_track_associatedSecVtx.clear();
 
     m_track_isTight.clear();
     m_track_isMedium.clear();
