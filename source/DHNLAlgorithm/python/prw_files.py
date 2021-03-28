@@ -703,6 +703,7 @@ prw_files_cvmfs = [
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312991_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312992_AFII.root",
     # "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312993_AFII.root", # missing in cvmfs. May need to use local
+    "$WorkDir_DIR/data/DHNLAlgorithm/PRW/mc16_13TeV.312993.Pythia8EvtGen_A14NNPDF23LO_WelHNL50_12p5G_lt10dd_ee.merge.NTUP_PILEUP.e7902_e5984_a875_r11891_r11748_p3604_p3605/NTUP_PILEUP.21479911._000001.pool.root.1", # missing in cvmfs. May need to use local
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312994_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312995_AFII.root",
     "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/DSID312xxx/pileup_mc16e_dsid312996_AFII.root",
