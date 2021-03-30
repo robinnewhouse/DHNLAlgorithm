@@ -356,6 +356,7 @@ DHNLDict = {
     "m_useMCPileupCheck"        : False,
     "m_metCut"                  : 20000,
     "m_doInverseLeptonControlRegion"   : False,
+    "m_fakeAOD"                 : True,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",

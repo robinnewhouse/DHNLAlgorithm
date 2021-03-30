@@ -55,6 +55,7 @@ private:
     std::vector<int> m_track_quality;
     std::vector<bool> m_track_isLRT;
     std::vector<bool> m_track_fromPV;
+    std::vector<bool> m_track_prompt_lepton;
 
     std::vector<int>m_track_isTight;
     std::vector<int>m_track_isMedium;

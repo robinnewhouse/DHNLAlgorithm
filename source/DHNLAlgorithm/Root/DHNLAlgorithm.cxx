@@ -71,6 +71,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationBranches = false;
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
+    m_fakeAOD = false;
     m_metCut = 0;
     m_doSkipTracks = false;
     m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
@@ -406,6 +407,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             for (const xAOD::TrackParticle *trk : vtx_tracks) { // loop over tracks in the DV
                 bool fromPV = false;
                 bool dropTrack = false;
+
                 const xAOD::TrackParticle *id_trk;
                 // this will be a nullptr is trk is not a GSF track
                 id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
@@ -416,11 +418,20 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 auto it_id = std::find(pvTracks.begin(), pvTracks.end(), id_trk);
                 if (it_id != pvTracks.end())
                     fromPV = true;
+                if (m_fakeAOD) { // running on a fake AOD where the tracks used in the vertex seeding are random shuffling. PV info is decorated on the tracks
+                    if (trk->isAvailable<char>("be_prompt_lepton") ) { // if avaliable then get original fromPV information decorated on the track
+                        fromPV = trk->auxdataConst<char>("be_prompt_lepton");
+                        }
+                }
                 trk->auxdecor<bool>("fromPV") = fromPV;
 
+                bool trk_is_lepton = false;
+                if (m_fakeAOD) {
+                    trk_is_lepton = trk->auxdataConst<int>("TrackType") == 0 or trk->auxdataConst<int>("TrackType") == 1;
+                } else{
+                    trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or trk->auxdataConst<int>("electronIndex") >= 0);
+                }
 
-                bool trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or
-                                      trk->auxdataConst<int>("electronIndex") >= 0);
                 if (trk_is_lepton and trk->auxdataConst<bool>("fromPV")) {
                     dropTrack = true;
                 }
