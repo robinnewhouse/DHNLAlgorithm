@@ -419,6 +419,7 @@ DHNLDict = {
     "m_metCut"                  : 20000,
     "m_doInverseLeptonControlRegion"   : False,
     "m_backgroundEstimationBranches"   : True,
+    "m_doPromptLeptonCut"   : True, # apply prompt lepton cut!
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
@@ -440,12 +441,10 @@ DHNLNtupleDict = {
     "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
-    "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
+    "m_secondaryVertexContainerNameList" : '',
     "m_secondaryVertexContainerNameList" : "",
-    "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
-    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    "m_secondaryVertexContainerNameAlt" : "",
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
+    "m_secondaryVertexBranchNameList" : '',
+    "m_AugmentationVersionStringList" : '',
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
     "m_truthVertexContainerName"     : "TruthVertices",
