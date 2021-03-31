@@ -45,21 +45,12 @@
 namespace VKalVrtAthena {
 
     //____________________________________________________________________________________________________
-    bool isAssociatedToVertices(const xAOD::TrackParticle *trk, const xAOD::VertexContainer *vertices, bool doSelectTracksFromElectrons ) {
-
+    bool isAssociatedToVertices(const xAOD::TrackParticle *trk, const xAOD::VertexContainer *vertices ) {
+        // checks whether the track is associated to a PV (this check is not correct for GSF track, but is currently what is run in data) -DT
         bool is_pv_associated = false;
-        const xAOD::TrackParticle *id_trk;
-        id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
-
         for (auto *vtx : *vertices) {
             for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) {
                 auto *pvtrk = vtx->trackParticle(iv); // gets the track associated to the primary vertex
-                if (doSelectTracksFromElectrons) { // when vertexing with electron tracks, need to compare the orginal track particle from GSF to the track in the PV
-                    if (id_trk == pvtrk){
-                        is_pv_associated = true;
-                        break;
-                    }
-                }
                 if (trk == pvtrk) {
                     is_pv_associated = true;
                     break;
@@ -68,6 +59,27 @@ namespace VKalVrtAthena {
         }
         return is_pv_associated;
     }
+
+    //____________________________________________________________________________________________________
+    bool isAssociatedToVertices_withGSF(const xAOD::TrackParticle *trk, const xAOD::VertexContainer *vertices ) {
+        // checks whether the track is associated to a PV, including the proper check for GSF tracks -DT
+        bool is_pv_associated = false;
+        const xAOD::TrackParticle *id_trk;
+        id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+
+        for (auto *vtx : *vertices) {
+            for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) {
+                auto *pvtrk = vtx->trackParticle(iv); // gets the track associated to the primary vertex
+                 if ((pvtrk != nullptr) // sometimes the PV track is a nullptr (?), skip these tracks
+                     and ((id_trk == pvtrk) or (trk == pvtrk))) { // when vertexing with electron tracks, need to compare the orginal track particle from GSF to the track in the PV
+                    is_pv_associated = true;
+                    break;
+                }
+            }
+        }
+        return is_pv_associated;
+    }
+
 
     //____________________________________________________________________________________________________
     double vtxVtxDistance(const Amg::Vector3D &v1, const Amg::Vector3D &v2) {
@@ -320,7 +332,7 @@ bool VSITrackSelection::selectTrack_hitPatternTight( const xAOD::TrackParticle* 
 
 //____________________________________________________________________________________________________
 bool VSITrackSelection::selectTrack_notPVassociated  ( const xAOD::TrackParticle* trk ) const {
-    return !( VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices, m_jp_doSelectTracksFromElectrons ) );
+    return !( VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices ) );
 }
 
 //____________________________________________________________________________________________________
@@ -457,7 +469,7 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
         trk->auxdecor<Double_t>("be_e") = p4.E();
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
-        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices, m_jp_doSelectTracksFromElectrons );
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices ); // this is the info that VSI currently uses to veto "PV" tracks
         // track is not a lepton so no lepton quality information
         trk->auxdecor<int>("be_isTight") = -1;
         trk->auxdecor<int>("be_isMedium") = -1;
@@ -525,7 +537,7 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
         trk->auxdecor<Double_t>("be_e") = p4.E();
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
-        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices,m_jp_doSelectTracksFromElectrons );
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices ); // this is the info that VSI currently uses to veto "PV" tracks
         // track is not a lepton so no lepton quality information
         trk->auxdecor<int>("be_isTight") = -1;
         trk->auxdecor<int>("be_isMedium") = -1;
@@ -584,7 +596,8 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         trk->auxdecor<Double_t>("be_e") = p4.E();
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
-        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices,m_jp_doSelectTracksFromElectrons );
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices ); // this is the info that VSI currently uses to veto "PV" tracks
+        trk->auxdecor<bool>("be_prompt_lepton") = VKalVrtAthena::isAssociatedToVertices_withGSF( trk, m_primaryVertices ); // this is the actual information about whether the lepton is a PV
         //Add default lepton quality information 
         trk->auxdecor<int>("be_isTight") = ((int)muon->auxdataConst<char>("isTightQ") );
         trk->auxdecor<int>("be_isMedium") = ((int)muon->auxdataConst<char>("isMediumQ") );
@@ -647,7 +660,8 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
         trk->auxdecor<Double_t>("be_e") = p4.E();
         trk->auxdecor<uint32_t>("be_runNumber") = m_runNumber;
         trk->auxdecor<unsigned long long>("be_eventNumber") = m_eventNumber;
-        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices, m_jp_doSelectTracksFromElectrons );
+        trk->auxdecor<bool>("be_fromPV") = VKalVrtAthena::isAssociatedToVertices( trk, m_primaryVertices ); // this is the info that VSI currently uses to veto "PV" tracks
+        trk->auxdecor<bool>("be_prompt_lepton") = VKalVrtAthena::isAssociatedToVertices_withGSF( trk, m_primaryVertices ); // this is the actual information about whether the lepton is a PV
         //Add default lepton quality information 
         trk->auxdecor<int>("be_isTight") = (int)electron->auxdataConst<char>("LHTight");
         trk->auxdecor<int>("be_isMedium") = (int)electron->auxdataConst<char>("LHMedium");

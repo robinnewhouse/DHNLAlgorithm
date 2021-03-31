@@ -125,6 +125,7 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
+    m_tree->Branch((name + "prompt_lepton").c_str(), &m_track_prompt_lepton);
 
     m_tree->Branch((name+ "definingParametersCovMatrixVec").c_str(), &m_track_definingParametersCovMatrixVec);
 
@@ -421,6 +422,9 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
     if (track->isAvailable<bool>("be_fromPV"))
         m_track_fromPV.push_back(track->auxdecor<bool>("be_fromPV"));
+   
+    if (track->isAvailable<bool>("be_prompt_lepton"))
+        m_track_prompt_lepton.push_back(track->auxdecor<bool>("be_prompt_lepton"));
     
     if (track->isAvailable<int>("be_isTight"))
         m_track_isTight.push_back(track->auxdecor<int>("be_isTight"));
@@ -481,6 +485,7 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
+    m_track_prompt_lepton.clear();
 
     m_track_isTight.clear();
     m_track_isMedium.clear();
