@@ -372,14 +372,13 @@ EL::StatusCode DHNLAlgorithm::execute() {
             // check if this vertex contains tracks from different original events (shuffled vertex)
             vertex->auxdecor<bool>("shuffled") = false;
             vertex->auxdecor<int>("SecondaryVtxNumber") = nSecVtx;
+            ANA_MSG_INFO( "nSecVtx = "<<nSecVtx);
             if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
                 vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
                 vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
                 vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
-
                     int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
                     int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
-
                     int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
                     int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
@@ -388,6 +387,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             
             std::vector< const xAOD::TrackParticle* > vtx_tracks;
             DVHelper::getTracks( vertex, vtx_tracks ); // get tracks in the DV
+
             for ( const auto& trk : vtx_tracks ) { // loop over tracks in the DV
                 bool is_pv_associated = false;
                 bool dropTrack = false;
@@ -404,6 +404,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
                             }
                     }
                 }
+
                 trk->auxdecor<bool>("fromPV") = is_pv_associated;
                 trk->auxdecor<int>("associatedSecVtx") = nSecVtx; 
 
@@ -412,6 +413,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
                         dropTrack = true;
                     }
                 }
+
                 // drop the track if it is from a primary vertex
                 // this should have been done in VSI_Leptons but a bug was found. Can approximately fix in ntuple maker.
                 trk->auxdecor<bool>("dropTrack") = dropTrack;

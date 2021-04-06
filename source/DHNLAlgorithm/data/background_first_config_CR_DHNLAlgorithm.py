@@ -409,6 +409,8 @@ DHNLDict = {
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
+    "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
+    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
     "m_inDetTrackParticlesContainerName" : "InDetTrackParticles_Selected",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
