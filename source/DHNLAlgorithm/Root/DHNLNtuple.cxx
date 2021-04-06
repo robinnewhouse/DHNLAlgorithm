@@ -145,19 +145,16 @@ EL::StatusCode DHNLNtuple::initialize() {
       std::istringstream augstr(m_AugmentationVersionStringList);
 
       while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
-		ANA_MSG_INFO("secondaryVertexContainerName_token is: "<< secondaryVertexContainerName_token);
         m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
       }
 
       while ( std::getline(sb, secondaryVertexBranchName_token, ',') ) {
-        ANA_MSG_INFO("secondaryVertexBranchName_token is: "<< secondaryVertexBranchName_token);
 		m_secondaryVertexBranchNameKeys.push_back(secondaryVertexBranchName_token);
       }
 
       if (m_AugmentationVersionStringList.empty())
 		  m_AugmentationVersionStringKeys.push_back("");
 	  while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
-        ANA_MSG_INFO("AugmentationVersionString_token is: "<< AugmentationVersionString_token);
 		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
       }
 
@@ -290,11 +287,6 @@ EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
         ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
-    const xAOD::TrackParticleContainer *tracks = nullptr;
-    if (not m_trackParticleContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
-    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
-
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store));
@@ -325,6 +317,11 @@ EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
         ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
     if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
 
+    const xAOD::TrackParticleContainer *tracks = nullptr;
+    if (not m_trackParticleContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
+    if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
+
     const xAOD::JetContainer *allJets = nullptr;
     if (not m_allJetContainerName.empty()) 
         ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
@@ -347,7 +344,6 @@ EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
      // Fill the secondary vertices from the list
     if (!m_secondaryVertexContainerNameKeys.empty() and not m_AugmentationVersionStringKeys.empty()) { 
         for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
-			ANA_MSG_DEBUG("m_AugmentationVersionStringList[i] is :  "<<m_AugmentationVersionStringList[i]);
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
             if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchNameKeys[i], m_suppressTrackFilter);
@@ -393,6 +389,8 @@ void DHNLNtuple::AddTree(std::string name) {
     
     // Jets
     if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
+
+    // Vertices
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
     
     // Secondary Vertices

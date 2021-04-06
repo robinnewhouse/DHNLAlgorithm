@@ -116,7 +116,9 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     std::string name = trkName + "_";
     m_tree->Branch((name + "toSave").c_str(), &m_track_toSave);
     m_tree->Branch((name + "type").c_str(), &m_track_type);
+    m_tree->Branch((name + "muonType").c_str(), &m_track_muonType);
     m_tree->Branch((name + "quality").c_str(), &m_track_quality);
+    m_tree->Branch((name + "isLRT").c_str(), &m_track_isLRT);
     m_tree->Branch((name + "runNumber").c_str(), &m_track_runNumber);
     m_tree->Branch((name + "eventNumber").c_str(), &m_track_eventNumber);
     m_tree->Branch((name + "fromPV").c_str(), &m_track_fromPV);
@@ -135,6 +137,14 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name+ "py").c_str(), &m_track_py);
     m_tree->Branch((name+ "pz").c_str(), &m_track_pz);
     m_tree->Branch((name+ "e").c_str(), &m_track_e);
+
+    m_tree->Branch((name + "isTight").c_str(), &m_track_isTight);
+    m_tree->Branch((name + "isMedium").c_str(), &m_track_isMedium);
+    m_tree->Branch((name + "isLoose").c_str(), &m_track_isLoose);
+
+    m_tree->Branch((name + "isLHVeryLoose").c_str(), &m_track_isVeryLoose);
+    m_tree->Branch((name + "isLHVeryLoose_mod1").c_str(), &m_track_isVeryVeryLoose);
+    m_tree->Branch((name + "isLHVeryLoose_modSi").c_str(), &m_track_isVeryVeryLooseSi);
 }
 
 
@@ -195,11 +205,20 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
 
 void DHNLMiniTree::FillElectronsUser(const xAOD::Electron *electron, const std::string &electronName) {
     (void) electronName; // suppress warning
- 	
     bool val_vloose(false),val_vvloose(false),val_vvloosesi(false);
     val_vloose = (bool)m_LHToolVeryLoose->accept(electron);
     val_vvloose = (bool)m_LHToolVeryVeryLoose->accept(electron);
     val_vvloosesi = (bool)m_LHToolVeryVeryLooseSi->accept(electron);
+
+    //decorate custom lepton information to the GSF track. This should really be done in DHNLAlg -DT
+    const auto* trk = electron->trackParticle(0);
+    if  (trk->isAvailable<int>("be_type")  ) {
+        if (trk->auxdecor<int>("be_type") == 1) {
+            trk->auxdecor<int>("be_isLHVeryLoose") = int(val_vloose);
+            trk->auxdecor<int>("be_isLHVeryLoose_mod1") = int(val_vvloose);
+            trk->auxdecor<int>("be_isLHVeryLoose_modSi") = int(val_vvloosesi);
+        }
+    }
 
    if(val_vloose)
       m_electron_isVeryLoose.push_back(val_vvloose);
@@ -365,8 +384,14 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     if (track->isAvailable<int>("be_type"))
         m_track_type.push_back(track->auxdecor<int>("be_type"));
 
+    if (track->isAvailable<int>("be_muonType"))
+        m_track_muonType.push_back(track->auxdecor<int>("be_muonType"));
+
     if (track->isAvailable<int>("be_quality"))
         m_track_quality.push_back(track->auxdecor<int>("be_quality"));
+    
+    if (track->isAvailable<bool>("be_isLRT"))
+        m_track_isLRT.push_back(track->auxdecor<bool>("be_isLRT"));
 
     if (track->isAvailable<uint32_t>("be_runNumber"))
         m_track_runNumber.push_back(track->auxdecor<uint32_t>("be_runNumber"));
@@ -376,6 +401,25 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
 
     if (track->isAvailable<bool>("be_fromPV"))
         m_track_fromPV.push_back(track->auxdecor<bool>("be_fromPV"));
+    
+    if (track->isAvailable<int>("be_isTight"))
+        m_track_isTight.push_back(track->auxdecor<int>("be_isTight"));
+    
+    if (track->isAvailable<int>("be_isMedium"))
+        m_track_isMedium.push_back(track->auxdecor<int>("be_isMedium"));
+    
+    if (track->isAvailable<int>("be_isLoose"))
+        m_track_isLoose.push_back(track->auxdecor<int>("be_isLoose"));
+    
+     if (track->isAvailable<int>("be_isLHVeryLoose"))
+        m_track_isVeryLoose.push_back(track->auxdecor<int>("be_isLHVeryLoose") );
+
+    if (track->isAvailable<int>("be_isLHVeryLoose_mod1")) 
+        m_track_isVeryVeryLoose.push_back(track->auxdecor<int>("be_isLHVeryLoose_mod1") );
+    
+    if (track->isAvailable<int>("be_isLHVeryLoose_modSi"))
+        m_track_isVeryVeryLooseSi.push_back(track->auxdecor<int>("be_isLHVeryLoose_modSi") );
+
     
     // Missing track details
 
@@ -411,10 +455,20 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     (void) trackName; // suppress warning
     m_track_toSave.clear();
     m_track_type.clear();
+    m_track_muonType.clear();
     m_track_quality.clear();
+    m_track_isLRT.clear();
     m_track_runNumber.clear();
     m_track_eventNumber.clear();
     m_track_fromPV.clear();
+
+    m_track_isTight.clear();
+    m_track_isMedium.clear();
+    m_track_isLoose.clear();
+
+    m_track_isVeryLoose.clear();
+    m_track_isVeryVeryLoose.clear();
+    m_track_isVeryVeryLooseSi.clear();
 
     m_track_definingParametersCovMatrixVec.clear();
 

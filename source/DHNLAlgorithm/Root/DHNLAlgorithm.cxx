@@ -19,6 +19,7 @@
 #include <SampleHandler/MetaFields.h>
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODEgamma/ElectronxAODHelpers.h>
+#include "DVAnalysisBase/DVertexContainer.h"
 
 #include "TFile.h"
 #include "TEnv.h"
@@ -58,6 +59,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_inMETContainerName = "";
     m_inMETTrkContainerName = "";
     m_secondaryVertexContainerNameList = "";
+    m_AugmentationVersionStringList = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
@@ -70,6 +72,8 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
     m_metCut = 0;
+    m_doSkipTracks = false;
+    m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
 
 }
 
@@ -100,7 +104,7 @@ EL::StatusCode DHNLAlgorithm::initialize() {
 
     uint32_t dsid= m_isMC ? eventInfo->mcChannelNumber() : -1;
 
-    //
+    // ==============================================
     // x-sec tool
     ANA_CHECK( ASG_MAKE_ANA_TOOL(m_PMGCrossSectionTool_handle, PMGTools::PMGCrossSectionTool) );
     ANA_CHECK( m_PMGCrossSectionTool_handle.retrieve() );
@@ -123,6 +127,21 @@ EL::StatusCode DHNLAlgorithm::initialize() {
         }
         m_weight_xs = xs * eff * kfactor;
     }
+
+    // ==============================================
+    // tracking uncertainties
+
+    // Set random seed by time
+    srand (static_cast <unsigned> (time(nullptr)));
+
+    m_trkEffHistLooseGlobal = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSOverall_5_Loose");
+    m_trkEffHistLooseIBL = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSIBL_10_Loose");
+    m_trkEffHistLoosePP0 = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSPP0_25_Loose");
+    m_trkEffHistLoosePhysModel = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSQGS_BIC_Loose");
+    m_trkEffHistTightGlobal = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSOverall_5_TightPrimary");
+    m_trkEffHistTightIBL = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSIBL_10_TightPrimary");
+    m_trkEffHistTightPP0 = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSPP0_25_TightPrimary");
+    m_trkEffHistTightPhysModel = DHNLFunctions::getCalibHistogram(m_trackingCalibFile, "OneMinusRatioEfficiencyVSEtaPt_AfterRebinning_NominalVSQGS_BIC_TightPrimary");
 
     return EL::StatusCode::SUCCESS;
 }
@@ -254,6 +273,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     if(!m_inElContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
     
+    const xAOD::VertexContainer *primaryVertices = nullptr;
+    ANA_CHECK (HelperFunctions::retrieve(primaryVertices, "PrimaryVertices", m_event, m_store, msg()));
+    
     /*const xAOD::VertexContainer *inVSIVertices = nullptr;
     if(!m_inVSIContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
@@ -262,7 +284,10 @@ EL::StatusCode DHNLAlgorithm::execute() {
 	
     int MuonsPerEvent = 0;
     int ElectronsPerEvent = 0;
-    
+
+    // =======================================================================
+    // Filter
+    // =======================================================================
     // Copy over the aux data containing filter pass information
     // We think this should be done automatically in the shallow copy od MuonCalibrator.cxx, but it appears not to be.
     // Be careful with these hardcoded collection names.
@@ -321,149 +346,95 @@ EL::StatusCode DHNLAlgorithm::execute() {
         }
     }
 
-    //////////////////// Store track information (for Background Estimation) //////////////////////
-
-    TLorentzVector p4;
-    if (m_backgroundEstimationBranches) {
-        // muon tracks
-        for (const xAOD::Muon *muon : *inMuons) {
-            // susy15 derivation does not keep sufficient track information for SiliconAssociatedForwardMuon types
-            if (muon->muonType() == xAOD::Muon::SiliconAssociatedForwardMuon) {
-                const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
-                if (track == nullptr) continue;
-
-                track->auxdecor<bool>("be_toSave") = false;
-                track->auxdecor<int>("be_type") = (int) TrackType::MUON;
-
-                continue;
-            };
-
-            const xAOD::TrackParticle *track = muon->trackParticle(xAOD::Muon::InnerDetectorTrackParticle);
-
-            if (track == nullptr) continue;
-
-            // Quality data
-            track->auxdecor<int>("be_quality") = (int) muon->quality();
-
-            track->auxdecor<bool>("be_toSave") = true;
-            track->auxdecor<int>("be_type") = (int) TrackType::MUON;
-
-            track->auxdecor<float_t>("be_vx") = track->vx();
-            track->auxdecor<float_t>("be_vy") = track->vy();
-            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
-
-            track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
-            track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();
-
-            track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
-
-            p4 = muon->p4();
-            track->auxdecor<Double_t>("be_px") = p4.Px();
-            track->auxdecor<Double_t>("be_py") = p4.Py();
-            track->auxdecor<Double_t>("be_pz") = p4.Pz();
-            track->auxdecor<Double_t>("be_e") = p4.E();
-
-            track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
-            track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
-            track->auxdecor<bool>("be_fromPV") = false;
-        
-            //MuonsPerEvent+=1;
-        }
-		
-
-        // electron tracks
-        for (const xAOD::Electron *electron : *inElectrons) {
-            const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
-
-            if (track == nullptr) continue;
-
-            // Quality data
-            track->auxdecor<int>("be_quality") = -998;
-
-            track->auxdecor<bool>("be_toSave") = true;
-            track->auxdecor<int>("be_type") = (int) TrackType::ELECTRON;
-
-            track->auxdecor<float_t>("be_vx") = track->vx();
-            track->auxdecor<float_t>("be_vy") = track->vy();
-            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
-
-            track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
-            track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();
-
-            track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
-
-            p4 = electron->p4();
-            track->auxdecor<Double_t>("be_px") = p4.Px();
-            track->auxdecor<Double_t>("be_py") = p4.Py();
-            track->auxdecor<Double_t>("be_pz") = p4.Pz();
-            track->auxdecor<Double_t>("be_e") = p4.E();
-
-            track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
-            track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
-            track->auxdecor<bool>("be_fromPV") = false;
-        
-            //ElectronsPerEvent+=1;
-        }
-
-        // non-lepton tracks
-        for (const xAOD::TrackParticle *track : *tracks) {
-            if (track->isAvailable<bool>("be_toSave") && track->auxdecor<bool>("be_toSave")) {
-                // This is either a muon or an electron, which were already added.
-                continue;
+    // =======================================================================
+    // Make a vector of primary vertices
+    // =======================================================================
+    std::vector<const xAOD::TrackParticle *> pvTracks;
+    // loop over primary vertices
+    for (auto *vtx : *primaryVertices) {
+        // loop over each track in the PV
+        for (size_t iv = 0; iv < vtx->nTrackParticles(); iv++) {
+            // gets the track associated to the primary vertex
+            const xAOD::TrackParticle *pvTrack = vtx->trackParticle(iv);
+            if (pvTrack != nullptr) {
+                pvTracks.push_back(pvTrack);
             }
+        }
+    }
 
-            track->auxdecor<bool>("be_toSave") = true;
-            track->auxdecor<int>("be_type") = (int) TrackType::NON_LEPTON;
-            track->auxdecor<int>("be_quality") = -999;
-
-            track->auxdecor<float_t>("be_vx") = track->vx();
-            track->auxdecor<float_t>("be_vy") = track->vy();
-            track->auxdecor<std::vector< float >>("be_definingParametersCovMatrixVec")  = track->definingParametersCovMatrixVec();
-
-            track->auxdecor<float_t>("be_beamlineTiltX") = track->beamlineTiltX();
-            track->auxdecor<float_t>("be_beamlineTiltY") = track->beamlineTiltY();
-
-            track->auxdecor<uint32_t>("be_hitPattern") = track->hitPattern();
-
-            p4 = track->p4();
-            track->auxdecor<Double_t>("be_px") = p4.Px();
-            track->auxdecor<Double_t>("be_py") = p4.Py();
-            track->auxdecor<Double_t>("be_pz") = p4.Pz();
-            track->auxdecor<Double_t>("be_e") = p4.E();
-
-            track->auxdecor<uint32_t>("be_runNumber") = eventInfo->runNumber();
-            track->auxdecor<unsigned long long>("be_eventNumber") = eventInfo->eventNumber();
-            track->auxdecor<bool>("be_fromPV") = false;
-
-        }   
-	}
-    
-	std::string secondaryVertexContainerName_token;
+    // =======================================================================
+    // Loop over secondary vertices
+    // =======================================================================
+    std::string secondaryVertexContainerName_token;
     std::istringstream sv(m_secondaryVertexContainerNameList);
-	while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
-		const xAOD::VertexContainer *inVSIVertices = nullptr;
-		ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, secondaryVertexContainerName_token, m_event, m_store, msg()));
-		for (const xAOD::Vertex *vertex: *inVSIVertices){
+    std::string AugmentationVersionString_token;
+    std::istringstream augstr(m_AugmentationVersionStringList);
+    while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+        m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
+    }
+    while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
+		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
+      }
+
+    // do this for each vertex collection
+    for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
+        const xAOD::VertexContainer *inVSIVertices = nullptr;
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
+        for (const xAOD::Vertex *vertex: *inVSIVertices) {
+            // Store number of leptons in each event
             vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
             vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
 
             // check if this vertex contains tracks from different original events (shuffled vertex)
             vertex->auxdecor<bool>("shuffled") = false;
-            if (vertex->trackParticle(0)->isAvailable<int>("trackOriginalRun") &&
-                vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent") &&
-                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun") &&
-                vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent")) {
+            if (vertex->trackParticle(0)->isAvailable<unsigned int>("trackOriginalRun") &&
+                vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
+                vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
+                vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
 
-                int runNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalRun");
-                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<int>("trackOriginalEvent");
+                    int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
+                    int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                int runNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalRun");
-                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<int>("trackOriginalEvent");
+                    int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
+                    int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+                    vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
             }
-		}
-	}
+
+            std::vector<const xAOD::TrackParticle *> vtx_tracks;
+            DVHelper::getTracks(vertex, vtx_tracks); // get tracks in the DV
+            for (const xAOD::TrackParticle *trk : vtx_tracks) { // loop over tracks in the DV
+                bool fromPV = false;
+                bool dropTrack = false;
+                const xAOD::TrackParticle *id_trk;
+                // this will be a nullptr is trk is not a GSF track
+                id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+
+                auto it = std::find(pvTracks.begin(), pvTracks.end(), trk);
+                if (it != pvTracks.end())
+                    fromPV = true;
+                auto it_id = std::find(pvTracks.begin(), pvTracks.end(), id_trk);
+                if (it_id != pvTracks.end())
+                    fromPV = true;
+                trk->auxdecor<bool>("fromPV") = fromPV;
+
+
+                bool trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or
+                                      trk->auxdataConst<int>("electronIndex") >= 0);
+                if (trk_is_lepton and trk->auxdataConst<bool>("fromPV")) {
+                    dropTrack = true;
+                }
+                // drop the track if it is a lepton and is associated to a primary vertex
+                trk->auxdecor<bool>("dropTrack") = dropTrack;
+
+                // Use tracking systematic tool to drop some percent of tracks
+                if (m_doSkipTracks and !dropTrack) { // only do this if the track has not been already dropped
+                    trk->auxdecor<bool>("dropTrack") = !DHNLAlgorithm::acceptTrack(*trk);
+                }
+
+            }
+        }
+    }
 
     //////////////////// Store primary vertex information //////////////////////
 
@@ -479,18 +450,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
         eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
     }
 
-    if (m_backgroundEstimationBranches) {
-        // This logic is similar to https://gitlab.cern.ch/dtrischu/athena/-/blob/vrtSecInclusive-21.2-hnl/Reconstruction/VKalVrt/VrtSecInclusive/src/Utilities.cxx#L37 so we could later filter only tracks that are not from PV before shuffling
-        const xAOD::Vertex *primaryVertex = HelperFunctions::getPrimaryVertex(vertices, msg());
-        if(primaryVertex){
-            for( size_t iv = 0; iv < primaryVertex->nTrackParticles(); iv++ ) {
-                auto* pvtrk = primaryVertex->trackParticle( iv );
-                if (pvtrk)
-                    pvtrk->auxdecor<bool>("be_fromPV") = true;
-            }
-        }
-    }
-
     return EL::StatusCode::SUCCESS;
 }
 
@@ -504,4 +463,54 @@ EL::StatusCode DHNLAlgorithm::finalize() {
     // submission node after all your histogram outputs have been
     // merged.
     return EL::StatusCode::SUCCESS;
+}
+
+bool DHNLAlgorithm::acceptTrack(const xAOD::TrackParticle &trk) const {
+
+    float fTrkEffSyst = 0;
+    
+    // loose
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLooseGlobal, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLooseIBL, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLoosePP0, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    fTrkEffSyst = getFractionDropped(1, m_trkEffHistLoosePhysModel, (float) trk.pt(), (float) trk.eta());
+    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+    
+    // tight
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+//    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
+//    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
+
+    return true;
+}
+
+float DHNLAlgorithm::getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const {
+
+    if(histogram==nullptr) {
+        return fDefault;
+    }
+
+    pt *= 1.e-3; // unit conversion to GeV
+    if( pt >= histogram->GetXaxis()->GetXmax() ) pt = histogram->GetXaxis()->GetXmax() - 0.001;
+
+    float frac = histogram->GetBinContent(histogram->FindBin(pt, eta));
+    if( frac > 1. ) {
+        ANA_MSG_DEBUG( "Fraction from histogram " << histogram->GetName()
+                                                    << " is greater than 1. Setting fraction to 1." );
+        frac = 1.;
+    }
+    if( frac < 0. ) {
+        ANA_MSG_DEBUG( "Fraction from histogram " << histogram->GetName()
+                                                    << " is less than 0. Setting fraction to 0." );
+        frac = 0.;
+    }
+    return frac;
 }

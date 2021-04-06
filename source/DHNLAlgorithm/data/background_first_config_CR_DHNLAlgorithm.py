@@ -84,7 +84,7 @@ basicEventSelectionDict = {
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
     "m_vertexContainerName"       : "PrimaryVertices",
-    "m_applyPrimaryVertexCut"     : False,
+    "m_applyPrimaryVertexCut"     : True,
     "m_PVNTrack"                    : 2,
     "m_msgLevel"                  : "Info",
 }
@@ -119,7 +119,6 @@ DHNLFilterDict = {
 
 c.algorithm("DHNLFilter", DHNLFilterDict )
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -138,6 +137,7 @@ MuonCalibratorDict = {
 }
 
 c.algorithm("MuonCalibrator", MuonCalibratorDict )
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -165,7 +165,7 @@ MuonSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu40, HLT_mu50, HLT_mu60_0eta105_msonly",
+    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_imedium, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu60_0eta105_msonly",
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
@@ -195,6 +195,7 @@ ElectronCalibratorDict = {
 
 c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -220,7 +221,7 @@ ElectronSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0, HLT_e300_etcut",
+    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
@@ -229,92 +230,176 @@ ElectronSelectorDict = {
 c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%% Secondary Vertex Selection %%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-SecondaryVertexSelectorDict = {
-    "m_name"                 : "SecVtxSel_VSI",
-    "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-    "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices",
-    #---------------------- Selections ---------------------------#
-    "m_do_trackTrimming"     : False,
-    "m_do_matMapVeto"        : True,
-    "prop_chi2Cut"           : 5.0,
-    "prop_d0_wrtSVCut"       : 0.8,
-    "prop_z0_wrtSVCut"       : 1.2,
-    "prop_errd0_wrtSVCut"    : 999999,
-    "prop_errz0_wrtSVCut"    : 999999,
-    "prop_d0signif_wrtSVCut" : 5.0,
-    "prop_z0signif_wrtSVCut" : 5.0,
-    "prop_chi2_toSVCut"      : 5.0,
-    "prop_vtx_suffix"        : "",
-    #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
-}
-
-c.algorithm ( "SecondaryVertexSelector", SecondaryVertexSelectorDict )
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-
-
-for augstr in AugmentationVersionStrings:
-
-    Dict_VertexMatcher = {
-        "m_name"                            : "VertexMatch"+ augstr,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-         "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-    }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
-
-if o.altVSIstr != "None":
-    Dict_VertexMatcher_Alt = {
-        "m_name"                            : "VertexMatch"+o.altVSIstr ,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr ,
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-        "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-        }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
-
-
-
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
-# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-TruthVertexSelectorDict = {
-    "m_name"                      : "TruthVtxSel",
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection (ALL Leptons: VSILep Mod + VSILep) %%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+VSITrackSelectionDict = {
+    "m_name"                      : "VSITrackSelection",
     #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "TruthVertices",
-    "m_outContainerName"          : "SelectedTruthVertices",
-    "m_createSelectedContainer"   : True,
+    "m_inDetTrackParticlesContainerName"           : "InDetTrackParticles",
+    "m_inElContainerName"           : "Electrons_Calibrate",
+    "m_inMuContainerName"           : "Muons_Calibrate",
+    "m_vertexContainerName"         : "PrimaryVertices",
+    "m_outContainerName"            : "InDetTrackParticles_Selected",
     #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "50, 24",
+    "m_jp_passThroughTrackSelection": True, # dont apply any track selection
+    "m_jp_SAloneTRT": False,
+
+    "m_jp_do_PVvetoCut": True,
+    "m_jp_do_d0Cut": False,
+    "m_jp_do_z0Cut": False,
+    "m_jp_do_d0errCut": False,
+    "m_jp_do_z0errCut": False,
+    "m_jp_do_d0signifCut": False,
+    "m_jp_do_z0signifCut": False,
+
+    "m_jp_d0TrkPVDstMinCut": 2,
+    "m_jp_d0TrkPVDstMaxCut": 300,
+    "m_jp_z0TrkPVDstMinCut": 0,
+    "m_jp_z0TrkPVDstMaxCut": 1500,
+    "m_jp_d0TrkErrorCut": 200000,
+    "m_jp_z0TrkErrorCut": 200000,
+    
+    "m_jp_TrkChi2Cut": 50,
+    "m_jp_TrkPtCut": 1000,
+
+    "m_jp_doTRTPixCut": True,
+    "m_jp_CutSctHits": 2,
+    "m_jp_CutPixelHits": 0,
+    "m_jp_CutSiHits": 0,
+    "m_jp_CutBLayHits": 0,
+    "m_jp_CutSharedHits": 0,
+    "m_jp_CutTRTHits": 0,
+    "m_jp_CutTightSCTHits": 7,
+    "m_jp_CutTightTRTHits": 20,
+
+    "m_jp_doSelectTracksFromMuons": True,
+    "m_jp_doRemoveCaloTaggedMuons": False, # don't remove calo-tagged muons
+    "m_jp_doSelectTracksFromElectrons": True,
+    "m_jp_doSelectTracksWithLRTCuts": True,
+    "m_jp_addInDetHadrons" : False, # do not add original hadrons
+
     #------------------------ Other ------------------------------#
     "m_msgLevel"             : "Info",
-
 }
 
-# if args.is_MC:
-#     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
+c.algorithm("VSITrackSelection", VSITrackSelectionDict )
+
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# # #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection ( VSILep Mod ) %%%%%%%%%%%%%%%%%%%%%%%%%%#
+# # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# VSITrackSelectionDict = {
+#     "m_name"                      : "VSITrackSelection",
+#     #----------------------- Container Flow ----------------------------#
+#     "m_inDetTrackParticlesContainerName"           : "InDetTrackParticles",
+#     "m_inElContainerName"           : "Electrons_Calibrate",
+#     "m_inMuContainerName"           : "Muons_Calibrate",
+#     "m_vertexContainerName"         : "PrimaryVertices",
+#     "m_outContainerName"            : "InDetTrackParticles_Selected",
+#     #---------------------- Selections ---------------------------#
+#     "m_jp_passThroughTrackSelection": False, # apply track selection
+#     "m_jp_SAloneTRT": False,
+
+#     "m_jp_do_PVvetoCut": True,
+#     "m_jp_do_d0Cut": False,
+#     "m_jp_do_z0Cut": False,
+#     "m_jp_do_d0errCut": False,
+#     "m_jp_do_z0errCut": False,
+#     "m_jp_do_d0signifCut": False,
+#     "m_jp_do_z0signifCut": False,
+
+#     "m_jp_d0TrkPVDstMinCut": 2.0,
+#     "m_jp_d0TrkPVDstMaxCut": 300.0,
+#     "m_jp_z0TrkPVDstMinCut": 0.0,
+#     "m_jp_z0TrkPVDstMaxCut": 1500.0,
+#     "m_jp_d0TrkErrorCut": 200000,
+#     "m_jp_z0TrkErrorCut": 200000,
+    
+#     "m_jp_TrkChi2Cut": 50,
+#     "m_jp_TrkPtCut": 1000,
+
+#     "m_jp_doTRTPixCut": True,
+#     "m_jp_CutSctHits": 2,
+#     "m_jp_CutPixelHits": 0,
+#     "m_jp_CutSiHits": 0,
+#     "m_jp_CutBLayHits": 0,
+#     "m_jp_CutSharedHits": 0,
+#     "m_jp_CutTRTHits": 0,
+#     "m_jp_CutTightSCTHits": 7,
+#     "m_jp_CutTightTRTHits": 20,
+
+#     "m_jp_doSelectTracksFromMuons": True,
+#     "m_jp_doRemoveCaloTaggedMuons": True, 
+#     "m_jp_doSelectTracksFromElectrons": True,
+#     "m_jp_doSelectTracksWithLRTCuts": True,
+#     "m_jp_addInDetHadrons" : False, # do not add original hadrons
+
+#     #------------------------ Other ------------------------------#
+#     "m_msgLevel"             : "Info",
+# }
+
+# c.algorithm("VSITrackSelection", VSITrackSelectionDict )
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%% VSI Track Selection ( VSILep ) %%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# VSITrackSelectionDict = {
+#     "m_name"                      : "VSITrackSelection",
+#     #----------------------- Container Flow ----------------------------#
+#     "m_inDetTrackParticlesContainerName"           : "InDetTrackParticles",
+#     "m_inElContainerName"           : "Electrons_Calibrate",
+#     "m_inMuContainerName"           : "Muons_Calibrate",
+#     "m_vertexContainerName"         : "PrimaryVertices",
+#     "m_outContainerName"            : "InDetTrackParticles_Selected",
+#     #---------------------- Selections ---------------------------#
+#     "m_jp_passThroughTrackSelection": False, # apply track selection
+#     "m_jp_SAloneTRT": False,
+
+#     "m_jp_do_PVvetoCut": True,
+#     "m_jp_do_d0Cut": True,
+#     "m_jp_do_z0Cut": False,
+#     "m_jp_do_d0errCut": False,
+#     "m_jp_do_z0errCut": False,
+#     "m_jp_do_d0signifCut": False,
+#     "m_jp_do_z0signifCut": False,
+
+#     "m_jp_d0TrkPVDstMinCut": 0.0,
+#     "m_jp_d0TrkPVDstMaxCut": 300.0,
+#     "m_jp_z0TrkPVDstMinCut": 0.0,
+#     "m_jp_z0TrkPVDstMaxCut": 1500.0,
+#     "m_jp_d0TrkErrorCut": 200000,
+#     "m_jp_z0TrkErrorCut": 200000,
+    
+#     "m_jp_TrkChi2Cut": 50,
+#     "m_jp_TrkPtCut": 1000.0,
+
+#     "m_jp_doTRTPixCut": False,
+#     "m_jp_CutSctHits": 2,
+#     "m_jp_CutPixelHits": 0,
+#     "m_jp_CutSiHits": 0,
+#     "m_jp_CutBLayHits": 0,
+#     "m_jp_CutSharedHits": 0,
+#     "m_jp_CutTRTHits": 0,
+#     "m_jp_CutTightSCTHits": 7,
+#     "m_jp_CutTightTRTHits": 20,
+
+#     "m_jp_doSelectTracksFromMuons": True,
+#     "m_jp_doRemoveCaloTaggedMuons": False, 
+#     "m_jp_doSelectTracksFromElectrons": True,
+#     "m_jp_doSelectTracksWithLRTCuts": False,
+#     "m_jp_addInDetHadrons" : False, # do not add original hadrons
+
+#     #------------------------ Other ------------------------------#
+#     "m_msgLevel"             : "Info",
+# }
+
+# c.algorithm("VSITrackSelection", VSITrackSelectionDict )
+
+
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# ##%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLAlgo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
@@ -322,24 +407,25 @@ DHNLDict = {
     "m_inputAlgo"               : "SignalJets_Algo",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
-    "m_inElContainerName"       : "Electrons_Calibrate",
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
+    "m_inMuContainerName"       : "Muons",
+    "m_inElContainerName"       : "Electrons",
+    "m_inDetTrackParticlesContainerName" : "InDetTrackParticles_Selected",
     #----------------------- Selections ----------------------------#
     "m_leadingJetPtCut"         : 20,
     "m_subleadingJetPtCut"      : 20,
     "m_jetMultiplicity"         : 2,
     "m_useMCPileupCheck"        : False,
     "m_metCut"                  : 20000,
-    "m_doInverseLeptonControlRegion"   : True,
+    "m_doInverseLeptonControlRegion"   : True, # apply inverse prompt lepton cut!
     "m_backgroundEstimationBranches"   : True,
     #----------------------- Other ----------------------------#
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -350,13 +436,14 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons_Calibrate",
+    "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "Electrons_Calibrate",
-    "m_trackParticleContainerName"   : "InDetTrackParticles",
+    "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
+    "m_secondaryVertexContainerNameList" : "",
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
+    "m_secondaryVertexContainerNameAlt" : "",
     "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
     "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
@@ -366,9 +453,9 @@ DHNLNtupleDict = {
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup", #shapeEM
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_muDetailStr"                  : "",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     "m_trackDetailStr"               : "numbers fitpars vertex",
