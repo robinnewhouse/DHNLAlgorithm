@@ -249,6 +249,7 @@ for augstr in AugmentationVersionStrings:
         "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
         "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
         "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr,
+        "m_outContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr +"_sel",
         #---------------------- Selections ---------------------------#
         "m_do_trackTrimming"     : False,
         "m_do_matMapVeto"        : True,
