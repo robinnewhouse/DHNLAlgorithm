@@ -5,6 +5,8 @@
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
 
+#include "MuonSelectorTools/MuonSelectionTool.h"
+
 
 DHNLMiniTree::DHNLMiniTree(xAOD::TEvent *event, TTree *tree, TFile *file, xAOD::TStore *store /* = 0 */) :
         HelpTreeBase(event, tree, file, 1e3) {
@@ -85,6 +87,10 @@ void DHNLMiniTree::AddMuonsUser(const std::string &detailStr, const std::string 
     std::string name = muonName + "_";
     m_tree->Branch((name + "index").c_str(), &m_muon_index);
     m_tree->Branch((name + "type").c_str(), &m_muon_type);
+    m_tree->Branch((name + "isMyLoose").c_str(), &m_muon_isMyLoose);
+    m_tree->Branch((name + "isMyMedium").c_str(), &m_muon_isMyMedium);
+    m_tree->Branch((name + "isMyTight").c_str(), &m_muon_isMyTight);
+    m_tree->Branch((name + "isLowPt").c_str(), &m_muon_isLowPt);
     m_tree->Branch((name + "passesPromptCuts").c_str(), &m_muon_passesPromptCuts);
     m_tree->Branch((name + "passesDisplacedCuts").c_str(), &m_muon_passesDisplacedCuts);
     m_tree->Branch((name + "px").c_str(), &m_muon_px);
@@ -182,6 +188,50 @@ void DHNLMiniTree::FillMuonsUser(const xAOD::Muon *muon, const std::string &muon
 
     if (muon->isAvailable<int>("type"))
         m_muon_type.push_back(muon->auxdecor<int>("type"));
+
+    std::vector<std::unique_ptr<CP::MuonSelectionTool> > selectorTools;
+    selectorTools.clear();
+    const int Nwp = 6; // number of working points (tool instances)const int Nwp = 6; // number of working points (tool instances)
+    std::vector<std::string> WPnames = {"Tight", "Medium", "Loose", "VeryLoose", "HighPt", "LowPt"};
+
+    for (int wp = 0; wp < Nwp; wp++) {
+      CP::MuonSelectionTool* muonSelection = new CP::MuonSelectionTool( "MuonSelection_"+WPnames[wp] );
+      //muonSelection->msg().setLevel( MSG::DEBUG );
+      muonSelection->setProperty( "MuQuality", wp);
+      muonSelection->initialize();
+	  //   //muonSelection->initialize();
+      selectorTools.emplace_back(muonSelection);
+      if(wp == 0) {
+	muon->auxdecor<bool>("isMyTight") = (selectorTools[wp]->accept(*muon));
+      }
+      if(wp == 1) {
+	muon->auxdecor<bool>("isMyMedium") = (selectorTools[wp]->accept(*muon));
+      }
+      if(wp == 2) {
+	muon->auxdecor<bool>("isMyLoose") = (selectorTools[wp]->accept(*muon));
+      }
+      if(wp == 5) {
+	std::cout << "MuonSelection LowPt" << std::endl;
+	if (selectorTools[wp]->accept(*muon)) { std::cout << "!lowpt!wp " << wp << std::endl; }
+	muon->auxdecor<bool>("isLowPt") = (selectorTools[wp]->accept(*muon));
+      }
+
+    }
+
+
+    if (muon->isAvailable<bool>("isMyTight"))
+      m_muon_isMyTight.push_back(muon->auxdecor<bool>("isMyTight"));
+    else m_muon_isMyTight.push_back(false);
+    if (muon->isAvailable<bool>("isMyMedium"))
+      m_muon_isMyMedium.push_back(muon->auxdecor<bool>("isMyMedium"));
+    else m_muon_isMyMedium.push_back(false);
+    if (muon->isAvailable<bool>("isMyLoose"))
+      m_muon_isMyLoose.push_back(muon->auxdecor<bool>("isMyLoose"));
+    else m_muon_isMyLoose.push_back(false);
+
+    if (muon->isAvailable<bool>("isLowPt"))
+      m_muon_isLowPt.push_back(muon->auxdecor<bool>("isLowPt"));
+    else m_muon_isLowPt.push_back(false);
 
     if (muon->isAvailable<bool>("passesPromptCuts"))
         m_muon_passesPromptCuts.push_back(muon->auxdecor<bool>("passesPromptCuts"));
@@ -285,6 +335,10 @@ void DHNLMiniTree::ClearMuonsUser(const std::string &muonName) {
     (void) muonName; // suppress warning
     m_muon_index.clear();
     m_muon_type.clear();
+    m_muon_isMyTight.clear();
+    m_muon_isMyMedium.clear();
+    m_muon_isMyLoose.clear();
+    m_muon_isLowPt.clear();
     m_muon_passesPromptCuts.clear();
     m_muon_passesDisplacedCuts.clear();
     m_muon_px.clear();
