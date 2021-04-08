@@ -25,6 +25,10 @@ private:
 
     std::vector<int> m_muon_index;
     std::vector<int> m_muon_type;
+    std::vector<bool> m_muon_isMyLoose;
+    std::vector<bool> m_muon_isMyMedium;
+    std::vector<bool> m_muon_isMyTight;
+    std::vector<bool> m_muon_isLowPt;
     std::vector<bool> m_muon_passesPromptCuts;
     std::vector<bool> m_muon_passesDisplacedCuts;
     std::vector<double> m_muon_px;
