@@ -21,6 +21,8 @@
 #include <xAODEgamma/ElectronxAODHelpers.h>
 #include "DVAnalysisBase/DVertexContainer.h"
 
+#include "MuonSelectorTools/MuonSelectionTool.h"
+
 #include "TFile.h"
 #include "TEnv.h"
 #include "TSystem.h"
@@ -303,6 +305,30 @@ EL::StatusCode DHNLAlgorithm::execute() {
 
     if (inMuons) {
         for (const xAOD::Muon *muon : *inMuons) {
+
+	  std::vector<std::unique_ptr<CP::MuonSelectionTool> > selectorTools;
+	  selectorTools.clear();
+	  const int Nwp = 6; // number of working points (tool instances)const int Nwp = 6; // number of working points (tool instances)
+	  std::vector<std::string> WPnames = {"Tight", "Medium", "Loose", "VeryLoose", "HighPt", "LowPt"};
+	  for (int wp = 0; wp < Nwp; wp++) {
+	    CP::MuonSelectionTool* muonSelection = new CP::MuonSelectionTool( "MuonSelection_"+WPnames[wp] );
+	    muonSelection->msg().setLevel( MSG::DEBUG );
+	    ANA_CHECK(muonSelection->setProperty( "MuQuality", wp));
+	    ANA_CHECK(muonSelection->initialize());
+	    //muonSelection->initialize();
+	    selectorTools.emplace_back(muonSelection);
+	    if(wp == 2) {
+	      muon->auxdecor<bool>("isMyLoose") = (selectorTools[wp]->accept(*muon));
+	    }
+	    if(wp == 5) {
+	      std::cout << "MuonSelection LowPt" << std::endl;
+	      if (selectorTools[wp]->accept(*muon)) { std::cout << "!lowpt!wp " << wp << std::endl; }
+	      muon->auxdecor<bool>("isLowPt") = (selectorTools[wp]->accept(*muon));
+	    }
+
+
+	  }
+	  
             muon->auxdecor<int>("index") = muon->index();
             muon->auxdecor<int>("type") = muon->muonType();
             muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
