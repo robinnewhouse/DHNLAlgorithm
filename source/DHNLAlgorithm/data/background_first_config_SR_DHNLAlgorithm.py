@@ -443,7 +443,7 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
-    "m_secondaryVertexContainerNameList" : "",
+    #"m_secondaryVertexContainerNameList" : "",
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
     "m_secondaryVertexContainerNameAlt" : "",
@@ -458,7 +458,7 @@ DHNLNtupleDict = {
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
     "m_muDetailStr"                  : "",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
-    "m_secondaryVertexDetailStr"     : "", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
+    "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     "m_trackDetailStr"               : "numbers fitpars vertex",
