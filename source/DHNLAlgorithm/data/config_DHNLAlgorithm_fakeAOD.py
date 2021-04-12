@@ -16,9 +16,9 @@ c = Config()
 
 # vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
 if o.isSUSY15:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_fake"]
-    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_fake"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake"]
+    secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake"]
 
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
@@ -99,52 +99,25 @@ basicEventSelectionDict = {
 c.algorithm("BasicEventSelection", basicEventSelectionDict)
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# DHNLFilterDict = {
-#     "m_name"                    : "DHNLFilter",
+
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# MuonCalibratorDict = {
+#     "m_name"                      : "MuonCalibrate",
 #     #----------------------- Container Flow ----------------------------#
-
-#     "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
-#     "m_inMuContainerName"       : "Muons",
-#     "m_inElContainerName"       : "Electrons",
-#     "m_vertexContainerName"     : "PrimaryVertices",
-#     "m_applyFilterCut"          : False,
-#     # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
-
-#     #----------------------- Selections ----------------------------#
-
-#     # All selections are stored in default parameters in filter.
-#     # they can still be modified here. e.g.:
-#     # "m_AlphaMaxCut"             : 0.03,
-#     "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
-
+#     "m_inContainerName"           : "Muons",
+#     "m_outContainerName"          : "Muons_Calibrate",
+#     #----------------------- Systematics ----------------------------#
+#     "m_systName"                  : "",
+#     "m_systVal"                   : 0,
 #     #----------------------- Other ----------------------------#
-#     "m_msgLevel"                : "Info",
+#     "m_forceDataCalib"            : False,
+#     "m_sort"                      : True,
+#     "m_msgLevel"                  : "Info"
 # }
 
-# c.algorithm("DHNLFilter", DHNLFilterDict )
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-MuonCalibratorDict = {
-    "m_name"                      : "MuonCalibrate",
-    #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "Muons",
-    "m_outContainerName"          : "Muons_Calibrate",
-    #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",
-    "m_systVal"                   : 0,
-    #----------------------- Other ----------------------------#
-    "m_forceDataCalib"            : False,
-    "m_sort"                      : True,
-    "m_msgLevel"                  : "Info"
-}
-
-c.algorithm("MuonCalibrator", MuonCalibratorDict )
+# c.algorithm("MuonCalibrator", MuonCalibratorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%% MuonSelector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -188,22 +161,22 @@ c.algorithm("MuonCalibrator", MuonCalibratorDict )
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-ElectronCalibratorDict = {
-    "m_name"                      : "ElectronCalibrate",
-    #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "Electrons",
-    "m_outContainerName"          : "Electrons_Calibrate",
-    #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "Nominal",            ## For data
-    "m_systVal"                   : 0,                    ## For data
-    "m_esModel"                   : "es2016PRE",
-    "m_decorrelationModel"        : "1NP_v1",
-    #----------------------- Other ----------------------------#
-    "m_sort"                      : True,
-    "m_msgLevel"                  : "Info"
-}
+# ElectronCalibratorDict = {
+#     "m_name"                      : "ElectronCalibrate",
+#     #----------------------- Container Flow ----------------------------#
+#     "m_inContainerName"           : "Electrons",
+#     "m_outContainerName"          : "Electrons_Calibrate",
+#     #----------------------- Systematics ----------------------------#
+#     "m_systName"                  : "Nominal",            ## For data
+#     "m_systVal"                   : 0,                    ## For data
+#     "m_esModel"                   : "es2016PRE",
+#     "m_decorrelationModel"        : "1NP_v1",
+#     #----------------------- Other ----------------------------#
+#     "m_sort"                      : True,
+#     "m_msgLevel"                  : "Info"
+# }
 
-c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
+# c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%% ElectronSelector %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -285,8 +258,8 @@ for augstr in AugmentationVersionStrings:
         #------------------------ Lepton Matching ------------------------------#
         "m_doLeptons"                       : True,
         "m_fakeAOD"                         : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
+        "m_inMuContainerName"               : "",
+        "m_inElContainerName"               : "",
         "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
         "m_inTrackParticleContainerName"   : "TracksForVSI",
         #------------------------ Other ------------------------------#
@@ -294,21 +267,6 @@ for augstr in AugmentationVersionStrings:
     }
     c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
 
-if o.altVSIstr != "None":
-    Dict_VertexMatcher_Alt = {
-        "m_name"                            : "VertexMatch"+o.altVSIstr ,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr , 
-        "m_doTruth"                         : True,
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_fakeAOD"                         : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-        "m_VSILepmatch"                     : True if "Leptons" in o.altVSIstr else False, # careful here since if altVSIstr doesnt include Leptons but VSI algorithm was run with selectMuons or selectElectrons this wont run properly
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-        }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher_Alt           )
 
 
 
@@ -338,10 +296,10 @@ if args.is_MC:
 DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"      : "SignalJets",
-    "m_inputAlgo"               : "SignalJets_Algo",
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
-    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_inJetContainerName"      : "",
+    "m_inputAlgo"               : "",
+    "m_allJetContainerName"     : "",
+    "m_allJetInputAlgo"         : "",
     "m_inDetTrackParticlesContainerName": "TracksForVSI",
     "m_inMuContainerName"       : "",
     "m_inElContainerName"       : "",
@@ -373,8 +331,8 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons",
-    "m_inElContainerName"            : "Electrons",
+    "m_inMuContainerName"            : "",
+    "m_inElContainerName"            : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
