@@ -345,9 +345,9 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "pileup", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger isolation trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
-    "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
+    "m_elDetailStr"                  : "",
+    "m_muDetailStr"                  : "",
+    "m_trigDetailStr"                : "",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons fakeAOD", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
