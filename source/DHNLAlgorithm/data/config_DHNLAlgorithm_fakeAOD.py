@@ -333,6 +333,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "",
+    "m_eventInfoContainerName" : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
@@ -344,7 +345,7 @@ DHNLNtupleDict = {
     "m_truthVertexBranchName"        : "",
     "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
-    "m_eventDetailStr"               : "pileup", #shapeEM
+    "m_eventDetailStr"               : "", #shapeEM
     "m_elDetailStr"                  : "",
     "m_muDetailStr"                  : "",
     "m_trigDetailStr"                : "",#basic menuKeys passTriggers",
@@ -353,8 +354,8 @@ DHNLNtupleDict = {
     "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
-    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
-    "m_msgLevel"                : "Info",
+    "m_MCPileupCheckContainer"  : "",
+    "m_msgLevel"                : "Debug",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )
