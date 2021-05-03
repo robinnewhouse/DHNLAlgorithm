@@ -5,7 +5,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
-parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 o = parser.parse_args(shlex.split(args.extra_options))
 
@@ -13,7 +13,7 @@ c = Config()
 
 
 # vertex container information (by default run VSI & VSI Leptons)
-if o.isSUSY15:
+if o.isDerivation:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
     AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
@@ -82,7 +82,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : not args.is_MC,
+    "m_applyTriggerCut"           : False, #not args.is_MC,
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : lumicalcs,
@@ -107,7 +107,7 @@ DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
     #----------------------- Container Flow ----------------------------#
 
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810",
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
@@ -119,8 +119,8 @@ DHNLFilterDict = {
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"              : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
-    "m_el1IDKey"                  :  "LHLoose", # if not o.isSUSY15 else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
+    "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium",
+    "m_el1IDKey"                  :  "LHLoose", # if not o.isDerivation else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
     #----------------------- Other ----------------------------#
     "m_msgLevel"                : "Info",
 }
@@ -171,7 +171,7 @@ MuonSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_imedium, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu60_0eta105_msonly",
     #"m_minDeltaR"                 : 0.1,
@@ -226,7 +226,7 @@ ElectronSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
