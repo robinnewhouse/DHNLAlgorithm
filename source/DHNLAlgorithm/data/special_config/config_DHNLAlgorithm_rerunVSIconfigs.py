@@ -6,7 +6,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
-parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--rerunVSI_d0test', dest='rerunVSI_d0test', action="store_true", default=False)
 parser.add_argument('--rerunVSI_LRTR3test', dest='rerunVSI_LRTR3test', action="store_true", default=False)
@@ -25,9 +25,9 @@ if o.rerunVSI_LRTR3test:
     # VSI_Suffixes = ["_d0min_1p0", "_LRTR3_2p0", "_LRTR3_1p0", "_LRTR3_0p0"]
     VSI_Suffixes = ["_LRTR3_1p0"]   
 
-secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_fixedExtrapolator"]
-secondaryVertexBranchNames = ["secVtx_VSI_fixedExtrapolator"]
-AugmentationVersionStrings = ["_fixedExtrapolator"]
+secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices","VrtSecInclusive_SecondaryVertices_Leptons"]
+secondaryVertexBranchNames = ["secVtx_VSI", "secVtx_VSI_Leptons"]
+AugmentationVersionStrings = ["","_Leptons"]
 
 if o.rerunVSI_LRTR3test: 
     for suffix in VSI_Suffixes: 
@@ -42,7 +42,6 @@ if o.rerunVSI_LRTR3test:
         AugmentationVersionStrings.append("_LeptonsMod" + suffix)
     
         
-
 
 
 
@@ -126,7 +125,7 @@ DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
     #----------------------- Container Flow ----------------------------#
 
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810",
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
@@ -138,8 +137,8 @@ DHNLFilterDict = {
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"              : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
-    "m_el1IDKey"                  :  "LHLoose", # if not o.isSUSY15 else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
+    "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium",
+    "m_el1IDKey"                  :  "LHLoose", # if not o.isDerivation else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
     #----------------------- Other ----------------------------#
     "m_msgLevel"                : "Info",
 }
@@ -190,7 +189,7 @@ MuonSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu40, HLT_mu50, HLT_mu60_0eta105_msonly",
     #"m_minDeltaR"                 : 0.1,
@@ -247,9 +246,9 @@ ElectronSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
+    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : single_el_triggers_minus_HLT_e300_etcut if o.isSUSY15 else single_el_triggers,
+    "m_singleElTrigChains"        : single_el_triggers_minus_HLT_e300_etcut if o.isDerivation else single_el_triggers,
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
@@ -265,7 +264,7 @@ SecondaryVertexSelectorDict = {
     "m_name"                 : "SecVtxSel_VSI",
     "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
     "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
-    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_fixedExtrapolator",
+    "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0",
     #---------------------- Selections ---------------------------#
     "m_do_trackTrimming"     : False,
     "m_do_matMapVeto"        : True,
@@ -334,7 +333,7 @@ TruthVertexSelectorDict = {
     #---------------------- Selections ---------------------------#
     "m_pdgIdList"               : "50, 24, 443", # HNL W J/Psi
     #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Debug",
+    "m_msgLevel"             : "Info",
 
 }
 
@@ -369,7 +368,6 @@ DHNLDict = {
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
 
-print (secondaryVertexContainerNames)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLNtuple %%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#

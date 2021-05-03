@@ -6,7 +6,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
-parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="_Leptons")
 
 o = parser.parse_args(shlex.split(args.extra_options))

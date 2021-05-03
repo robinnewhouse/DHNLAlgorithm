@@ -6,7 +6,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
-parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
@@ -15,7 +15,7 @@ c = Config()
 
 
 # vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
-if o.isSUSY15:
+if o.isDerivation:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake", "VrtSecInclusive_SecondaryVertices_Leptons_fake"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod","secVtx_VSI_Leptons"]
     AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake","_Leptons_fake"]
@@ -106,7 +106,7 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 #     "m_name"                    : "DHNLFilter",
 #     #----------------------- Container Flow ----------------------------#
 
-#     "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isSUSY15 else "AntiKt4EMTopoJets_BTagging201810",
+#     "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810",
 #     "m_inMuContainerName"       : "Muons",
 #     "m_inElContainerName"       : "Electrons",
 #     "m_vertexContainerName"     : "PrimaryVertices",
@@ -118,7 +118,7 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 #     # All selections are stored in default parameters in filter.
 #     # they can still be modified here. e.g.:
 #     # "m_AlphaMaxCut"             : 0.03,
-#     "m_electronLHWP"            : "Medium" if not o.isSUSY15 else "DFCommonElectronsLHMedium",
+#     "m_electronLHWP"            : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium",
 
 #     #----------------------- Other ----------------------------#
 #     "m_msgLevel"                : "Info",
@@ -171,7 +171,7 @@ c.algorithm("MuonCalibrator", MuonCalibratorDict )
 #     "m_z0sintheta_max"            : 1e8,
 #     #----------------------- isolation stuff ----------------------------#
 #     "m_MinIsoWPCut"               : "",
-#     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "FixedCutHighPtTrackOnly",
+#     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
 #     #----------------------- trigger matching stuff ----------------------------#
 #     # "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu40, HLT_mu50, HLT_mu60_0eta105_msonly",
 #     "m_singleMuTrigChains"        : "", # no trigger matching in fake AOD
@@ -229,7 +229,7 @@ c.algorithm("ElectronCalibrator", ElectronCalibratorDict )
 #     "m_z0sintheta_max"            : 1e8,
 #     #----------------------- isolation stuff ----------------------------#
 #     "m_MinIsoWPCut"               : "",
-#     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isSUSY15 else "Gradient",
+#     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
 #     #----------------------- trigger matching stuff ----------------------------#
 #     # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e60_lhmedium, LT_e60_medium, HLT_e120_lhloose, HLT_e140_lhloose_nod0, HLT_e300_etcut",
 #     "m_singleElTrigChains"        : "", # no trigger matching for fake AOD

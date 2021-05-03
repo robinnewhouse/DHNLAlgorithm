@@ -6,7 +6,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
-parser.add_argument('--isSUSY15', dest='isSUSY15', action="store_true", default=False)
+parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 o = parser.parse_args(shlex.split(args.extra_options))
