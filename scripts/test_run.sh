@@ -9,5 +9,6 @@ xAH_run.py \
 --submitDir testRun \
 --force \
 --isMC \
+--extraOptions="--isDerivation --samplePeriod mc16e" \
 --nevents=100 \
 direct
