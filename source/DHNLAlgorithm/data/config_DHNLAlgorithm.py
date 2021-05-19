@@ -1,18 +1,26 @@
 from xAODAnaHelpers import Config
-import os
 import shlex
 import argparse
+
+
+def get_comma_separated_args(option, opt, value, parser):
+    setattr(parser.values, option.dest, value.split(','))
 
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
+parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
+
+sample_periods = o.samplePeriod.split(',')
+if sample_periods == []:
+    print("You didn't specify a data or MC period. Setting to 'all'. This will give incorrect results.")
+    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data14', 'data16', 'data17', 'data18',]
 
 c = Config()
 
-
-# vertex container information (by default run VSI & VSI Leptons)
+# vertex container information (by default run VSI Leptons [VSI LeptonsMod for derivations])
 if o.isDerivation:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
@@ -25,14 +33,11 @@ else:
 
 # Good Run Lists
 # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
-GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/data15_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/data16_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_WITH_IGNORES.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/data17_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/data18_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-]
-
-
+GRLList = []
+if 'data15' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/data15_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns.xml')
+if 'data16' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/data16_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_WITH_IGNORES.xml')
+if 'data17' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/data17_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
+if 'data18' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/data18_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
@@ -41,8 +46,11 @@ GRLList = [
 # from DHNLAlgorithm.prw_files import prw_files_local as PRWList
 # option 2. use centrally produced CVMFS files. This is still being tested as there are potentially issues.
 # see https://indico.cern.ch/event/892901/contributions/3779966/attachments/2002909/3344068/sampleRequest.pdf
-from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
-
+import DHNLAlgorithm.prw_files as prw_files
+PRWList = []
+if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
+if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
+if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
 
 # Lumicalc Files
 # Must be careful about which lines are commented and which are active.
@@ -52,22 +60,27 @@ from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
 # Note 2: These files are fairly large (~20 MB) so they will not be kept
 # in the git repository for now. You may need to copy them from cvmfs
 # and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
-lumicalcList = [
-    # mc16a 
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_276262-284484_OflLumi-13TeV-010.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_267638-271744_OflLumi-13TeV-010.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/ilumicalc_histograms_None_297730-311481_OflLumi-13TeV-010.root',
-    # mc16d
+lumicalcList = []
+if 'mc16a' in sample_periods: 
+    lumicalcList.extend([
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_276262-284484_OflLumi-13TeV-010.root',
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_267638-271744_OflLumi-13TeV-010.root',
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/ilumicalc_histograms_None_297730-311481_OflLumi-13TeV-010.root',
+    ])
+if 'mc16d' in sample_periods: 
+    lumicalcList.extend([
     '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_325713-340453_OflLumi-13TeV-010.root',
     '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_341294-341649_OflLumi-13TeV-001.root',
-    # mc16e 
+    ])
+if 'mc16e' in sample_periods: 
+    lumicalcList.extend([
     '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_354396-355468_OflLumi-13TeV-001.root',
     '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
-]
+    ])
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
-lumicalcs = ",".join(lumicalcList)
+LUMICALCS = ",".join(lumicalcList)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% BasicEventSelection %%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -84,8 +97,9 @@ basicEventSelectionDict = {
     "m_storeTrigKeys"             : True,
     "m_applyTriggerCut"           : False, #not args.is_MC,
     "m_doPUreweighting"           : False if o.noPRW else True,
+    "m_doPUreweightingSys"        : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
-    "m_lumiCalcFileNames"         : lumicalcs,
+    "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
     "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
     "m_checkDuplicatesData"       : False,
@@ -332,6 +346,7 @@ DHNLDict = {
     "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
     "m_trackingCalibFile"       : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
+    "m_doSkipTracks"            : False,
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
@@ -355,7 +370,7 @@ DHNLNtupleDict = {
     "m_truthVertexBranchName"        : "truthVtx",
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
-    "m_eventDetailStr"               : "truth pileup", #shapeEM
+    "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
