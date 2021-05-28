@@ -71,6 +71,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationBranches = false;
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
+    m_doPromptLeptonCut = false;
     m_fakeAOD = false;
     m_metCut = 0;
     m_doSkipTracks = false;
@@ -250,7 +251,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
     // weirdly the grid needs to have the log file pinged periodically so it doesn't kill jobs prematurely
     if (eventInfo->eventNumber() % 10 == 0) 
-        ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
+        ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Apply event selection including control region if requested //////////////////////
     ANA_CHECK(eventSelection());
