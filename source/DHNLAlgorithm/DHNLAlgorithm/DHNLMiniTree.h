@@ -65,6 +65,8 @@ private:
     std::vector<int>m_track_isVeryVeryLoose;
     std::vector<int>m_track_isVeryVeryLooseSi;
 
+    std::vector<double>m_track_leppt;
+
 
 
     std::vector<std::vector< float >> m_track_definingParametersCovMatrixVec;

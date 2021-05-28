@@ -477,6 +477,7 @@ StatusCode  VSITrackSelection::selectTracksInDet() {
         trk->auxdecor<int>("be_isLHVeryLoose") = -1;
         trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -1;
         trk->auxdecor<int>("be_isLHVeryLoose_modSi") = -1;
+	trk->auxdecor<Double_t>("be_leppt") = -1;
 
 
     }
@@ -545,6 +546,7 @@ StatusCode  VSITrackSelection::selectTracksInDetHadronOverlay() {
         trk->auxdecor<int>("be_isLHVeryLoose") = -1;
         trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -1;
         trk->auxdecor<int>("be_isLHVeryLoose_modSi") = -1;
+	trk->auxdecor<Double_t>("be_leppt") = -1;
 
 
         m_selectedTracks->emplace_back( trk );
@@ -602,6 +604,7 @@ StatusCode  VSITrackSelection::selectTracksFromMuons() {
         trk->auxdecor<int>("be_isTight") = ((int)muon->auxdataConst<char>("isTightQ") );
         trk->auxdecor<int>("be_isMedium") = ((int)muon->auxdataConst<char>("isMediumQ") );
         trk->auxdecor<int>("be_isLoose") = ((int)muon->auxdataConst<char>("isLooseQ") );
+	trk->auxdecor<Double_t>("be_leppt") = ( (Double_t)muon->pt() );
         // track is not an electron so no custom quality 
         trk->auxdecor<int>("be_isLHVeryLoose") = -1;
         trk->auxdecor<int>("be_isLHVeryLoose_mod1") = -1;
@@ -666,6 +669,7 @@ StatusCode  VSITrackSelection::selectTracksFromElectrons() {
         trk->auxdecor<int>("be_isTight") = (int)electron->auxdataConst<char>("LHTight");
         trk->auxdecor<int>("be_isMedium") = (int)electron->auxdataConst<char>("LHMedium");
         trk->auxdecor<int>("be_isLoose") = (int)electron->auxdataConst<char>("LHLoose");
+	trk->auxdecor<Double_t>("be_leppt") = ( (Double_t)electron->pt() );
         // custom electron WP currently decorated in MiniTree FillElectronUsers, this is not ideal,  
         // but I couldnt figure out how to initialize the electron likelihood tool in this code... -DT
 

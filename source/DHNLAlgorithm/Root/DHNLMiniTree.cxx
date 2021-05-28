@@ -150,6 +150,8 @@ void DHNLMiniTree::AddTracksUser(const std::string &trkName, const std::string &
     m_tree->Branch((name + "isLHVeryLoose_mod1").c_str(), &m_track_isVeryVeryLoose);
     m_tree->Branch((name + "isLHVeryLoose_modSi").c_str(), &m_track_isVeryVeryLooseSi);
 
+    m_tree->Branch((name + "leppt").c_str(), &m_track_leppt);
+
 
 
 //    m_tree->Branch("electron_ptC30", &m_electron_ptC30);
@@ -444,6 +446,8 @@ void DHNLMiniTree::FillTracksUser(const xAOD::TrackParticle *track, const std::s
     if (track->isAvailable<int>("be_isLHVeryLoose_modSi"))
         m_track_isVeryVeryLooseSi.push_back(track->auxdecor<int>("be_isLHVeryLoose_modSi") );
 
+    if (track->isAvailable<double>("be_leppt"))
+      m_track_leppt.push_back(track->auxdecor<double>("be_leppt") );
     
     // Missing track details
 
@@ -494,6 +498,8 @@ void DHNLMiniTree::ClearTracksUser(const std::string &trackName) {
     m_track_isVeryLoose.clear();
     m_track_isVeryVeryLoose.clear();
     m_track_isVeryVeryLooseSi.clear();
+
+    m_track_leppt.clear();
 
     m_track_definingParametersCovMatrixVec.clear();
 
