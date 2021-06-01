@@ -230,6 +230,87 @@ EL::StatusCode DHNLAlgorithm::eventSelection() {
         ANA_MSG_DEBUG ("Event accepted for control region: ");
     }
 
+    if (m_doPromptLeptonCut) {
+
+        ANA_MSG_DEBUG ("in eventSelection:m_doPromptLeptonCut. Inspecting muons.");
+        const xAOD::MuonContainer *inMuons = nullptr;
+        ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
+	int nGoodPromptMuons = 0;
+        for (const xAOD::Muon *muon : *inMuons) {
+
+            // Check that a muon has at lest some quality
+            if (not(muon->quality() == xAOD::Muon_v1::Quality::Loose ||
+		    muon->quality() == xAOD::Muon_v1::Quality::Medium ||
+                    muon->quality() == xAOD::Muon_v1::Quality::Tight)) {
+                ANA_MSG_DEBUG ("Muon doesn't satisfy medium or tight quality. Skip muon");
+		continue;
+            }
+            // 	check that the muon satisfies prompt lepton requirements
+            const xAOD::TrackParticle *muonPrimaryTrackParticle = muon->primaryTrackParticle();
+            if (muonPrimaryTrackParticle == nullptr) {
+                ANA_MSG_DEBUG ("Muon primary track particle not found. Ignore this muon.");
+                continue;
+            }
+            static SG::AuxElement::Accessor<float> z0sinthetaAcc("z0sintheta");
+            if (not z0sinthetaAcc.isAvailable(*muon)) {
+                ANA_MSG_DEBUG ("Muon z0sintheta not available. Ignore this muon.");
+                continue;
+            }
+            if ((abs(muonPrimaryTrackParticle->d0()) < D0_CUT) and
+                (abs(z0sinthetaAcc(*muon)) < Z0_SIN_THETA_CUT)) {
+	      nGoodPromptMuons++;
+	      ANA_MSG_DEBUG ("Quality prompt muon found.");
+            } else {
+	      ANA_MSG_DEBUG ("Fail the d0/z0 cut.");
+	    }
+        }
+
+
+        ANA_MSG_DEBUG ("in eventSelection:m_doPromptLeptonCut. Inspecting electrons.");
+        const xAOD::ElectronContainer *inElectrons = nullptr;
+        ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
+	int nGoodPromptElectrons = 0;
+        for (const xAOD::Electron *electron : *inElectrons) {
+
+            // Check that an electron has at least medium quality
+            bool passLHLoose = false;
+            bool passLHMedium = false;
+            bool passLHTight = false;
+            electron->passSelection(passLHMedium, "LHLoose");
+            electron->passSelection(passLHMedium, "LHMedium");
+            electron->passSelection(passLHTight, "LHTight");
+            if (not(passLHLoose || passLHMedium || passLHTight)) {
+                ANA_MSG_DEBUG ("Electron doesn't satisfy medium quality. Ignore this electron.");
+                continue;
+            }
+            // 	check that the electron satisfies prompt lepton requirements
+            // This is how the track particle is retrieved in xAODAnaHelpers::ElectronContainer
+            const xAOD::TrackParticle *electronTrackParticle = electron->trackParticle();
+            if (electronTrackParticle == nullptr) {
+                ANA_MSG_DEBUG ("Electron track particle not found. Ignore this electron.");
+                continue;
+            }
+            static SG::AuxElement::Accessor<float> z0sinthetaAcc("z0sintheta");
+            if (not z0sinthetaAcc.isAvailable(*electron)) {
+                ANA_MSG_DEBUG ("Electron z0sintheta not available. Ignore this electron.");
+                continue;
+            }
+            if ((abs(electronTrackParticle->d0()) < D0_CUT) and
+                (abs(z0sinthetaAcc(*electron)) < Z0_SIN_THETA_CUT)) {
+	      nGoodPromptElectrons++;
+	      ANA_MSG_DEBUG ("Quality prompt electron found.");
+            } else {
+	      ANA_MSG_DEBUG ("Fail the d0/z0 cut.");
+	    }
+        } // for (const xAOD::Electron *electron : *inElectrons)
+
+	if(nGoodPromptMuons == 0 && nGoodPromptElectrons == 0) {
+	  wk()->skipEvent();
+	  ANA_MSG_DEBUG ("Event has no good (medium) prompt leptons, so skip it:");
+	}
+
+    }
+
     return EL::StatusCode::SUCCESS;
 
 }
