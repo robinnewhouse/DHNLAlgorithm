@@ -9,7 +9,14 @@ parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
+parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
+
+sample_periods = o.samplePeriod.split(',')
+if sample_periods == []:
+    print("You didn't specify a data or MC period. Setting to 'all'. This will give incorrect results.")
+    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data14', 'data16', 'data17', 'data18',]
+
 
 c = Config()
 
@@ -43,7 +50,11 @@ GRLList = [
 # from DHNLAlgorithm.prw_files import prw_files_local as PRWList
 # option 2. use centrally produced CVMFS files. This is still being tested as there are potentially issues.
 # see https://indico.cern.ch/event/892901/contributions/3779966/attachments/2002909/3344068/sampleRequest.pdf
-from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
+import DHNLAlgorithm.prw_files as prw_files
+PRWList = []
+if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
+if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
+if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
 
 
 # Lumicalc Files
@@ -54,19 +65,29 @@ from DHNLAlgorithm.prw_files import prw_files_cvmfs as PRWList
 # Note 2: These files are fairly large (~20 MB) so they will not be kept
 # in the git repository for now. You may need to copy them from cvmfs
 # and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
-lumicalcList = [
-    # mc16a (r-tag r10740)
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root',
-    # mc16d (r-tag r10739)
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',
-    # mc16e (r-tag r10790)
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
-]
+lumicalcList = []
+if 'mc16a' in sample_periods: 
+    lumicalcList.extend([
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_276262-284484_OflLumi-13TeV-010.root',
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/ilumicalc_histograms_None_267638-271744_OflLumi-13TeV-010.root',
+        '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/ilumicalc_histograms_None_297730-311481_OflLumi-13TeV-010.root',
+    ])
+if 'mc16d' in sample_periods: 
+    lumicalcList.extend([
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_325713-340453_OflLumi-13TeV-010.root',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/ilumicalc_histograms_None_341294-341649_OflLumi-13TeV-001.root',
+    ])
+if 'mc16e' in sample_periods: 
+    lumicalcList.extend([
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_354396-355468_OflLumi-13TeV-001.root',
+    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
+    ])
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
-lumicalcs = ",".join(lumicalcList)
+LUMICALCS = ",".join(lumicalcList)
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% BasicEventSelection %%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -83,7 +104,7 @@ basicEventSelectionDict = {
     "m_applyTriggerCut"           : False, # no Trigger menu in fakeAOD
     "m_doPUreweighting"           : False if o.noPRW else args.is_MC,
     "m_PRWFileNames"              : PRW,
-    "m_lumiCalcFileNames"         : lumicalcs,
+    "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
     "m_triggerSelection"          : "", # no trigger selection in fake AOD
     "m_checkDuplicatesData"       : False,
@@ -353,7 +374,7 @@ DHNLNtupleDict = {
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
     "m_MCPileupCheckContainer"  : "",
-    "m_msgLevel"                : "Debug",
+    "m_msgLevel"                : "Info",
 }
 
 c.algorithm("DHNLNtuple", DHNLNtupleDict )
