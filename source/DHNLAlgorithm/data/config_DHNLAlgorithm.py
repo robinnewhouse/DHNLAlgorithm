@@ -9,6 +9,7 @@ def get_comma_separated_args(option, opt, value, parser):
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
+parser.add_argument('--runAllSyst', dest='runAllSyst', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
@@ -151,8 +152,9 @@ MuonCalibratorDict = {
     "m_inContainerName"           : "Muons",
     "m_outContainerName"          : "Muons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",
-    "m_systVal"                   : 0,
+    "m_systName"                  : "All" if o.runAllSyst else "",
+    "m_systVal"                   : 1.0,
+    "m_outputAlgoSystNames"       : "MuonCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_forceDataCalib"            : False,
     "m_sort"                      : True,
@@ -171,14 +173,15 @@ MuonSelectorDict = {
     "m_outContainerName"          : "Muons_Signal",
     "m_createSelectedContainer"   : True,
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",        ## Data
-    "m_systVal"                   : 0,
+    "m_inputAlgoSystNames"        : "MuonCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "MuonSelector_Syst",
+    "m_systVal"                   : 1.0,
     #----------------------- configurable cuts ----------------------------#
     "m_muonQualityStr"            : "VeryLoose",
     "m_pass_max"                  : -1,
-    "m_pass_min"                  : -1,
+    "m_pass_min"                  : 1,
     "m_pT_max"                    : 1e8,
-    "m_pT_min"                    : 1,
+    "m_pT_min"                    : 3.0,
     "m_eta_max"                   : 1e8,
     "m_d0_max"                    : 1e8,
     "m_d0sig_max"                 : 1e8,
@@ -196,6 +199,36 @@ MuonSelectorDict = {
 
 # Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
 c.algorithm("MuonSelector", MuonSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%%% MuonEfficiencyCorrector %%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+MuonEfficiencyCorrectorDict = {
+  "m_name"                      : "MuonEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Muons_Signal",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesMuons"       : "MuonSelector_Syst",
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+  "m_systNameIso"               : "All",
+  "m_systValIso"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_AllowZeroSF"               : True, # the code says to use with caution... why?
+  # TODO: put in the right triggers
+  "m_MuTrigLegs"                : "2015:HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium,2016:HLT_mu26_ivarmedium,2017:HLT_mu26_ivarmedium,2018:HLT_mu26_ivarmedium",
+#  "m_MuTrigLegs"                : "HLT_mu26_ivarmedium_OR_HLT_mu50",
+#  "m_MuTrigLegs"                : "HLT_mu50",
+  #----------------------- Working Points ----------------------------#
+  "m_WorkingPointReco"          : "Medium",
+  "m_WorkingPointIso"           : "FCLoose",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("MuonEfficiencyCorrector", MuonEfficiencyCorrectorDict ) 
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -329,7 +362,7 @@ DHNLDict = {
     "m_inputAlgo"               : "SignalJets_Algo",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Calibrate",
+    "m_inMuContainerName"       : "Muons_Signal",
     "m_inElContainerName"       : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
@@ -360,7 +393,7 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons_Calibrate",
+    "m_inMuContainerName"            : "Muons_Signal",
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
@@ -371,8 +404,17 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
+                                        quality RECO_Loose RECO_Medium RECO_Tight \
+                                        isolation \
+                                        trigger effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
+                                        ",
+    # "m_muDetailStrSyst"              : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
+    #                                     quality RECO_Loose RECO_Medium RECO_Tight \
+    #                                     isolation \
+    #                                     trigger effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
+    #                                     ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
