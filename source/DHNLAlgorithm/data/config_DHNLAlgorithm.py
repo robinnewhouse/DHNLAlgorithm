@@ -17,7 +17,7 @@ o = parser.parse_args(shlex.split(args.extra_options))
 sample_periods = o.samplePeriod.split(',')
 if sample_periods == []:
     print("You didn't specify a data or MC period. Setting to 'all'. This will give incorrect results.")
-    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data14', 'data16', 'data17', 'data18',]
+    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data15', 'data16', 'data17', 'data18',]
 
 c = Config()
 
