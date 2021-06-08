@@ -392,7 +392,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
 		    MuonsPerEvent+=1;
-//        muon->auxdecor<float>("ptC30") = muon->isolation(xAOD::Iso::ptcone30);
+
             if (not(m_inMuContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
                 muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");
@@ -485,48 +485,48 @@ EL::StatusCode DHNLAlgorithm::execute() {
                     vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
             }
 
-            // std::vector<const xAOD::TrackParticle *> vtx_tracks;
-            // DVHelper::getTracks(vertex, vtx_tracks); // get tracks in the DV
-            // for (const xAOD::TrackParticle *trk : vtx_tracks) { // loop over tracks in the DV
-            //     bool fromPV = false;
-            //     bool dropTrack = false;
+            std::vector<const xAOD::TrackParticle *> vtx_tracks;
+            DVHelper::getTracks(vertex, vtx_tracks); // get tracks in the DV
+            for (const xAOD::TrackParticle *trk : vtx_tracks) { // loop over tracks in the DV
+                // bool fromPV = false;
+                // bool dropTrack = false;
 
-            //     const xAOD::TrackParticle *id_trk;
-            //     // this will be a nullptr is trk is not a GSF track
-            //     id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
+                // const xAOD::TrackParticle *id_trk;
+                // // this will be a nullptr is trk is not a GSF track
+                // id_trk = xAOD::EgammaHelpers::getOriginalTrackParticleFromGSF(trk);
 
-            //     auto it = std::find(pvTracks.begin(), pvTracks.end(), trk);
-            //     if (it != pvTracks.end())
-            //         fromPV = true;
-            //     auto it_id = std::find(pvTracks.begin(), pvTracks.end(), id_trk);
-            //     if (it_id != pvTracks.end())
-            //         fromPV = true;
-            //     if (m_fakeAOD) { // running on a fake AOD where the tracks used in the vertex seeding are random shuffling. PV info is decorated on the tracks
-            //         if (trk->isAvailable<char>("be_prompt_lepton") ) { // if avaliable then get original fromPV information decorated on the track
-            //             fromPV = trk->auxdataConst<char>("be_prompt_lepton");
-            //             }
-            //     }
-            //     trk->auxdecor<bool>("fromPV") = fromPV;
+                // auto it = std::find(pvTracks.begin(), pvTracks.end(), trk);
+                // if (it != pvTracks.end())
+                //     fromPV = true;
+                // auto it_id = std::find(pvTracks.begin(), pvTracks.end(), id_trk);
+                // if (it_id != pvTracks.end())
+                //     fromPV = true;
+                // if (m_fakeAOD) { // running on a fake AOD where the tracks used in the vertex seeding are random shuffling. PV info is decorated on the tracks
+                //     if (trk->isAvailable<char>("be_prompt_lepton") ) { // if avaliable then get original fromPV information decorated on the track
+                //         fromPV = trk->auxdataConst<char>("be_prompt_lepton");
+                //         }
+                // }
+                // trk->auxdecor<bool>("fromPV") = fromPV;
 
-            //     bool trk_is_lepton = false;
-            //     if (m_fakeAOD) {
-            //         trk_is_lepton = trk->auxdataConst<int>("TrackType") == 0 or trk->auxdataConst<int>("TrackType") == 1;
-            //     } else{
-            //         trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or trk->auxdataConst<int>("electronIndex") >= 0);
-            //     }
+                // bool trk_is_lepton = false;
+                // if (m_fakeAOD) {
+                //     trk_is_lepton = trk->auxdataConst<int>("TrackType") == 0 or trk->auxdataConst<int>("TrackType") == 1;
+                // } else{
+                //     trk_is_lepton = (trk->auxdataConst<int>("muonIndex") >= 0 or trk->auxdataConst<int>("electronIndex") >= 0);
+                // }
 
-            //     if (trk_is_lepton and trk->auxdataConst<bool>("fromPV")) {
-            //         dropTrack = true;
-            //     }
-            //     // drop the track if it is a lepton and is associated to a primary vertex
-            //     trk->auxdecor<bool>("dropTrack") = dropTrack;
+                // if (trk_is_lepton and trk->auxdataConst<bool>("fromPV")) {
+                //     dropTrack = true;
+                // }
+                // // drop the track if it is a lepton and is associated to a primary vertex
+                // trk->auxdecor<bool>("dropTrack") = dropTrack;
 
-            //     // Use tracking systematic tool to drop some percent of tracks
-            //     if (m_doSkipTracks and !dropTrack) { // only do this if the track has not been already dropped
-            //         trk->auxdecor<bool>("dropTrack") = !DHNLAlgorithm::acceptTrack(*trk);
-            //     }
+                // Use tracking systematic tool to drop some percent of tracks
+                if (m_doSkipTracks) { // only do this if the track has not been already dropped
+                    trk->auxdecor<bool>("dropTrack") = !DHNLAlgorithm::acceptTrack(*trk);
+                }
 
-            // }
+            }
         }
     }
 
