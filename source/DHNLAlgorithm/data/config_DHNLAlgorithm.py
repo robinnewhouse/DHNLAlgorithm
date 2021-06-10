@@ -406,9 +406,10 @@ DHNLNtupleDict = {
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
-                                        quality RECO_Loose RECO_Medium RECO_Tight \
-                                        isolation \
-                                        trigger effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
+                                        effSF \
+                                        quality RECO_Medium \
+                                        isolation ISOL_FCLoose\
+                                        trigger TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
                                         ",
     # "m_muDetailStrSyst"              : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
     #                                     quality RECO_Loose RECO_Medium RECO_Tight \
