@@ -409,13 +409,8 @@ DHNLNtupleDict = {
                                         effSF \
                                         quality RECO_Medium \
                                         isolation ISOL_FCLoose\
-                                        trigger TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
+                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium \
                                         ",
-    # "m_muDetailStrSyst"              : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
-    #                                     quality RECO_Loose RECO_Medium RECO_Tight \
-    #                                     isolation \
-    #                                     trigger effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50 \
-    #                                     ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
