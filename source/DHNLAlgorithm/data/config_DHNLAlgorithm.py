@@ -239,10 +239,11 @@ ElectronCalibratorDict = {
     "m_inContainerName"           : "Electrons",
     "m_outContainerName"          : "Electrons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "Nominal",            ## For data
-    "m_systVal"                   : 0,                    ## For data
-    "m_esModel"                   : "es2016PRE",
-    "m_decorrelationModel"        : "1NP_v1",
+    "m_systName"                  : "All" if o.runAllSyst else "",            
+    "m_systVal"                   : 1.0,                   
+    "m_esModel"                   : "es2018_R21_v0", # recommendation as of May 11 2020
+    "m_decorrelationModel"        : "1NP_v1",        # likely sufficient for our needs (NPs summed in quadrature)
+    "m_outputAlgoSystNames"       : "ElectronCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_sort"                      : True,
     "m_msgLevel"                  : "Info"
@@ -259,9 +260,12 @@ ElectronSelectorDict = {
     "m_inContainerName"           : "Electrons_Calibrate",
     "m_outContainerName"          : "Electrons_Signal",
     "m_createSelectedContainer"   : True,
-    #----------------------- PID ------------- ----------------------------#
+    #----------------------- PID -----------------------------------------#
     "m_doLHPIDcut"                : False,
     "m_LHOperatingPoint"          : "Medium",
+    #----------------------- Systematics ----------------------------#
+    "m_inputAlgoSystNames"        : "ElectronCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "ElectronSelector_Syst",
     #----------------------- configurable cuts ----------------------------#
     "m_pass_max"                  : -1,
     "m_pass_min"                  : -1,
@@ -284,7 +288,63 @@ ElectronSelectorDict = {
 c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%% ElectronEfficiencyCorrector %%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+ElectronEfficiencyCorrectorDict = {
+  "m_name"                      : "ElectronEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Electrons_Signal",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_systNamePID"               : "All",
+  "m_systValPID"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+#  "m_systNameIso"               : "All",
+#  "m_systValIso"                : 1.0,
+  "m_correlationModel"          : "SIMPLIFIED",
+  #----------------------- Working Points ----------------------------#
+  "m_WorkingPointReco"          : "Reconstruction",
+  "m_WorkingPointPID"           : "LooseBLayer",
+  "m_WorkingPointIso"           : "Gradient",
+  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
 
+c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%% ElectronEfficiencyCorrector %%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+ElectronEfficiencyCorrectorDict = {
+  "m_name"                      : "ElectronEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Electrons_Signal",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_systNamePID"               : "All",
+  "m_systValPID"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+#  "m_systNameIso"               : "All",
+#  "m_systValIso"                : 1.0,
+  "m_correlationModel"          : "SIMPLIFIED",
+  #----------------------- Working Points ----------------------------#
+  "m_WorkingPointReco"          : "Reconstruction",
+  "m_WorkingPointPID"           : "Medium",
+  "m_WorkingPointIso"           : "Gradient",
+  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
 
 for augstr in AugmentationVersionStrings: 
 
@@ -394,7 +454,7 @@ DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Signal",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inElContainerName"            : "Electrons_Signal",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
@@ -404,11 +464,14 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams energyLoss \
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams \
+                                        PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
+                                        effSF PIDSF_LooseBLayer PIDSF_Medium \
+                                        ",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
                                         effSF \
                                         quality RECO_Medium \
-                                        isolation ISOL_FCLoose\
+                                        isolation ISOL_FCLoose \
                                         trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium \
                                         ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
