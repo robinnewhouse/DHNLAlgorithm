@@ -8,40 +8,34 @@ import argparse
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
-parser.add_argument('--altVSIstr', dest='altVSIstr', type=str, default="None") # alternate vertex configuration string to store in tree along with VSI 
 parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
 
 sample_periods = o.samplePeriod.split(',')
 if sample_periods == []:
     print("You didn't specify a data or MC period. Setting to 'all'. This will give incorrect results.")
-    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data14', 'data16', 'data17', 'data18',]
-
+    sample_periods = ['mc16a', 'mc16d', 'mc16e', 'data15', 'data16', 'data17', 'data18',]
 
 c = Config()
 
-
-# vertex container information (by default run VSILepMod for SUSY15 else VSI Leptons)
+# vertex container information (by default run VSI Leptons [VSI LeptonsMod for derivations])
 if o.isDerivation:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
+    # VrtSecInclusive_SecondaryVertices_FixedExtroplator in SUSY15
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
     secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
     AugmentationVersionStrings = ["_Leptons"]
 
-
-
-
 # Good Run Lists
-GRLList = [
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml',
-]
-
+# https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
+GRLList = []
+if 'data15' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20190708/data15_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns.xml')
+if 'data16' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20190708/data16_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_WITH_IGNORES.xml')
+if 'data17' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/data17_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
+if 'data18' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/data18_13TeV.periodAllYear_DetStatus-v105-pro22-13_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
@@ -55,7 +49,6 @@ PRWList = []
 if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
 if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
 if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
-
 
 # Lumicalc Files
 # Must be careful about which lines are commented and which are active.
