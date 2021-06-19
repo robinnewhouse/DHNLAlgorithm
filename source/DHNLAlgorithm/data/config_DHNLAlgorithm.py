@@ -102,7 +102,8 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
+    "m_triggerSelection"          : "HLT_e24_lhmedium_L1EM20VH || HLT_e26_lhtight_nod0_ivarloose || HLT_mu26_ivarmedium || HLT_mu20_iloose_L1MU15",
+    # "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
@@ -190,7 +191,7 @@ MuonSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_imedium, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu60_0eta105_msonly",
+    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15,HLT_mu26_ivarmedium",
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
@@ -279,7 +280,8 @@ ElectronSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
+    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH,HLT_e26_lhtight_nod0_ivarloose",
+    # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
@@ -464,15 +466,18 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger trackparams \
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
                                         PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
-                                        effSF PIDSF_LooseBLayer PIDSF_Medium \
+                                        effSF \
+                                        PIDSF_LooseBLayer PIDSF_Medium \
+                                        isolation ISOL_Gradient \
+                                        trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
                                         ",
     "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
                                         effSF \
                                         quality RECO_Medium \
                                         isolation ISOL_FCLoose \
-                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium \
+                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
                                         ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
