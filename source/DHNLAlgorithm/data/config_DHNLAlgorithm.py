@@ -309,6 +309,7 @@ ElectronEfficiencyCorrectorDict = {
 #  "m_systValIso"                : 1.0,
   "m_correlationModel"          : "SIMPLIFIED",
   #----------------------- Working Points ----------------------------#
+  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
   "m_WorkingPointReco"          : "Reconstruction",
   "m_WorkingPointPID"           : "LooseBLayer",
   "m_WorkingPointIso"           : "Gradient",
@@ -338,6 +339,7 @@ ElectronEfficiencyCorrectorDict = {
 #  "m_systValIso"                : 1.0,
   "m_correlationModel"          : "SIMPLIFIED",
   #----------------------- Working Points ----------------------------#
+  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
   "m_WorkingPointReco"          : "Reconstruction",
   "m_WorkingPointPID"           : "Medium",
   "m_WorkingPointIso"           : "Gradient",
