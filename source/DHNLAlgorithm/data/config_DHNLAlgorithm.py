@@ -210,6 +210,7 @@ MuonEfficiencyCorrectorDict = {
   "m_inContainerName"           : "Muons_Signal",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesMuons"       : "MuonSelector_Syst",
+  "m_writeSystToMetadata"       : True,
   "m_systNameReco"              : "All",
   "m_systValReco"               : 1.0,
   "m_systNameIso"               : "All",
@@ -217,11 +218,9 @@ MuonEfficiencyCorrectorDict = {
   "m_systNameTrig"              : "All",
   "m_systValTrig"               : 1.0,
   "m_AllowZeroSF"               : True, # the code says to use with caution... why?
-  # TODO: put in the right triggers
-  "m_MuTrigLegs"                : "2015:HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium,2016:HLT_mu26_ivarmedium,2017:HLT_mu26_ivarmedium,2018:HLT_mu26_ivarmedium",
-#  "m_MuTrigLegs"                : "HLT_mu26_ivarmedium_OR_HLT_mu50",
-#  "m_MuTrigLegs"                : "HLT_mu50",
+  "m_MuTrigLegs"                : "2015:HLT_mu20_iloose_L1MU15,2016:HLT_mu26_ivarmedium,2017:HLT_mu26_ivarmedium,2018:HLT_mu26_ivarmedium",
   #----------------------- Working Points ----------------------------#
+  "m_overrideCalibRelease"      : "210222_Precision_r21",
   "m_WorkingPointReco"          : "Medium",
   "m_WorkingPointIso"           : "FCLoose",
   #----------------------- Other ----------------------------#
@@ -299,6 +298,7 @@ ElectronEfficiencyCorrectorDict = {
   "m_inContainerName"           : "Electrons_Signal",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_writeSystToMetadata"       : True,
   "m_systNamePID"               : "All",
   "m_systValPID"                : 1.0,
   "m_systNameTrig"              : "All",
@@ -329,6 +329,7 @@ ElectronEfficiencyCorrectorDict = {
   "m_inContainerName"           : "Electrons_Signal",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_writeSystToMetadata"       : True,
   "m_systNamePID"               : "All",
   "m_systValPID"                : 1.0,
   "m_systNameTrig"              : "All",
@@ -468,18 +469,18 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
+                                        effSF \
+                                        quality RECO_Tight RECO_Medium RECO_Loose \
+                                        isolation ISOL_FCLoose \
+                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
+                                        ",
     "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
                                         PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
                                         effSF \
                                         PIDSF_LooseBLayer PIDSF_Medium \
                                         isolation ISOL_Gradient \
                                         trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
-                                        ",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
-                                        effSF \
-                                        quality RECO_Medium \
-                                        isolation ISOL_FCLoose \
-                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu26_ivarmedium_OR_HLT_mu24_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
                                         ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
