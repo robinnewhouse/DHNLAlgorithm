@@ -180,7 +180,7 @@ MuonSelectorDict = {
     #----------------------- configurable cuts ----------------------------#
     "m_muonQualityStr"            : "VeryLoose",
     "m_pass_max"                  : -1,
-    "m_pass_min"                  : 1,
+    "m_pass_min"                  : -1,
     "m_pT_max"                    : 1e8,
     "m_pT_min"                    : 3.0,
     "m_eta_max"                   : 1e8,
@@ -207,7 +207,7 @@ c.algorithm("MuonSelector", MuonSelectorDict )
 MuonEfficiencyCorrectorDict = {
   "m_name"                      : "MuonEfficiencyCorrector",
   #----------------------- Container Flow ----------------------------#
-  "m_inContainerName"           : "Muons_Signal",
+  "m_inContainerName"           : "Muons_Calibrate",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesMuons"       : "MuonSelector_Syst",
   "m_writeSystToMetadata"       : True,
@@ -295,7 +295,7 @@ c.algorithm("ElectronSelector", ElectronSelectorDict )
 ElectronEfficiencyCorrectorDict = {
   "m_name"                      : "ElectronEfficiencyCorrector",
   #----------------------- Container Flow ----------------------------#
-  "m_inContainerName"           : "Electrons_Signal",
+  "m_inContainerName"           : "Electrons_Calibrate",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
   "m_writeSystToMetadata"       : True,
@@ -326,7 +326,7 @@ c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict )
 ElectronEfficiencyCorrectorDict = {
   "m_name"                      : "ElectronEfficiencyCorrector",
   #----------------------- Container Flow ----------------------------#
-  "m_inContainerName"           : "Electrons_Signal",
+  "m_inContainerName"           : "Electrons_Calibrate",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
   "m_writeSystToMetadata"       : True,
@@ -427,7 +427,7 @@ DHNLDict = {
     "m_inputAlgo"               : "SignalJets_Algo",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
-    "m_inMuContainerName"       : "Muons_Signal",
+    "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
@@ -458,8 +458,8 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons_Signal",
-    "m_inElContainerName"            : "Electrons_Signal",
+    "m_inMuContainerName"            : "Muons_Calibrate",
+    "m_inElContainerName"            : "Electrons_Calibrate",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
