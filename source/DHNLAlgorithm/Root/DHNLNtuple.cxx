@@ -233,7 +233,6 @@ EL::StatusCode DHNLNtuple::execute() {
     if (m_myTrees.find(systName) == m_myTrees.end()) { AddTree(systName); } // Get tree or make a new one
 
     ANA_MSG_DEBUG("execute() : Get Containers");
-
     const xAOD::EventInfo *eventInfo = nullptr;
     if(not m_eventInfoContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
@@ -333,7 +332,7 @@ void DHNLNtuple::AddTree(std::string name) {
 
     ANA_MSG_DEBUG("AddTree");
 
-    std::string treeName("outTree");
+    std::string treeName("nominal");
     // naming convention
     treeName += name; // add systematic
     auto *outTree = new TTree(treeName.c_str(), treeName.c_str());
