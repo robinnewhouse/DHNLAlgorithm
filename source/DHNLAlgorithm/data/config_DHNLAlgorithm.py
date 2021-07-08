@@ -9,6 +9,7 @@ def get_comma_separated_args(option, opt, value, parser):
 
 parser = argparse.ArgumentParser(description='Test for extra options')
 parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", default=False)
+parser.add_argument('--runAllSyst', dest='runAllSyst', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
@@ -101,7 +102,8 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
+    "m_triggerSelection"          : "HLT_e24_lhmedium_L1EM20VH || HLT_e26_lhtight_nod0_ivarloose || HLT_mu26_ivarmedium || HLT_mu20_iloose_L1MU15",
+    # "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
@@ -151,8 +153,9 @@ MuonCalibratorDict = {
     "m_inContainerName"           : "Muons",
     "m_outContainerName"          : "Muons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",
-    "m_systVal"                   : 0,
+    "m_systName"                  : "All" if o.runAllSyst else "",
+    "m_systVal"                   : 1.0,
+    "m_outputAlgoSystNames"       : "MuonCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_forceDataCalib"            : False,
     "m_sort"                      : True,
@@ -171,14 +174,15 @@ MuonSelectorDict = {
     "m_outContainerName"          : "Muons_Signal",
     "m_createSelectedContainer"   : True,
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "",        ## Data
-    "m_systVal"                   : 0,
+    "m_inputAlgoSystNames"        : "MuonCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "MuonSelector_Syst",
+    "m_systVal"                   : 1.0,
     #----------------------- configurable cuts ----------------------------#
     "m_muonQualityStr"            : "VeryLoose",
     "m_pass_max"                  : -1,
     "m_pass_min"                  : -1,
     "m_pT_max"                    : 1e8,
-    "m_pT_min"                    : 1,
+    "m_pT_min"                    : 3.0,
     "m_eta_max"                   : 1e8,
     "m_d0_max"                    : 1e8,
     "m_d0sig_max"                 : 1e8,
@@ -187,7 +191,7 @@ MuonSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15, HLT_mu24_iloose, HLT_mu24_ivarloose, HLT_mu24_imedium, HLT_mu24_ivarmedium, HLT_mu26_imedium, HLT_mu26_ivarmedium, HLT_mu60_0eta105_msonly",
+    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15,HLT_mu26_ivarmedium",
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
@@ -196,6 +200,35 @@ MuonSelectorDict = {
 
 # Annoyingly, we must run the MuonSelector algorithm in order to store quality parameters even in the input container.
 c.algorithm("MuonSelector", MuonSelectorDict )
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%%% MuonEfficiencyCorrector %%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+MuonEfficiencyCorrectorDict = {
+  "m_name"                      : "MuonEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Muons_Calibrate",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesMuons"       : "MuonSelector_Syst",
+  "m_writeSystToMetadata"       : True,
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+  "m_systNameIso"               : "All",
+  "m_systValIso"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_AllowZeroSF"               : True, # the code says to use with caution... why?
+  "m_MuTrigLegs"                : "2015:HLT_mu20_iloose_L1MU15,2016:HLT_mu26_ivarmedium,2017:HLT_mu26_ivarmedium,2018:HLT_mu26_ivarmedium",
+  #----------------------- Working Points ----------------------------#
+  "m_overrideCalibRelease"      : "210222_Precision_r21",
+  "m_WorkingPointReco"          : "Medium",
+  "m_WorkingPointIso"           : "FCLoose",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("MuonEfficiencyCorrector", MuonEfficiencyCorrectorDict ) 
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%% ElectronCalibrator %%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -206,10 +239,11 @@ ElectronCalibratorDict = {
     "m_inContainerName"           : "Electrons",
     "m_outContainerName"          : "Electrons_Calibrate",
     #----------------------- Systematics ----------------------------#
-    "m_systName"                  : "Nominal",            ## For data
-    "m_systVal"                   : 0,                    ## For data
-    "m_esModel"                   : "es2016PRE",
-    "m_decorrelationModel"        : "1NP_v1",
+    "m_systName"                  : "All" if o.runAllSyst else "",            
+    "m_systVal"                   : 1.0,                   
+    "m_esModel"                   : "es2018_R21_v0", # recommendation as of May 11 2020
+    "m_decorrelationModel"        : "1NP_v1",        # likely sufficient for our needs (NPs summed in quadrature)
+    "m_outputAlgoSystNames"       : "ElectronCalibrator_Syst",
     #----------------------- Other ----------------------------#
     "m_sort"                      : True,
     "m_msgLevel"                  : "Info"
@@ -226,9 +260,12 @@ ElectronSelectorDict = {
     "m_inContainerName"           : "Electrons_Calibrate",
     "m_outContainerName"          : "Electrons_Signal",
     "m_createSelectedContainer"   : True,
-    #----------------------- PID ------------- ----------------------------#
+    #----------------------- PID -----------------------------------------#
     "m_doLHPIDcut"                : False,
     "m_LHOperatingPoint"          : "Medium",
+    #----------------------- Systematics ----------------------------#
+    "m_inputAlgoSystNames"        : "ElectronCalibrator_Syst",
+    "m_outputAlgoSystNames"       : "ElectronSelector_Syst",
     #----------------------- configurable cuts ----------------------------#
     "m_pass_max"                  : -1,
     "m_pass_min"                  : -1,
@@ -242,7 +279,8 @@ ElectronSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
+    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH,HLT_e26_lhtight_nod0_ivarloose",
+    # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
@@ -251,7 +289,67 @@ ElectronSelectorDict = {
 c.algorithm("ElectronSelector", ElectronSelectorDict )
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%% ElectronEfficiencyCorrector %%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+ElectronEfficiencyCorrectorDict = {
+  "m_name"                      : "ElectronEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Electrons_Calibrate",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_writeSystToMetadata"       : True,
+  "m_systNamePID"               : "All",
+  "m_systValPID"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+#  "m_systNameIso"               : "All",
+#  "m_systValIso"                : 1.0,
+  "m_correlationModel"          : "SIMPLIFIED",
+  #----------------------- Working Points ----------------------------#
+  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
+  "m_WorkingPointReco"          : "Reconstruction",
+  "m_WorkingPointPID"           : "LooseBLayer",
+  "m_WorkingPointIso"           : "Gradient",
+  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
 
+c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+#%%%%%%%%%%%%%%%%%%%%%%% ElectronEfficiencyCorrector %%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
+ElectronEfficiencyCorrectorDict = {
+  "m_name"                      : "ElectronEfficiencyCorrector",
+  #----------------------- Container Flow ----------------------------#
+  "m_inContainerName"           : "Electrons_Calibrate",
+  #----------------------- Systematics ----------------------------#
+  "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
+  "m_writeSystToMetadata"       : True,
+  "m_systNamePID"               : "All",
+  "m_systValPID"                : 1.0,
+  "m_systNameTrig"              : "All",
+  "m_systValTrig"               : 1.0,
+  "m_systNameReco"              : "All",
+  "m_systValReco"               : 1.0,
+#  "m_systNameIso"               : "All",
+#  "m_systValIso"                : 1.0,
+  "m_correlationModel"          : "SIMPLIFIED",
+  #----------------------- Working Points ----------------------------#
+  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
+  "m_WorkingPointReco"          : "Reconstruction",
+  "m_WorkingPointPID"           : "Medium",
+  "m_WorkingPointIso"           : "Gradient",
+  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+  #----------------------- Other ----------------------------#
+  "m_msgLevel"                  : "Info"
+}
+
+c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
 
 for augstr in AugmentationVersionStrings: 
 
@@ -371,8 +469,19 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams PID PID_Loose PID_Medium PID_Tight PID_LHLoose PID_LHMedium PID_LHTight PID_MultiLepton ",
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trigger  trackparams quality RECO_Tight RECO_Medium RECO_Loose energyLoss",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
+                                        effSF \
+                                        quality RECO_Tight RECO_Medium RECO_Loose \
+                                        isolation ISOL_FCLoose \
+                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
+                                        ",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
+                                        PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
+                                        effSF \
+                                        PIDSF_LooseBLayer PIDSF_Medium \
+                                        isolation ISOL_Gradient \
+                                        trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
+                                        ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
