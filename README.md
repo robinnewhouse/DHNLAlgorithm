@@ -52,9 +52,18 @@ The interesting ntuples are stored in `testRun/data-tree/<filename>.root`.
 
 #### MC
 ```bash
-cd $TestArea/../run/
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --isMC --submitDir testRun --force direct
-# the --force option will overwrite your output directory
+echo /afs/cern.ch/user/d/dhnl/public/mc16_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.deriv.DAOD_EXOT29.e7422_e5984_a875_r11891_r11748_p4482/DAOD_EXOT29.24947839._000009.pool.root.1 > files.txt
+# source build/*/setup.sh
+xAH_run.py \
+--config $WorkDir_DIR/data/DHNLAlgorithm/config_DHNLAlgorithm.py \
+--inputList \
+--files files.txt \
+--submitDir testRun \
+--force \
+--isMC \
+--extraOptions="--isDerivation --samplePeriod mc16e" \
+--nevents=100 \
+direct
 ```
 
 The output ntuple will be stored in the  directory `testRun/data-tree/`.
@@ -64,6 +73,7 @@ N.B. The above run command is configured for VSI vertexing. For details about ru
 #### Data
 To run on data, simply remove the --isMC flag
 
+WARNING This example needs to be updated.
 ```bash
 xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
 ```
