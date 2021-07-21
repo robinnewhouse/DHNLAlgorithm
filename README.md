@@ -66,9 +66,7 @@ xAH_run.py \
 direct
 ```
 
-The output ntuple will be stored in the  directory `testRun/data-tree/`.
-
-N.B. The above run command is configured for VSI vertexing. For details about running using VSI Leptons vertexing see additional notes below. 
+WARNING: `--samplePeriod mc16e` is for rtag: r11891. This must be modified accordingly for mc16a (rtag: r11915) and mc16d (rtag: r11916).
 
 #### Data
 To run on data, simply remove the --isMC flag
