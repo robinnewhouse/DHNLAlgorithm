@@ -289,7 +289,7 @@ prw_files_mc16d = [
 
     # pileup reweighting actual mu issue
     # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting#Notes_for_users_of_MC16d
-    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20190708/purw.actualMu.2017.root",
+    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180618/physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
 ]
 
 prw_files_mc16e = [
@@ -438,5 +438,5 @@ prw_files_mc16e = [
 
     # pileup reweighting actual mu issue
     # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting#Notes_for_users_of_MC16d
-    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190708/purw.actualMu.2018.root",
+    "/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
     ]
