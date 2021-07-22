@@ -52,7 +52,7 @@ The interesting ntuples are stored in `testRun/data-tree/<filename>.root`.
 
 #### MC
 ```bash
-echo /afs/cern.ch/user/d/dhnl/public/mc16_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.deriv.DAOD_EXOT29.e7422_e5984_a875_r11891_r11748_p4482/DAOD_EXOT29.24947839._000009.pool.root.1 > files.txt
+echo /eos/home-d/dhnl/data/EXOT29/mc16_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.deriv.DAOD_EXOT29.e7422_e5984_a875_r11891_r11748_p4482/DAOD_EXOT29.24947839._000010.pool.root.1 > files.txt
 # source build/*/setup.sh
 xAH_run.py \
 --config $WorkDir_DIR/data/DHNLAlgorithm/config_DHNLAlgorithm.py \
@@ -69,11 +69,20 @@ direct
 WARNING: `--samplePeriod mc16e` is for rtag: r11891. This must be modified accordingly for mc16a (rtag: r11915) and mc16d (rtag: r11916).
 
 #### Data
-To run on data, simply remove the --isMC flag
+To run on data, simply remove the `--isMC` flag and change the `--samplePeriod` option to `dataXX`, where `XX` is the data period year.
 
-WARNING This example needs to be updated.
 ```bash
-xAH_run.py --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py --files /path/to/my/DAOD_RPVLL/file --submitDir testRun --force direct
+echo /eos/home-d/dhnl/data/EXOT29/data18_13TeV.00358985.physics_Main.deriv.DAOD_EXOT29.r11969_r11784_p4072_p4491/DAOD_EXOT29.24937680._000183.pool.root.1 > files.txt
+# source build/*/setup.sh
+xAH_run.py \
+--config $WorkDir_DIR/data/DHNLAlgorithm/config_DHNLAlgorithm.py \
+--inputList \
+--files files.txt \
+--submitDir testRun \
+--force \
+--extraOptions="--isDerivation --samplePeriod data18" \
+--nevents=100 \
+direct
 ```
 
 #### Grid
