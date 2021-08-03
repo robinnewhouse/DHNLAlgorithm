@@ -43,10 +43,8 @@ if 'data18' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/dat
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
 # If you are getting errors such as "Unrecognised channelNumber 311660 for periodNumber 300000" this is the place to start.
-# option 1. use local PRW files (these may be deleted in the future if the central cvmfs files work well)
-# from DHNLAlgorithm.prw_files import prw_files_local as PRWList
-# option 2. use centrally produced CVMFS files. This is still being tested as there are potentially issues.
-# see https://indico.cern.ch/event/892901/contributions/3779966/attachments/2002909/3344068/sampleRequest.pdf
+# option 1. use centrally produced CVMFS files located in /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/
+# option 2. use local PRW files. You can download the NTUP_PILEUP version of your sample locally and load it into the PRW tool.
 import DHNLAlgorithm.prw_files as prw_files
 PRWList = []
 if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
@@ -54,27 +52,16 @@ if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
 if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
 
 # Lumicalc Files
-# Must be careful about which lines are commented and which are active.
+# Must be careful about which MC campaign is specified in the run command.
 # Note: if you want to use all lumicalc files without deactivating any,
 # then the PRW files for ALL MC CAMPAIGNS must be loaded in the PRWList.
 # If this isn't done the pileup reweighting tool will crash the algorithm.
-# Note 2: These files are fairly large (~20 MB) so they will not be kept
-# in the git repository for now. You may need to copy them from cvmfs
-# and store them in $TestArea/DHNLAlgorithm/data/GRL/ to run on grid.
 lumicalcList = []
 if 'mc16a' in sample_periods: 
-    lumicalcList.extend([
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root',
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root',
-    ]) 
-if 'mc16d' in sample_periods: 
-    lumicalcList.extend([
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',
-    ])
-if 'mc16e' in sample_periods: 
-    lumicalcList.extend([
-    '/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',
-    ]) 
+    lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root'])
+    lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root']) 
+if 'mc16d' in sample_periods: lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',])
+if 'mc16e' in sample_periods: lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',]) 
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
@@ -87,7 +74,6 @@ basicEventSelectionDict = {
     "m_name"                      : "BasicEventSelect",
     "m_applyGRLCut"               : not args.is_MC,
     "m_GRLxml"                    : GRL,
-    #"m_derivationName"            : "SUSY15Kernel_skim",
     "m_useMetaData"               : True,
     "m_storePassHLT"              : True,
     "m_storeTrigDecisions"        : True,
@@ -100,7 +86,6 @@ basicEventSelectionDict = {
     "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
     "m_triggerSelection"          : "HLT_e24_lhmedium_L1EM20VH || HLT_e26_lhtight_nod0_ivarloose || HLT_mu26_ivarmedium || HLT_mu20_iloose_L1MU15",
-    # "m_triggerSelection"          : "HLT_mu20_iloose_L1MU15 || HLT_mu24_iloose || HLT_mu24_ivarloose || HLT_mu24_imedium || HLT_mu24_ivarmedium || HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu60_0eta105_msonly || HLT_e24_lhmedium_L1EM20VH || HLT_e24_lhtight_nod0_ivarloose || HLT_e26_lhtight_nod0 || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
@@ -114,25 +99,21 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-##%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
     #----------------------- Container Flow ----------------------------#
-
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810",
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810", # not used (vh4b only)
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
     "m_applyFilterCut"          : False,
-    # "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
-
     #----------------------- Selections ----------------------------#
-
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
     # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium",
+    "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium", # not used (vh4b only)
     "m_el1IDKey"                  :  "LHLoose", # if not o.isDerivation else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
     #----------------------- Other ----------------------------#
     "m_msgLevel"                : "Info",
