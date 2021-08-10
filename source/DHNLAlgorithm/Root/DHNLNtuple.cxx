@@ -228,15 +228,67 @@ EL::StatusCode DHNLNtuple::execute() {
 //    if (doCutflow)
 //        DHNLFunctions::passCut(m_cutflowHist, m_cutflowHistW, m_iCutflow, m_mcEventWeight); //TriggerEfficiency
 
+    // Prepare systematic trees
+    std::vector<std::string> allSystematicTrees = {};
+    vector<string> systAlgs;
 
-    std::string systName; // This is a placeholder to be modified when we start doing the analysis with systematics
-    if (m_myTrees.find(systName) == m_myTrees.end()) { AddTree(systName); } // Get tree or make a new one
+    string m_inputAlgosTmp = string(m_inputAlgos);
+    string delimiter = ",";
+    size_t pos;
+    while ((pos = m_inputAlgosTmp.find(delimiter)) != string::npos) {
+        systAlgs.push_back(m_inputAlgosTmp.substr(0, pos));
+        m_inputAlgosTmp.erase(0, pos + delimiter.length());
+    }
+
+//    boost::split(systAlgs, m_inputAlgos, boost::is_any_of(","));
+
+
+//    m_store->print();
+
+    for (auto alg : systAlgs) {
+        ANA_MSG_DEBUG("Will add systematics from algorithm: " << alg);
+        std::vector<std::string> *systNames = nullptr;
+        if (m_store->contains<std::vector<std::string> >(alg)) {
+            if (!m_store->retrieve(systNames, alg).isSuccess()) {
+                ANA_MSG_INFO("Cannot find vector from " << alg);
+                return StatusCode::FAILURE;
+            }
+            // Add every systematic for this object type to allSystematicTrees
+            for (auto sys : *systNames)
+                allSystematicTrees.push_back(sys);
+        }
+
+    }
+    for (auto sys : allSystematicTrees)
+        ANA_MSG_DEBUG("Systematic added: " << sys);
+
+
+    if (m_inputAlgos.empty()) {
+        // executeAnalysis
+        fillTree(); // Fill nominal tree (no systematics)
+    } else {
+        for (auto systName : allSystematicTrees) {
+            ANA_MSG_DEBUG("execute() : Systematic Loop " << systName);
+            fillTree(systName);
+        }
+    }
+
+    return EL::StatusCode::SUCCESS;
+}
+
+EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
+    
+    // Get the existing ttree associated with this systematic tree. If it can't be found, create a new one.
+    if (m_myTrees.find(systName) == m_myTrees.end()) {
+        AddTree(systName);
+    } 
 
     ANA_MSG_DEBUG("execute() : Get Containers");
+
     const xAOD::EventInfo *eventInfo = nullptr;
-    if(not m_eventInfoContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
-    if (eventInfo) { 
+    if (not m_eventInfoContainerName.empty()) ANA_CHECK (
+            HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
+    if (eventInfo) {
         m_myTrees[systName]->FillEvent(eventInfo, m_event);
         m_myTrees[systName]->FillTrigger(eventInfo);
     }
@@ -338,17 +390,28 @@ void DHNLNtuple::AddTree(std::string name) {
     auto *outTree = new TTree(treeName.c_str(), treeName.c_str());
     TFile *treeFile = wk()->getOutputFile(m_treeStream);
     outTree->SetDirectory(treeFile);
-
+    
     DHNLMiniTree *miniTree = new DHNLMiniTree(m_event, outTree, treeFile, m_store); //!!j
 
+    // Event
     if (not m_eventDetailStr.empty()) miniTree->AddEvent(m_eventDetailStr);
     if (not m_trigDetailStr.empty()) miniTree->AddTrigger(m_trigDetailStr);
-    if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
-    if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
-    if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
+    
+    // Leptons
     if (not m_muDetailStr.empty()) miniTree->AddMuons(m_muDetailStr);
     if (not m_elDetailStr.empty()) miniTree->AddElectrons(m_elDetailStr);
+
+    // Tracks
     if (not m_trackDetailStr.empty()) miniTree->AddTrackParts(m_trackDetailStr, "tracks");
+
+    // MET
+    if (not m_metDetailStr.empty()) miniTree->AddMET(m_metDetailStr);
+    if (not m_metTrkDetailStr.empty()) miniTree->AddMET(m_metTrkDetailStr, "trkMET");
+    
+    // Jets
+    if (not m_jetDetailStrSyst.empty()) miniTree->AddJets(m_jetDetailStrSyst);
+
+    // Vertices
     if (not m_vertexDetailStr.empty()) miniTree->AddVertices(m_vertexDetailStr);
     if (m_secondaryVertexBranchNameKeys.size()>0 and not m_secondaryVertexDetailStr.empty()) {
 		
@@ -356,6 +419,8 @@ void DHNLNtuple::AddTree(std::string name) {
 			 miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameKeys[i], m_AugmentationVersionStringKeys[i]); } }
     if (m_AltAugmentationVersionString != "None" ) { 
         miniTree->AddSecondaryVerts(m_secondaryVertexDetailStr, m_secondaryVertexBranchNameAlt, m_AltAugmentationVersionString); }
+    
+    // Truth
     if (m_isMC){ 
         miniTree->AddTruthParts(m_truthParticleDetailString, "xAH_truth");
         miniTree->AddTruthVerts(m_truthVertexDetailStr, m_truthVertexBranchName); 

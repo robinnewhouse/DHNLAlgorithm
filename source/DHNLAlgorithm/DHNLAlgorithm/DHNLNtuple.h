@@ -34,6 +34,7 @@ public:
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
     bool m_writeTree;                 // true will write out a TTree
+    std::string m_inputAlgos;           // input algos for when running systs, separated by ","
     std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
     bool m_useMCPileupCheck;          // determined by name of MCPileupCheckContainer
     float m_leadingJetPtCut;          // Leading jet Pt cut
@@ -114,10 +115,11 @@ public:
 
     EL::StatusCode execute() override;
 
-    EL::StatusCode finalize() override;
-    
-    virtual EL::StatusCode histFinalize ();
+    EL::StatusCode fillTree(std::string systName = "");
 
+    EL::StatusCode finalize() override;
+
+    virtual EL::StatusCode histFinalize();
 
     void AddTree(std::string name);
 

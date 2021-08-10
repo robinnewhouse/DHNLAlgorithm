@@ -438,6 +438,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inputAlgos"                   : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
