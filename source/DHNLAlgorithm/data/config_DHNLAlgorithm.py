@@ -402,7 +402,7 @@ DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
     "m_inJetContainerName"      : "SignalJets",
-    "m_inputAlgo"               : "SignalJets_Algo",
+    "m_inputAlgos"              : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
     "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
     "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons_Calibrate",

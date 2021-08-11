@@ -277,100 +277,107 @@ EL::StatusCode DHNLNtuple::execute() {
 }
 
 EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
-    
+
     // Get the existing ttree associated with this systematic tree. If it can't be found, create a new one.
     if (m_myTrees.find(systName) == m_myTrees.end()) {
         AddTree(systName);
-    } 
+    }
 
-    ANA_MSG_DEBUG("execute() : Get Containers");
+    ANA_MSG_DEBUG("fillTree() : Get Containers");
 
+    ///______________________________________________________
+    /// Event    
     const xAOD::EventInfo *eventInfo = nullptr;
-    if (not m_eventInfoContainerName.empty()) ANA_CHECK (
-            HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
+    ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
     if (eventInfo) {
         m_myTrees[systName]->FillEvent(eventInfo, m_event);
         m_myTrees[systName]->FillTrigger(eventInfo);
     }
 
+    ///______________________________________________________
+    /// Primary vertices
     const xAOD::VertexContainer *vertices = nullptr;
-    if (not m_vertexContainerName.empty()) // defined in xAODAnaHelpers/Algorithm.h, can override in config file.
-        ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
+    ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
+    ///______________________________________________________
+    /// Truth particles
     const xAOD::TruthParticleContainer *TruthParts = nullptr;
     if (m_isMC && not m_inTruthParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(TruthParts, m_inTruthParticleContainerName, m_event, m_store));
     if (TruthParts) { m_myTrees[systName]->FillTruth(TruthParts, "xAH_truth"); }
 
-    const xAOD::JetContainer *truthJets = nullptr;
-    if (m_useMCPileupCheck && m_isMC )
-        ANA_CHECK (HelperFunctions::retrieve(truthJets, m_MCPileupCheckContainer, m_event, m_store));
-    if (truthJets) { m_myTrees[systName]->FillJets(truthJets); }
+    ///______________________________________________________
+    /// Muons
+    if (!m_inMuContainerName.empty()) {
+        // get container + fill branches if available
+        const xAOD::MuonContainer *inMuons = nullptr;
+        if (HelperFunctions::isAvailable<xAOD::MuonContainer>(m_inMuContainerName + systName, m_event, m_store, msg())) {
+            ANA_MSG_DEBUG("Retrieving '" << m_inMuContainerName + systName << "' Muon container");
+            ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName + systName, m_event, m_store, msg()));
+            ANA_MSG_DEBUG("Filling Muon branches");
+            m_myTrees[systName]->FillMuons(inMuons, HelperFunctions::getPrimaryVertex(vertices));
+        } else if (HelperFunctions::isAvailable<xAOD::MuonContainer>(m_inMuContainerName, m_event, m_store, msg())) {
+            ANA_MSG_DEBUG("Retrieving '" << m_inMuContainerName << "' Muon container");
+            ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
+            ANA_MSG_DEBUG("Filling Muon branches");
+            m_myTrees[systName]->FillMuons(inMuons, HelperFunctions::getPrimaryVertex(vertices));
+        } else
+            ANA_MSG_DEBUG("Muon container, '" << m_inMuContainerName << ", is not available. Skipping...");
+    }
 
-    const xAOD::MissingETContainer *Met(nullptr);
-    if (not m_inMETContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(Met, m_inMETContainerName, m_event, m_store));
-    if (Met) { m_myTrees[systName]->FillMET(Met); }
+    ///______________________________________________________
+    /// Electrons
+    if (!m_inElContainerName.empty()) {
+        // get container + fill branches if available
+        const xAOD::ElectronContainer *inElectrons = nullptr;
+        if (HelperFunctions::isAvailable<xAOD::ElectronContainer>(m_inElContainerName + systName, m_event, m_store, msg())) {
+            ANA_MSG_DEBUG("Retrieving '" << m_inElContainerName + systName << "' Electron container");
+            ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName + systName, m_event, m_store, msg()));
+            ANA_MSG_DEBUG("Filling Electron branches");
+            m_myTrees[systName]->FillElectrons(inElectrons, HelperFunctions::getPrimaryVertex(vertices));
+        } else if (HelperFunctions::isAvailable<xAOD::ElectronContainer>(m_inElContainerName, m_event, m_store, msg())) {
+            ANA_MSG_DEBUG("Retrieving '" << m_inElContainerName << "' Electron container");
+            ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
+            ANA_MSG_DEBUG("Filling Electron branches");
+            m_myTrees[systName]->FillElectrons(inElectrons, HelperFunctions::getPrimaryVertex(vertices));
+        } else
+            ANA_MSG_DEBUG("Electron container, '" << m_inElContainerName << ", is not available. Skipping...");
+    }
 
-    const xAOD::MissingETContainer *MetTrk(nullptr);
-    if (not m_inMETTrkContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(MetTrk, m_inMETTrkContainerName, m_event, m_store));
-    if (MetTrk) { m_myTrees[systName]->FillMET(MetTrk); }
-
-    const xAOD::MuonContainer *allMuons(nullptr);
-    if (not m_inMuContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
-    if (allMuons) m_myTrees[systName]->FillMuons(allMuons, HelperFunctions::getPrimaryVertex(vertices));
-
-    const xAOD::ElectronContainer *allElectrons = nullptr;
-    if (not m_inElContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
-    if (allElectrons) m_myTrees[systName]->FillElectrons(allElectrons, HelperFunctions::getPrimaryVertex(vertices));
-
+    
+    ///______________________________________________________
+    /// Tracks
     const xAOD::TrackParticleContainer *tracks = nullptr;
     if (not m_trackParticleContainerName.empty())
         ANA_CHECK (HelperFunctions::retrieve(tracks, m_trackParticleContainerName, m_event, m_store));
     if (tracks) { m_myTrees[systName]->FillTracks(tracks, "tracks"); }
 
-    const xAOD::JetContainer *allJets = nullptr;
-    if (not m_allJetContainerName.empty()) 
-        ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
-    if (allJets) {
-        m_myTrees[systName]->FillJets(allJets, HelperFunctions::getPrimaryVertexLocation(vertices));
-        // m_myTrees[systName]->FillJets(allJets, -1); 
-    }
-
-    const xAOD::JetContainer *signalJets = nullptr;
-    if (not m_inJetContainerName.empty())
-        ANA_CHECK (HelperFunctions::retrieve(signalJets, m_inJetContainerName, m_event, m_store));
-    if (signalJets) m_myTrees[systName]->FillJets(signalJets, HelperFunctions::getPrimaryVertexLocation(vertices));
-
+    ///______________________________________________________
+    /// Truth vertices
     const xAOD::TruthVertexContainer *inTruthVerts = nullptr;
     if (m_isMC && not m_truthVertexContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inTruthVerts, m_truthVertexContainerName, m_event, m_store));
     if (inTruthVerts) m_myTrees[systName]->FillTruthVerts(inTruthVerts, m_truthVertexBranchName);
 
-
-     // Fill the secondary vertices from the list
-    if (m_secondaryVertexContainerNameKeys.size()>0 and not m_AugmentationVersionStringKeys.empty()) { 
-        for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
+    ///______________________________________________________
+    /// Secondary vertices
+    // Fill the secondary vertices from the list
+    if (!m_secondaryVertexContainerNameKeys.empty() and not m_AugmentationVersionStringKeys.empty()) {
+        for (size_t i = 0; i < m_secondaryVertexContainerNameKeys.size(); i++) {
             if (m_AugmentationVersionStringKeys[i] == m_AltAugmentationVersionString and not m_AltAugmentationVersionString.empty()) continue; // check you do not fill same as alt VSI twice
             const xAOD::VertexContainer *inSecVerts = nullptr;
             ANA_CHECK(HelperFunctions::retrieve(inSecVerts, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
             if (inSecVerts) m_myTrees[systName]->FillSecondaryVerts(inSecVerts, m_secondaryVertexBranchNameKeys[i], m_suppressTrackFilter);
         }
-       
     }
 
     // Fill the alternative secondary vertex container from command line if required 
-    if (not m_secondaryVertexContainerNameAlt.empty() and m_AltAugmentationVersionString != "None" ) { 
+    if (not m_secondaryVertexContainerNameAlt.empty() and m_AltAugmentationVersionString != "None") {
         const xAOD::VertexContainer *inSecVertsAlt = nullptr;
         ANA_CHECK(HelperFunctions::retrieve(inSecVertsAlt, m_secondaryVertexContainerNameAlt, m_event, m_store, msg()));
         if (inSecVertsAlt) m_myTrees[systName]->FillSecondaryVerts(inSecVertsAlt, m_secondaryVertexBranchNameAlt, m_suppressTrackFilter);
     }
-
-
 
     ANA_MSG_DEBUG("Event # " << m_eventCounter);
     m_myTrees[systName]->Fill();
