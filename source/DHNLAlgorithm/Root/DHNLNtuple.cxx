@@ -254,8 +254,12 @@ EL::StatusCode DHNLNtuple::execute() {
                 return StatusCode::FAILURE;
             }
             // Add every systematic for this object type to allSystematicTrees
-            for (auto sys : *systNames)
+            for (auto sys : *systNames) {
+                if (sys.empty()) // only add nominal tree once
+                    if (std::find(allSystematicTrees.begin(), allSystematicTrees.end(), "") != allSystematicTrees.end())
+                        continue;
                 allSystematicTrees.push_back(sys);
+            }
         }
 
     }
@@ -264,7 +268,6 @@ EL::StatusCode DHNLNtuple::execute() {
 
 
     if (m_inputAlgos.empty()) {
-        // executeAnalysis
         fillTree(); // Fill nominal tree (no systematics)
     } else {
         for (auto systName : allSystematicTrees) {
