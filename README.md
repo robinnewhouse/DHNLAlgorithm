@@ -108,7 +108,23 @@ To make migration easier, a spreadsheet specifying those changes has been compil
 
 ### Analysis
 
-To perform event selection and analysis on these generated ntuples please see the code repository: [DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis)
+To perform event selection and analysis on these generated ntuples please see the code repository: 
+[DHNLNtupleAnalysis](https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLNtupleAnalysis).
+
+### Systematics
+
+Scale factor systematics are output automatically in the `nominal` tree.
+Leptons quantites will be stored in an array where the first entry is the nominal, and the following entries correspond to each systematic variation.
+The systematic labels can be found in the ROOT file stored in `data-metadata/` directory. Browse to the `systematics` TDirectory.
+
+To output the trees for object smearing (in our case currently only leptons) add the following to the `--extraOptions` string:
+
+```
+--extraOptions="--runAllSyst"
+```
+
+This will enable the container flow to be aware of the various "algorithms" used in the previous steps.
+Please refer to [this tutorial](https://atlassoftwaredocs.web.cern.ch/ABtutorial/cpalg_sys_algorithm/) for more context.
 
 ### Running on different vertex containers
 
