@@ -34,12 +34,8 @@ class DHNLAlgorithm : public xAH::Algorithm {
 public:
 
     //configuration variables
-    std::string m_inJetContainerName;   // input Jet container name
-    std::string m_inputAlgo;          // input algo for when running systs
-    std::string m_allJetContainerName;// input container name
-    std::string m_allJetInputAlgo;    // input algo for when running systs
-    std::string m_inMETContainerName;  // input MET container name
-    std::string m_inMETTrkContainerName;  // input METTrk container name
+    std::string m_muInputAlgo;     // input algo for muon systematics
+    std::string m_elInputAlgo;     // input algo for electron systematics
     std::string m_inMuContainerName;    // input Muon container name
     std::string m_inElContainerName;    // input Electron container name
     std::string m_secondaryVertexContainerNameList;   // input Secondary Vertices container name
@@ -49,17 +45,11 @@ public:
     std::vector<std::string> m_AugmentationVersionStringKeys; // list of the aug strings in a vector
     bool m_isMC;                      // Is MC
     bool m_useCutFlow;                // true will write out cutflow histograms
-    std::string m_MCPileupCheckContainer; // Name of truth container for MC Pileup Check
-    bool m_useMCPileupCheck;          // determined by name of MCPileupCheckContainer
-    float m_leadingJetPtCut;          // Leading jet Pt cut
-    float m_subleadingJetPtCut;          // Leading jet Pt cut
-    uint m_jetMultiplicity;          // Leading jet Pt cut
     bool m_truthLevelOnly;            // truthLevelOnly info
     bool m_backgroundEstimationBranches; // do we add branches required for background estimation
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
     bool m_fakeAOD; // running on fake AOD
-    float m_metCut;
     bool m_doSkipTracks;
     std::string m_trackingCalibFile; // calibration file for tracking systmeatics
 
@@ -69,7 +59,14 @@ private:
     TH1D *m_cutflowHistW;   //!
     StatusCode eventSelection();
 
+    // Executes analysis using the lepton container names appended with the correct systematics.  
+    EL::StatusCode executeAnalysis(std::string elSystContainerName, std::string muSystContainerName);
+
+    // Randomly accepts or rejects tracks according to the tracking CP recommendations.
+    // Only to be used in systematic studies and not in production.
     bool acceptTrack(const xAOD::TrackParticle &trk) const;
+
+    // Used in acceptTrack() calculation.
     float getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const;
 
     asg::AnaToolHandle<PMGTools::IPMGCrossSectionTool> m_PMGCrossSectionTool_handle{"PMGCrossSectionTool", this}; //!
@@ -79,14 +76,14 @@ private:
     float m_weight;  //!
     float m_weight_xs;  //!
 
-    TH2* m_trkEffHistLooseGlobal = nullptr;
-    TH2* m_trkEffHistLooseIBL = nullptr;
-    TH2* m_trkEffHistLoosePP0 = nullptr;
-    TH2* m_trkEffHistLoosePhysModel = nullptr;
-    TH2* m_trkEffHistTightGlobal = nullptr;
-    TH2* m_trkEffHistTightIBL = nullptr;
-    TH2* m_trkEffHistTightPP0 = nullptr;
-    TH2* m_trkEffHistTightPhysModel = nullptr;
+    TH2 *m_trkEffHistLooseGlobal = nullptr;
+    TH2 *m_trkEffHistLooseIBL = nullptr;
+    TH2 *m_trkEffHistLoosePP0 = nullptr;
+    TH2 *m_trkEffHistLoosePhysModel = nullptr;
+    TH2 *m_trkEffHistTightGlobal = nullptr;
+    TH2 *m_trkEffHistTightIBL = nullptr;
+    TH2 *m_trkEffHistTightPP0 = nullptr;
+    TH2 *m_trkEffHistTightPhysModel = nullptr;
 
 public:
     // this is a standard constructor

@@ -401,25 +401,16 @@ if args.is_MC:
 DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"      : "SignalJets",
-    "m_inputAlgo"               : "SignalJets_Algo",
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets_Calib",
-    "m_allJetInputAlgo"         : "AntiKt4EMTopoJets_Calib_Algo",
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_muInputAlgo"             : "MuonSelector_Syst" if o.runAllSyst else "",
+    "m_elInputAlgo"             : "ElectronSelector_Syst" if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
-    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
+    "m_AugmentationVersionStringList"    : ','.join(AugmentationVersionStrings),
+    "m_inDetTrackParticlesContainerName" : "InDetTrackParticles",
     #----------------------- Selections ----------------------------#
-    "m_leadingJetPtCut"         : 20,
-    "m_subleadingJetPtCut"      : 20,
-    "m_jetMultiplicity"         : 2,
-    "m_useMCPileupCheck"        : False,
-    "m_metCut"                  : 20000,
-    "m_doInverseLeptonControlRegion"   : False,
+    "m_doInverseLeptonControlRegion"     : False,
     #----------------------- Other ----------------------------#
-    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
     "m_trackingCalibFile"       : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
     "m_doSkipTracks"            : False,
@@ -438,6 +429,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inputAlgos"                   : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
