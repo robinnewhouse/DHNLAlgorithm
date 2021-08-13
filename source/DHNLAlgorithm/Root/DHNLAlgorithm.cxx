@@ -47,32 +47,20 @@ DHNLAlgorithm::DHNLAlgorithm() :
 // resetting statistics variables or booking histograms should
 // rather go into the initialize() function.
 
-
     ANA_MSG_INFO("DHNLAlgorithm() : Calling constructor");
-	
 
-
-    m_inJetContainerName = "";
-    m_inputAlgo = "";
-    m_allJetContainerName = "";
-    m_allJetInputAlgo = "";
-    m_inMETContainerName = "";
-    m_inMETTrkContainerName = "";
+    m_muInputAlgo = "";
+    m_elInputAlgo = "";
     m_secondaryVertexContainerNameList = "";
     m_AugmentationVersionStringList = "";
     m_inDetTrackParticlesContainerName = "InDetTrackParticles";
     m_msgLevel = MSG::INFO;
     m_useCutFlow = true;
-    m_MCPileupCheckContainer = "AntiKt4TruthJets";
-    m_leadingJetPtCut = 225;
-    m_subleadingJetPtCut = 225;
-    m_jetMultiplicity = 3;
     m_truthLevelOnly = false;
     m_backgroundEstimationBranches = false;
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
     m_fakeAOD = false;
-    m_metCut = 0;
     m_doSkipTracks = false;
     m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
 
@@ -240,6 +228,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
     // histograms and trees.  This is where most of your actual analysis
     // code will go.
 
+    ///____________________________________________________________
+    /// First we do non-systematic things
+
     ANA_MSG_DEBUG("execute() : Get Containers");
 
     // retrieve the eventInfo object from the event store
@@ -249,7 +240,7 @@ EL::StatusCode DHNLAlgorithm::execute() {
     // print out run and event number from retrieved object
     ANA_MSG_DEBUG ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
     // weirdly the grid needs to have the log file pinged periodically so it doesn't kill jobs prematurely
-    if (eventInfo->eventNumber() % 10 == 0) 
+    if (eventInfo->eventNumber() % 10 == 0)
         ANA_MSG_INFO ("in execute, runNumber = " << eventInfo->runNumber() << ", eventNumber = " << eventInfo->eventNumber());
 
     //////////////////// Apply event selection including control region if requested //////////////////////
@@ -266,26 +257,74 @@ EL::StatusCode DHNLAlgorithm::execute() {
     eventInfo->auxdecor<float>("weight") = m_mcEventWeight * m_weight_xs;
 
 
+    //////////////////// Store primary vertex information //////////////////////
+
+    SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
+    const xAOD::VertexContainer *vertices = nullptr;
+    if (!m_truthLevelOnly && !m_backgroundEstimationNoParticleData) {
+        ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+    }
+    if (!m_truthLevelOnly && !NPVAccessor.isAvailable(*eventInfo) && vertices) { // NPV might already be available
+        // number of PVs with 2 or more tracks
+        //eventInfo->auxdecor< int >( "NPV" ) = HelperFunctions::countPrimaryVertices(vertices, 2);
+        // TMP for JetUncertainties uses the same variable
+        eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
+    }
+
+    ///____________________________________________________________
+    /// Systematic loop
+
+    if (!m_muInputAlgo.empty()) {
+        // get vector of string giving the names
+        std::vector<std::string> *muSystNames = nullptr;
+        if (m_store->contains<std::vector<std::string> >(m_muInputAlgo)) {
+            ANA_CHECK(m_store->retrieve(muSystNames, m_muInputAlgo).isSuccess())
+        }
+        if (!muSystNames->empty()) {
+            for (auto systName : *muSystNames) {
+                ANA_MSG_DEBUG("execute() : Systematic Loop" << systName);
+                ANA_CHECK(executeAnalysis(m_inElContainerName, m_inMuContainerName + systName))
+            }
+        }
+    }
+    if (!m_elInputAlgo.empty()) {
+        // get vector of string giving the names
+        std::vector<std::string> *elSystNames = nullptr;
+        if (m_store->contains<std::vector<std::string> >(m_elInputAlgo)) {
+            ANA_CHECK(m_store->retrieve(elSystNames, m_elInputAlgo))
+        }
+        if (!elSystNames->empty()) {
+            for (auto systName : *elSystNames) {
+                ANA_MSG_DEBUG("execute() : Systematic Loop" << systName);
+                ANA_CHECK(executeAnalysis(m_inElContainerName + systName, m_inMuContainerName))
+            }
+        }
+    }
+    
+    return EL::StatusCode::SUCCESS;
+}
+
+EL::StatusCode DHNLAlgorithm::executeAnalysis(std::string elSystContainerName, std::string muSystContainerName) {
+
     //////////////////// Store lepton information //////////////////////
 
     const xAOD::MuonContainer *inMuons = nullptr;
-    if (!m_inMuContainerName.empty()) ANA_CHECK(HelperFunctions::retrieve(inMuons, m_inMuContainerName, m_event, m_store, msg()));
+    if (!muSystContainerName.empty()) ANA_CHECK(HelperFunctions::retrieve(inMuons, muSystContainerName, m_event, m_store, msg()));
 
     const xAOD::ElectronContainer *inElectrons = nullptr;
-    if(!m_inElContainerName.empty())
-        ANA_CHECK(HelperFunctions::retrieve(inElectrons, m_inElContainerName, m_event, m_store, msg()));
-    
+    if (!elSystContainerName.empty()) ANA_CHECK(HelperFunctions::retrieve(inElectrons, elSystContainerName, m_event, m_store, msg()));
+
     const xAOD::VertexContainer *primaryVertices = nullptr;
     ANA_CHECK (HelperFunctions::retrieve(primaryVertices, "PrimaryVertices", m_event, m_store, msg()));
-    
+
     /*const xAOD::VertexContainer *inVSIVertices = nullptr;
     if(!m_inVSIContainerName.empty())
         ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_inVSIContainerName, m_event, m_store, msg()));
 	*/
-	
-	
-    int MuonsPerEvent = 0;
-    int ElectronsPerEvent = 0;
+
+
+    int muonsPerEvent = 0;
+    int electronsPerEvent = 0;
 
     // =======================================================================
     // Filter
@@ -302,16 +341,16 @@ EL::StatusCode DHNLAlgorithm::execute() {
     const xAOD::TrackParticleContainer *tracks = nullptr;
     if (!m_backgroundEstimationNoParticleData) ANA_CHECK (HelperFunctions::retrieve(tracks, m_inDetTrackParticlesContainerName, m_event, m_store));
 
-    if (inMuons) {
+     if (inMuons) {
         for (const xAOD::Muon *muon : *inMuons) {
             muon->auxdecor<int>("index") = muon->index();
             muon->auxdecor<int>("type") = muon->muonType();
             muon->auxdecor<float>("px") = muon->p4().Px() / GeV;
             muon->auxdecor<float>("py") = muon->p4().Py() / GeV;
             muon->auxdecor<float>("pz") = muon->p4().Pz() / GeV;
-		    MuonsPerEvent+=1;
-
-            if (not(m_inMuContainerName == "Muons")) {
+            muonsPerEvent += 1;
+            // need to get indices from sorted containers
+            if (not(muSystContainerName == "Muons")) {
                 muon->auxdecor<bool>("passesPromptCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesPromptCuts");
                 muon->auxdecor<bool>("passesDisplacedCuts") = inMuonsUncalibrated->at(muon->index())->auxdecor<bool>("passesDisplacedCuts");
             }
@@ -340,8 +379,9 @@ EL::StatusCode DHNLAlgorithm::execute() {
             electron->auxdecor<float>("px") = electron->p4().Px() / GeV;
             electron->auxdecor<float>("py") = electron->p4().Py() / GeV;
             electron->auxdecor<float>("pz") = electron->p4().Pz() / GeV;
-			ElectronsPerEvent+=1;
-            if (not(m_inElContainerName == "Electrons")) {
+            electronsPerEvent += 1;
+            // need to get indices from sorted containers
+            if (not(elSystContainerName == "Electrons")) {
                 electron->auxdecor<bool>("passesPromptCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesPromptCuts");
                 electron->auxdecor<bool>("passesDisplacedCuts") = inElectronsUncalibrated->at(electron->index())->auxdecor<bool>("passesDisplacedCuts");
             }
@@ -371,21 +411,21 @@ EL::StatusCode DHNLAlgorithm::execute() {
     std::istringstream sv(m_secondaryVertexContainerNameList);
     std::string AugmentationVersionString_token;
     std::istringstream augstr(m_AugmentationVersionStringList);
-    while ( std::getline(sv, secondaryVertexContainerName_token, ',') ) {
+    while (std::getline(sv, secondaryVertexContainerName_token, ',')) {
         m_secondaryVertexContainerNameKeys.push_back(secondaryVertexContainerName_token);
     }
-    while ( std::getline(augstr, AugmentationVersionString_token, ',') ) {
-		m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
-      }
+    while (std::getline(augstr, AugmentationVersionString_token, ',')) {
+        m_AugmentationVersionStringKeys.push_back(AugmentationVersionString_token);
+    }
 
     // do this for each vertex collection
-    for(size_t i=0; i < m_secondaryVertexContainerNameKeys.size(); i++){
+    for (auto &m_secondaryVertexContainerNameKey : m_secondaryVertexContainerNameKeys) {
         const xAOD::VertexContainer *inVSIVertices = nullptr;
-        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKeys[i], m_event, m_store, msg()));
+        ANA_CHECK(HelperFunctions::retrieve(inVSIVertices, m_secondaryVertexContainerNameKey, m_event, m_store, msg()));
         for (const xAOD::Vertex *vertex: *inVSIVertices) {
             // Store number of leptons in each event
-            vertex->auxdecor<int>("Muons_Per_Event") = MuonsPerEvent;
-            vertex->auxdecor<int>("Electrons_Per_Event") = ElectronsPerEvent;
+            vertex->auxdecor<int>("Muons_Per_Event") = muonsPerEvent;
+            vertex->auxdecor<int>("Electrons_Per_Event") = electronsPerEvent;
 
             // check if this vertex contains tracks from different original events (shuffled vertex)
             vertex->auxdecor<bool>("shuffled") = false;
@@ -393,14 +433,13 @@ EL::StatusCode DHNLAlgorithm::execute() {
                 vertex->trackParticle(0)->isAvailable<unsigned long long>("trackOriginalEvent") &&
                 vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun") &&
                 vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent")) {
+                int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
+                int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                    int runNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned int>("trackOriginalRun");
-                    int evtNr_0 = vertex->trackParticle(0)->auxdataConst<unsigned long long>("trackOriginalEvent");
+                int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
+                int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
 
-                    int runNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned int>("trackOriginalRun");
-                    int evtNr_1 = vertex->trackParticle(1)->auxdataConst<unsigned long long>("trackOriginalEvent");
-
-                    vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
+                vertex->auxdecor<bool>("shuffled") = (runNr_0 != runNr_1 || evtNr_0 != evtNr_1);
             }
 
             std::vector<const xAOD::TrackParticle *> vtx_tracks;
@@ -448,20 +487,6 @@ EL::StatusCode DHNLAlgorithm::execute() {
         }
     }
 
-    //////////////////// Store primary vertex information //////////////////////
-
-    SG::AuxElement::ConstAccessor<float> NPVAccessor("NPV");
-    const xAOD::VertexContainer *vertices = nullptr;
-    if (!m_truthLevelOnly && !m_backgroundEstimationNoParticleData) {
-        ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
-    }
-    if (!m_truthLevelOnly && !NPVAccessor.isAvailable(*eventInfo) && vertices) { // NPV might already be available
-        // number of PVs with 2 or more tracks
-        //eventInfo->auxdecor< int >( "NPV" ) = HelperFunctions::countPrimaryVertices(vertices, 2);
-        // TMP for JetUncertainties uses the same variable
-        eventInfo->auxdecor<float>("NPV") = HelperFunctions::countPrimaryVertices(vertices, 2);
-    }
-
     return EL::StatusCode::SUCCESS;
 }
 
@@ -480,7 +505,7 @@ EL::StatusCode DHNLAlgorithm::finalize() {
 bool DHNLAlgorithm::acceptTrack(const xAOD::TrackParticle &trk) const {
 
     float fTrkEffSyst = 0;
-    
+
     // loose
     fTrkEffSyst = getFractionDropped(1, m_trkEffHistLooseGlobal, (float) trk.pt(), (float) trk.eta());
     if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
@@ -490,7 +515,7 @@ bool DHNLAlgorithm::acceptTrack(const xAOD::TrackParticle &trk) const {
     if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
     fTrkEffSyst = getFractionDropped(1, m_trkEffHistLoosePhysModel, (float) trk.pt(), (float) trk.eta());
     if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
-    
+
     // tight
 //    fTrkEffSyst = getFractionDropped(1, m_trkEffHistTightGlobal, (float) trk.pt(), (float) trk.eta());
 //    if (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) < fTrkEffSyst) return false;
@@ -506,22 +531,20 @@ bool DHNLAlgorithm::acceptTrack(const xAOD::TrackParticle &trk) const {
 
 float DHNLAlgorithm::getFractionDropped(float fDefault, TH2 *histogram, float pt, float eta) const {
 
-    if(histogram==nullptr) {
+    if (histogram == nullptr) {
         return fDefault;
     }
 
     pt *= 1.e-3; // unit conversion to GeV
-    if( pt >= histogram->GetXaxis()->GetXmax() ) pt = histogram->GetXaxis()->GetXmax() - 0.001;
+    if (pt >= histogram->GetXaxis()->GetXmax()) pt = histogram->GetXaxis()->GetXmax() - 0.001;
 
     float frac = histogram->GetBinContent(histogram->FindBin(pt, eta));
-    if( frac > 1. ) {
-        ANA_MSG_DEBUG( "Fraction from histogram " << histogram->GetName()
-                                                    << " is greater than 1. Setting fraction to 1." );
+    if (frac > 1.) {
+        ANA_MSG_DEBUG("Fraction from histogram " << histogram->GetName() << " is greater than 1. Setting fraction to 1.");
         frac = 1.;
     }
-    if( frac < 0. ) {
-        ANA_MSG_DEBUG( "Fraction from histogram " << histogram->GetName()
-                                                    << " is less than 0. Setting fraction to 0." );
+    if (frac < 0.) {
+        ANA_MSG_DEBUG("Fraction from histogram " << histogram->GetName() << " is less than 0. Setting fraction to 0.");
         frac = 0.;
     }
     return frac;
