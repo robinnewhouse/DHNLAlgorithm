@@ -577,11 +577,6 @@ DHNLDict = {
     "m_AugmentationVersionStringList"    : ','.join(AugmentationVersionStrings),
     "m_inDetTrackParticlesContainerName" : "InDetTrackParticles_Selected",
     #----------------------- Selections ----------------------------#
-    "m_leadingJetPtCut"         : 20,
-    "m_subleadingJetPtCut"      : 20,
-    "m_jetMultiplicity"         : 2,
-    "m_useMCPileupCheck"        : False,
-    "m_metCut"                  : 20000,
     "m_doInverseLeptonControlRegion"   : False,
     "m_backgroundEstimationBranches"   : True,
     "m_doPromptLeptonCut"   : True, # apply prompt lepton cut!
