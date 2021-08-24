@@ -310,8 +310,8 @@ DHNLDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"       : "Muons_Calibrate",
     "m_inElContainerName"       : "Electrons_Calibrate",
-    "m_muInputAlgo"             : "MuonSelector_Syst" if o.runAllSyst else "",
-    "m_elInputAlgo"             : "ElectronSelector_Syst" if o.runAllSyst else "",
+    "m_muInputAlgo"             : "",
+    "m_elInputAlgo"             : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_AugmentationVersionStringList"    : ','.join(AugmentationVersionStrings),
     "m_inDetTrackParticlesContainerName" : "InDetTrackParticles",
