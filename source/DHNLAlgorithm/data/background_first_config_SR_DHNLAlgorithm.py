@@ -79,7 +79,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : False, #not args.is_MC, # why this is False?
+    "m_applyTriggerCut"           : True, #not args.is_MC, # why this is False?
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_doPUreweightingSys"        : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
@@ -104,11 +104,11 @@ c.algorithm("BasicEventSelection", basicEventSelectionDict)
 DHNLFilterDict = {
     "m_name"                    : "DHNLFilter",
     #----------------------- Container Flow ----------------------------#
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810", # not used (vh4b only)
+    "m_allJetContainerName"     : "AntiKt4EMTopoJets" if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810", # not used (vh4b only)
     "m_inMuContainerName"       : "Muons",
     "m_inElContainerName"       : "Electrons",
     "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : False,
+    "m_applyFilterCut"          : True,
     #----------------------- Selections ----------------------------#
     # All selections are stored in default parameters in filter.
     # they can still be modified here. e.g.:
@@ -604,6 +604,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "Muons_Calibrate",
     "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_inputAlgos"                   : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
