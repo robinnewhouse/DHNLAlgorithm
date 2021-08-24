@@ -308,23 +308,21 @@ if args.is_MC:
 DHNLDict = {
     "m_name"                    : "DHNLAlgo",
     #----------------------- Container Flow ----------------------------#
-    "m_inJetContainerName"      : "",
-    "m_inputAlgo"               : "",
-    "m_allJetContainerName"     : "",
-    "m_allJetInputAlgo"         : "",
-    "m_inDetTrackParticlesContainerName": "TracksForVSI",
-    "m_inMuContainerName"       : "",
-    "m_inElContainerName"       : "",
+    "m_inMuContainerName"       : "Muons_Calibrate",
+    "m_inElContainerName"       : "Electrons_Calibrate",
+    "m_muInputAlgo"             : "MuonSelector_Syst" if o.runAllSyst else "",
+    "m_elInputAlgo"             : "ElectronSelector_Syst" if o.runAllSyst else "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
-    # "m_inMETContainerName"      : "MET",
-    # "m_inMETTrkContainerName"   : "METTrk",
-    "m_backgroundEstimationNoParticleData" : True, 
+    "m_AugmentationVersionStringList"    : ','.join(AugmentationVersionStrings),
+    "m_inDetTrackParticlesContainerName" : "InDetTrackParticles",
+    "m_backgroundEstimationNoParticleData": True,
     #----------------------- Selections ----------------------------#
     "m_doInverseLeptonControlRegion"   : False,
     "m_fakeAOD"                 : True,
     #----------------------- Other ----------------------------#
-    "m_MCPileupCheckContainer"  : "AntiKt4TruthJets",
     "m_msgLevel"                : "Info",
+    "m_trackingCalibFile"       : "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root",
+    "m_doSkipTracks"            : False,
 }
 
 c.algorithm("DHNLAlgorithm", DHNLDict )
