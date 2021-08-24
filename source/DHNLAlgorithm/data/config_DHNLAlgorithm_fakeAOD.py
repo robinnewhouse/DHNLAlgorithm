@@ -320,11 +320,6 @@ DHNLDict = {
     # "m_inMETTrkContainerName"   : "METTrk",
     "m_backgroundEstimationNoParticleData" : True, 
     #----------------------- Selections ----------------------------#
-    "m_leadingJetPtCut"         : 20,
-    "m_subleadingJetPtCut"      : 20,
-    "m_jetMultiplicity"         : 2,
-    "m_useMCPileupCheck"        : False,
-    "m_metCut"                  : 20000,
     "m_doInverseLeptonControlRegion"   : False,
     "m_fakeAOD"                 : True,
     #----------------------- Other ----------------------------#
