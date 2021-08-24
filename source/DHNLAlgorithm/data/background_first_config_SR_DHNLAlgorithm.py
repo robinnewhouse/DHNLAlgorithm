@@ -597,10 +597,10 @@ c.algorithm("DHNLAlgorithm", DHNLDict )
 DHNLNtupleDict = {
     "m_name"                         : "DHNLNtup",
     #----------------------- Container Flow ----------------------------#
-    "m_inMuContainerName"            : "Muons_Calibrate",
-    "m_inElContainerName"            : "Electrons_Calibrate",
+    "m_inMuContainerName"            : "",
+    "m_inElContainerName"            : "",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
-    "m_inputAlgos"                   : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
+    "m_inputAlgos"                   : "",
     "m_secondaryVertexContainerNameList" : "",
     "m_secondaryVertexBranchNameList" : "",
     "m_AugmentationVersionStringList" : "",
@@ -610,19 +610,8 @@ DHNLNtupleDict = {
     "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
-                                        effSF \
-                                        quality RECO_Tight RECO_Medium RECO_Loose \
-                                        isolation ISOL_FCLoose \
-                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
-                                        ",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
-                                        PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
-                                        effSF \
-                                        PIDSF_LooseBLayer PIDSF_Medium \
-                                        isolation ISOL_Gradient \
-                                        trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
-                                        ",
+    "m_muDetailStr"                  : "",
+    "m_elDetailStr"                  : "",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "",
