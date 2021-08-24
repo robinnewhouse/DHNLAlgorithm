@@ -71,6 +71,7 @@ public:
     std::string m_vertexDetailStr;
     std::string m_secondaryVertexDetailStr;
     std::string m_truthParticleDetailString;
+    std::string m_vertexContainerName;
 
     //std::string m_secondaryVertexContainerName;
     //std::string m_secondaryVertexBranchName;

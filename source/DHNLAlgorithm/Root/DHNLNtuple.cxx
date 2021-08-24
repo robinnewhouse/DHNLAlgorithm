@@ -73,6 +73,7 @@ DHNLNtuple::DHNLNtuple() :
     m_truthParticleDetailString = "";
     m_AltAugmentationVersionString = "";
     m_suppressTrackFilter = true;
+    m_vertexContainerName = "";
 
 }
 
@@ -300,7 +301,8 @@ EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
     ///______________________________________________________
     /// Primary vertices
     const xAOD::VertexContainer *vertices = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
+    if (not m_vertexContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(vertices, m_vertexContainerName, m_event, m_store));
     if (vertices) { m_myTrees[systName]->FillVertices(vertices); }
 
     ///______________________________________________________
