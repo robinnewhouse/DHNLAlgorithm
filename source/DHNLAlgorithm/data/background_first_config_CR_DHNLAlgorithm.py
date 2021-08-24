@@ -81,7 +81,7 @@ basicEventSelectionDict = {
     "m_storeTrigDecisions"        : True,
     "m_storePassL1"               : True,
     "m_storeTrigKeys"             : True,
-    "m_applyTriggerCut"           : False, #not args.is_MC
+    "m_applyTriggerCut"           : False, #not args.is_MC,
     "m_doPUreweighting"           : False if o.noPRW else True,
     "m_doPUreweightingSys"        : False if o.noPRW else True,
     "m_PRWFileNames"              : PRW,
@@ -603,21 +603,32 @@ DHNLNtupleDict = {
     "m_inElContainerName"            : "Electrons_Calibrate",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_inputAlgos"                   : "MuonSelector_Syst,ElectronSelector_Syst," if o.runAllSyst else "",
-    "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
-    "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
-    "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
+    "m_secondaryVertexContainerNameList" : "",
+    "m_secondaryVertexBranchNameList" : "",
+    "m_AugmentationVersionStringList" : "",
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
-    "m_truthVertexContainerName"     : "SelectedTruthVertices",
-    "m_truthVertexBranchName"        : "truthVtx",
-    "m_inTruthParticleContainerName" : "MuonTruthParticles",
+    "m_truthVertexContainerName"     : "",
+    "m_truthVertexBranchName"        : "",
+    "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_muDetailStr"                  : "",
-    "m_elDetailStr"                  : "",
+    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
+                                        effSF \
+                                        quality RECO_Tight RECO_Medium RECO_Loose \
+                                        isolation ISOL_FCLoose \
+                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
+                                        ",
+    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
+                                        PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
+                                        effSF \
+                                        PIDSF_LooseBLayer PIDSF_Medium \
+                                        isolation ISOL_Gradient \
+                                        trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
+                                        ",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
-    "m_vertexDetailStr"              : "primary",
-    "m_truthVertexDetailStr"         : "isMatched", # Uses pt-matching to match reconstructed vertices.
+    "m_vertexDetailStr"              : "",
+    "m_truthVertexDetailStr"         : "", # Uses pt-matching to match reconstructed vertices.
     "m_trackDetailStr"               : "numbers fitpars vertex",
     #----------------------- Other ----------------------------#
     "m_useMCPileupCheck"        : False,
