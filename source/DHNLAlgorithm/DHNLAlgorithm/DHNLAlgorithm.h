@@ -49,6 +49,7 @@ public:
     bool m_backgroundEstimationBranches; // do we add branches required for background estimation
     bool m_backgroundEstimationNoParticleData; // for the second step with fake event where we are missing a lot of data.
     bool m_doInverseLeptonControlRegion;            // do control region cuts
+    bool m_doPromptLeptonCut;            // do signal region cuts
     bool m_fakeAOD; // running on fake AOD
     bool m_doSkipTracks;
     std::string m_trackingCalibFile; // calibration file for tracking systmeatics

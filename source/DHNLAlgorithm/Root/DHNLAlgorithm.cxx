@@ -60,6 +60,7 @@ DHNLAlgorithm::DHNLAlgorithm() :
     m_backgroundEstimationBranches = false;
     m_backgroundEstimationNoParticleData = false;
     m_doInverseLeptonControlRegion = false;
+    m_doPromptLeptonCut = false;
     m_fakeAOD = false;
     m_doSkipTracks = false;
     m_trackingCalibFile = "InDetTrackSystematicsTools/CalibData_21.2_2018-v15/TrackingRecommendations_final_rel21.root";
