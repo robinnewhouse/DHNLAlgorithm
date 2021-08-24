@@ -338,21 +338,18 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "",
-    "m_eventInfoContainerName" : "",
+    "m_inputAlgos"                   : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
-    "m_secondaryVertexContainerNameAlt" : "VrtSecInclusive_SecondaryVertices" + o.altVSIstr,
-    "m_secondaryVertexBranchNameAlt" : "secVtx_VSI" + o.altVSIstr,
-    "m_AltAugmentationVersionString" : o.altVSIstr, # augumentation for alternate vertex container
-    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
+    "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering
     "m_truthVertexContainerName"     : "",
     "m_truthVertexBranchName"        : "",
     "m_inTruthParticleContainerName" : "",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "", #shapeEM
-    "m_elDetailStr"                  : "",
     "m_muDetailStr"                  : "",
+    "m_elDetailStr"                  : "",
     "m_trigDetailStr"                : "",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons fakeAOD", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
