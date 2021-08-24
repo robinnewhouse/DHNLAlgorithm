@@ -20,9 +20,9 @@ c = Config()
 
 # vertex container information (by default run VSI Leptons [VSI LeptonsMod for derivations])
 if o.isDerivation:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_LeptonsMod_LRTR3_1p0_fake"]
     secondaryVertexBranchNames = ["secVtx_VSI_LeptonsMod"]
-    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
+    AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0_fake"]
     # VrtSecInclusive_SecondaryVertices_FixedExtroplator in SUSY15
 else:
     secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
