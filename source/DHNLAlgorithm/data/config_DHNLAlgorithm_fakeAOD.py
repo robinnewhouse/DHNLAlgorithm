@@ -338,6 +338,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "",
+    "m_eventInfoContainerName"       : "",
     "m_inputAlgos"                   : "",
     "m_secondaryVertexContainerNameList" : ','.join(secondaryVertexContainerNames),
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),

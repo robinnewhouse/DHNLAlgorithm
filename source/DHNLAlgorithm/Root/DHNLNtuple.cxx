@@ -74,6 +74,7 @@ DHNLNtuple::DHNLNtuple() :
     m_AltAugmentationVersionString = "";
     m_suppressTrackFilter = true;
     m_vertexContainerName = "";
+    m_eventInfoContainerName = "";
 
 }
 
@@ -292,7 +293,8 @@ EL::StatusCode DHNLNtuple::fillTree(std::string systName) {
     ///______________________________________________________
     /// Event    
     const xAOD::EventInfo *eventInfo = nullptr;
-    ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
+    if (not m_eventInfoContainerName.empty())
+        ANA_CHECK (HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store));
     if (eventInfo) {
         m_myTrees[systName]->FillEvent(eventInfo, m_event);
         m_myTrees[systName]->FillTrigger(eventInfo);

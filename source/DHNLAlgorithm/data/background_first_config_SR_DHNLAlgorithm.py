@@ -599,6 +599,7 @@ DHNLNtupleDict = {
     #----------------------- Container Flow ----------------------------#
     "m_inMuContainerName"            : "",
     "m_inElContainerName"            : "",
+    "m_eventInfoContainerName"       : "",
     "m_trackParticleContainerName"   : "InDetTrackParticles_Selected",
     "m_inputAlgos"                   : "",
     "m_secondaryVertexContainerNameList" : "",
