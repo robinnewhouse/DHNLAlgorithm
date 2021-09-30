@@ -35,15 +35,15 @@ else:
 # Good Run Lists
 # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
 GRLList = []
-if 'data15' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml')
-if 'data16' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml')
-if 'data17' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
-if 'data18' in sample_periods : GRLList.append('/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
+if 'data15' in sample_periods : GRLList.append('GoodRunsLists/data15_13TeV/20170619/data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml')
+if 'data16' in sample_periods : GRLList.append('GoodRunsLists/data16_13TeV/20180129/data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml')
+if 'data17' in sample_periods : GRLList.append('GoodRunsLists/data17_13TeV/20180619/data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
+if 'data18' in sample_periods : GRLList.append('GoodRunsLists/data18_13TeV/20190318/data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml')
 
 # Pileup Reweighting
 # The sample you're running over must have the PRW file available.
 # If you are getting errors such as "Unrecognised channelNumber 311660 for periodNumber 300000" this is the place to start.
-# option 1. use centrally produced CVMFS files located in /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PileupReweighting/share/
+# option 1. use centrally produced CVMFS files located in dev/PileupReweighting/share/
 # option 2. use local PRW files. You can download the NTUP_PILEUP version of your sample locally and load it into the PRW tool.
 import DHNLAlgorithm.prw_files as prw_files
 PRWList = []
@@ -58,10 +58,10 @@ if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
 # If this isn't done the pileup reweighting tool will crash the algorithm.
 lumicalcList = []
 if 'mc16a' in sample_periods: 
-    lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root'])
-    lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root']) 
-if 'mc16d' in sample_periods: lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',])
-if 'mc16e' in sample_periods: lumicalcList.extend(['/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',]) 
+    lumicalcList.extend(['GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root'])
+    lumicalcList.extend(['GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root']) 
+if 'mc16d' in sample_periods: lumicalcList.extend(['GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',])
+if 'mc16e' in sample_periods: lumicalcList.extend(['GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',]) 
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
