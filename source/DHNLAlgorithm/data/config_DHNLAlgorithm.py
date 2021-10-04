@@ -12,6 +12,7 @@ parser.add_argument('--isDerivation', dest='isDerivation', action="store_true", 
 parser.add_argument('--runAllSyst', dest='runAllSyst', action="store_true", default=False)
 parser.add_argument('--noPRW', dest='noPRW', action="store_true", default=False)
 parser.add_argument('--samplePeriod', dest='samplePeriod', default='',)
+parser.add_argument('--DSID', dest='DSID', default='',)
 o = parser.parse_args(shlex.split(args.extra_options))
 
 sample_periods = o.samplePeriod.split(',')
@@ -50,6 +51,12 @@ PRWList = []
 if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
 if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
 if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
+# Filter PRW list by DSID if provided
+try:
+    tmp_prw_list = [prw_file for prw_file in PRWList if str(int(o.DSID)) in prw_file or 'actualMu' in prw_file]
+    PRWList = tmp_prw_list
+except:
+    pass
 
 # Lumicalc Files
 # Must be careful about which MC campaign is specified in the run command.
