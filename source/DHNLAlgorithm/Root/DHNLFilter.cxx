@@ -488,296 +488,296 @@ bool DHNLFilter::isGood(const xAOD::Muon &mu) const {
 }
 
 // VH4b filter implementation
-bool DHNLFilter::applyVH4bFilter() {
+// bool DHNLFilter::applyVH4bFilter() {
 
-    ANA_MSG_DEBUG("execute() : Get Containers");
-    const xAOD::EventInfo *eventInfo(nullptr);
-    ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
+//     ANA_MSG_DEBUG("execute() : Get Containers");
+//     const xAOD::EventInfo *eventInfo(nullptr);
+//     ANA_CHECK (HelperFunctions::retrieve(eventInfo, "EventInfo", m_event, m_store));
 
-    const xAOD::VertexContainer *vertices = 0;
-    ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
+//     const xAOD::VertexContainer *vertices = 0;
+//     ANA_CHECK (HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store));
 
-    const xAOD::MuonContainer *allMuons = 0;
-    const xAOD::ElectronContainer *allElectrons = 0;
-    ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
-    ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
+//     const xAOD::MuonContainer *allMuons = 0;
+//     const xAOD::ElectronContainer *allElectrons = 0;
+//     ANA_CHECK (HelperFunctions::retrieve(allMuons, m_inMuContainerName, m_event, m_store));
+//     ANA_CHECK (HelperFunctions::retrieve(allElectrons, m_inElContainerName, m_event, m_store));
 
-    const xAOD::JetContainer *allJets = 0;
-    ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
+//     const xAOD::JetContainer *allJets = 0;
+//     ANA_CHECK (HelperFunctions::retrieve(allJets, m_allJetContainerName, m_event, m_store));
 
-//    pass = this->executeFilter( eventInfo, allJets, allMuons, allElectrons, vertices);
-    /////////////////////////// Begin Selections  ///////////////////////////////
+// //    pass = this->executeFilter( eventInfo, allJets, allMuons, allElectrons, vertices);
+//     /////////////////////////// Begin Selections  ///////////////////////////////
 
-    //int evtNum = eventInfo->eventNumber();
+//     //int evtNum = eventInfo->eventNumber();
 
-    bool passesFilter = false;
-    bool passesJet = false;
-    bool passesEl = false;
-    bool passesMu = false;
-
-
-    // New Containers for Jets, Electrons and Muons
-
-    newJetContainers(allJets, allElectrons);
-    const xAOD::JetContainer *good_jets;
-    const xAOD::JetContainer *selected_jets;
-    const xAOD::JetContainer *signal_jets;
-    ANA_CHECK (HelperFunctions::retrieve(good_jets, "good_jets", m_event, m_store));
-    ANA_CHECK (HelperFunctions::retrieve(selected_jets, "selected_jets", m_event, m_store));
-    ANA_CHECK (HelperFunctions::retrieve(signal_jets, "signal_jets", m_event, m_store));
-
-    newElectronContainers(allElectrons, eventInfo, vertices);
-
-    const xAOD::ElectronContainer *good_electrons;
-    const xAOD::ElectronContainer *selected_electrons;
-    ANA_CHECK (HelperFunctions::retrieve(good_electrons, "good_electrons", m_event, m_store));
-    ANA_CHECK (HelperFunctions::retrieve(selected_electrons, "selected_electrons", m_event, m_store));
-
-    newMuonContainers(allMuons, eventInfo, vertices);
-
-    const xAOD::MuonContainer *good_muons;
-    const xAOD::MuonContainer *selected_muons;
-    ANA_CHECK (HelperFunctions::retrieve(good_muons, "good_muons", m_event, m_store));
-    ANA_CHECK (HelperFunctions::retrieve(selected_muons, "selected_muons", m_event, m_store));
-
-    if (selected_electrons->size() > 0) { passesEl = true; }
-    if (selected_muons->size() > 0) { passesMu = true; }
+//     bool passesFilter = false;
+//     bool passesJet = false;
+//     bool passesEl = false;
+//     bool passesMu = false;
 
 
-    int nJets = 0;
+//     // New Containers for Jets, Electrons and Muons
+
+//     newJetContainers(allJets, allElectrons);
+//     const xAOD::JetContainer *good_jets;
+//     const xAOD::JetContainer *selected_jets;
+//     const xAOD::JetContainer *signal_jets;
+//     ANA_CHECK (HelperFunctions::retrieve(good_jets, "good_jets", m_event, m_store));
+//     ANA_CHECK (HelperFunctions::retrieve(selected_jets, "selected_jets", m_event, m_store));
+//     ANA_CHECK (HelperFunctions::retrieve(signal_jets, "signal_jets", m_event, m_store));
+
+//     newElectronContainers(allElectrons, eventInfo, vertices);
+
+//     const xAOD::ElectronContainer *good_electrons;
+//     const xAOD::ElectronContainer *selected_electrons;
+//     ANA_CHECK (HelperFunctions::retrieve(good_electrons, "good_electrons", m_event, m_store));
+//     ANA_CHECK (HelperFunctions::retrieve(selected_electrons, "selected_electrons", m_event, m_store));
+
+//     newMuonContainers(allMuons, eventInfo, vertices);
+
+//     const xAOD::MuonContainer *good_muons;
+//     const xAOD::MuonContainer *selected_muons;
+//     ANA_CHECK (HelperFunctions::retrieve(good_muons, "good_muons", m_event, m_store));
+//     ANA_CHECK (HelperFunctions::retrieve(selected_muons, "selected_muons", m_event, m_store));
+
+//     if (selected_electrons->size() > 0) { passesEl = true; }
+//     if (selected_muons->size() > 0) { passesMu = true; }
 
 
-    //Calculating alpha max and charged hadron fraction
-    int j = 0;
-    for (auto jet : *signal_jets) {
-        j++;
-        TLorentzVector VJet = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-        VJet.SetPtEtaPhiE(jet->pt(), jet->eta(), jet->phi(), jet->e());
-
-        TLorentzVector CHFNum = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-
-        int jetIndex = j - 1;
-
-//        Particles associated_tracks = btagAssociatedTracks(jet, jetIndex);
-        // Copying this function to in-line definition
-        const xAOD::BTagging *bjet(nullptr);
-        bjet = jet->btagging();
-
-        TrackLinks assocTracks = bjet->auxdata<TrackLinks>("BTagTrackToJetAssociator");
-        Particles selectedTracks;
-
-        for (unsigned int iT = 0; iT < assocTracks.size(); iT++) {
-            if (!assocTracks.at(iT).isValid()) continue;
-            else {
-                const xAOD::TrackParticle *tmpTrk = *(assocTracks.at(iT));
-                tmpTrk->auxdecor<int>("isAssoc") = 1;
-                tmpTrk->auxdecor<int>("jetIndex") = jetIndex;
-                selectedTracks.push_back(tmpTrk);
-            }
-        }
+//     int nJets = 0;
 
 
-        Particles tracks(selectedTracks.begin(), selectedTracks.end());
-        // end in-line function
-        Particles associated_tracks = tracks;
+//     //Calculating alpha max and charged hadron fraction
+//     int j = 0;
+//     for (auto jet : *signal_jets) {
+//         j++;
+//         TLorentzVector VJet = TLorentzVector(0.0, 0.0, 0.0, 0.0);
+//         VJet.SetPtEtaPhiE(jet->pt(), jet->eta(), jet->phi(), jet->e());
 
-        float alpha_max = -9;
-        int i = 0;
+//         TLorentzVector CHFNum = TLorentzVector(0.0, 0.0, 0.0, 0.0);
 
-        for (auto vertex : *vertices) {
-            TLorentzVector alphaDen = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-            TLorentzVector alphaNum = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-            float alpha;
-            for (auto track : associated_tracks) {
-                if (track->pt() < m_TrackMinPt) continue;
-                // skip over LRTs
-                const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = track->patternRecoInfo();
-                if (patternReco.test(49)) continue;
-                TLorentzVector VTrack = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-                VTrack.SetPtEtaPhiE(track->pt(), track->eta(), track->phi(), track->e());
-                alphaDen = alphaDen + VTrack;
-                if (track->d0() > m_TrackD0Max) continue;
-                float z0 = track->z0() + track->vz() - vertex->z();
-                float theta = track->theta();
-                if (fabs(z0 * sin(theta)) < m_TrackZ0Max) {
-                    alphaNum = alphaNum + VTrack;
-                }
-            }
-            if (alphaDen.Pt() == 0) { alpha = -99; }
-            else {
-                alpha = alphaNum.Pt() / alphaDen.Pt();
-            }
-            if (alpha > alpha_max) { alpha_max = alpha; }
-            i++;
-        }
+//         int jetIndex = j - 1;
 
-        for (auto track : associated_tracks) {
-            TLorentzVector VTrack = TLorentzVector(0.0, 0.0, 0.0, 0.0);
-            if (track->d0() > m_TrackD0Max) continue;
-            // skip over LRTs
-            const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = track->patternRecoInfo();
-            if (patternReco.test(49)) continue;
-            if (track->pt() < m_TrackMinPt) continue;
-            VTrack.SetPtEtaPhiE(track->pt(), track->eta(), track->phi(), track->e());
-            CHFNum = CHFNum + VTrack;
-        }
+// //        Particles associated_tracks = btagAssociatedTracks(jet, jetIndex);
+//         // Copying this function to in-line definition
+//         const xAOD::BTagging *bjet(nullptr);
+//         bjet = jet->btagging();
 
-        float chf = CHFNum.Pt() / VJet.Pt();
-        jet->auxdecor<float>("chf") = chf;
-        jet->auxdecor<float>("alpha_max") = alpha_max;
-        jet->auxdecor<int>("alpha_max_pass") = (alpha_max < m_AlphaMaxCut) * 1;
-        jet->auxdecor<int>("chf_pass") = (chf < m_CHFCut) * 1;
+//         TrackLinks assocTracks = bjet->auxdata<TrackLinks>("BTagTrackToJetAssociator");
+//         Particles selectedTracks;
 
-        if (((chf < m_CHFCut) || (alpha_max < m_AlphaMaxCut)) && j <= 2) { nJets++; }
-
-    }
-    if (nJets > 0) { passesJet = true; }
+//         for (unsigned int iT = 0; iT < assocTracks.size(); iT++) {
+//             if (!assocTracks.at(iT).isValid()) continue;
+//             else {
+//                 const xAOD::TrackParticle *tmpTrk = *(assocTracks.at(iT));
+//                 tmpTrk->auxdecor<int>("isAssoc") = 1;
+//                 tmpTrk->auxdecor<int>("jetIndex") = jetIndex;
+//                 selectedTracks.push_back(tmpTrk);
+//             }
+//         }
 
 
-    eventInfo->auxdecor<bool>("passesMuonFilterVH4b") = passesMu;
-    eventInfo->auxdecor<bool>("passesElecFilterVH4b") = passesEl;
+//         Particles tracks(selectedTracks.begin(), selectedTracks.end());
+//         // end in-line function
+//         Particles associated_tracks = tracks;
 
-    if (passesJet && (passesEl || passesMu)) {
-        passesFilter = true;
-    }
-    eventInfo->auxdecor<bool>("passesVH4bFilter") = passesFilter;
+//         float alpha_max = -9;
+//         int i = 0;
 
-    return passesFilter;
-}
+//         for (auto vertex : *vertices) {
+//             TLorentzVector alphaDen = TLorentzVector(0.0, 0.0, 0.0, 0.0);
+//             TLorentzVector alphaNum = TLorentzVector(0.0, 0.0, 0.0, 0.0);
+//             float alpha;
+//             for (auto track : associated_tracks) {
+//                 if (track->pt() < m_TrackMinPt) continue;
+//                 // skip over LRTs
+//                 const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = track->patternRecoInfo();
+//                 if (patternReco.test(49)) continue;
+//                 TLorentzVector VTrack = TLorentzVector(0.0, 0.0, 0.0, 0.0);
+//                 VTrack.SetPtEtaPhiE(track->pt(), track->eta(), track->phi(), track->e());
+//                 alphaDen = alphaDen + VTrack;
+//                 if (track->d0() > m_TrackD0Max) continue;
+//                 float z0 = track->z0() + track->vz() - vertex->z();
+//                 float theta = track->theta();
+//                 if (fabs(z0 * sin(theta)) < m_TrackZ0Max) {
+//                     alphaNum = alphaNum + VTrack;
+//                 }
+//             }
+//             if (alphaDen.Pt() == 0) { alpha = -99; }
+//             else {
+//                 alpha = alphaNum.Pt() / alphaDen.Pt();
+//             }
+//             if (alpha > alpha_max) { alpha_max = alpha; }
+//             i++;
+//         }
 
-void DHNLFilter::newJetContainers(const xAOD::JetContainer *input, const xAOD::ElectronContainer *electrons) {
+//         for (auto track : associated_tracks) {
+//             TLorentzVector VTrack = TLorentzVector(0.0, 0.0, 0.0, 0.0);
+//             if (track->d0() > m_TrackD0Max) continue;
+//             // skip over LRTs
+//             const std::bitset<xAOD::NumberOfTrackRecoInfo> patternReco = track->patternRecoInfo();
+//             if (patternReco.test(49)) continue;
+//             if (track->pt() < m_TrackMinPt) continue;
+//             VTrack.SetPtEtaPhiE(track->pt(), track->eta(), track->phi(), track->e());
+//             CHFNum = CHFNum + VTrack;
+//         }
 
-    ConstDataVector<xAOD::JetContainer> *goodJets(nullptr);
-    ConstDataVector<xAOD::JetContainer> *selectedJets(nullptr);
-    ConstDataVector<xAOD::JetContainer> *signalJets(nullptr);
-    goodJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
-    selectedJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
-    signalJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
+//         float chf = CHFNum.Pt() / VJet.Pt();
+//         jet->auxdecor<float>("chf") = chf;
+//         jet->auxdecor<float>("alpha_max") = alpha_max;
+//         jet->auxdecor<int>("alpha_max_pass") = (alpha_max < m_AlphaMaxCut) * 1;
+//         jet->auxdecor<int>("chf_pass") = (chf < m_CHFCut) * 1;
 
-    for (auto jet: *input) {
-        int good = 0;
-        int selected = 0;
-        int signal = 0;
-        TLorentzVector VJet = jet->p4();
-        float minDR = 100;
+//         if (((chf < m_CHFCut) || (alpha_max < m_AlphaMaxCut)) && j <= 2) { nJets++; }
 
-        for (auto elec: *electrons) {
+//     }
+//     if (nJets > 0) { passesJet = true; }
 
-            if (elec->pt() < 20000) continue;
-            if (fabs(elec->eta()) > 2.47) continue;
-            bool passLoose = false;
-            if (!elec->passSelection(passLoose, "Loose")) { continue; }
-            if (!passLoose) continue;
 
-            TLorentzVector VElectron = elec->p4();
-            float DR = VElectron.DeltaR(VJet);
+//     eventInfo->auxdecor<bool>("passesMuonFilterVH4b") = passesMu;
+//     eventInfo->auxdecor<bool>("passesElecFilterVH4b") = passesEl;
 
-            if (DR < minDR) { minDR = DR; }
-        }
-        if (minDR > 0.2) {
-            goodJets->push_back(jet);
-            good = 1;
+//     if (passesJet && (passesEl || passesMu)) {
+//         passesFilter = true;
+//     }
+//     eventInfo->auxdecor<bool>("passesVH4bFilter") = passesFilter;
 
-            if (jet->pt() > 20000) {
+//     return passesFilter;
+// }
 
-                if (fabs(jet->eta()) < 2.8) {
-                    selectedJets->push_back(jet);
-                    selected = 1;
-                }
+// void DHNLFilter::newJetContainers(const xAOD::JetContainer *input, const xAOD::ElectronContainer *electrons) {
 
-                if (fabs(jet->eta()) < 2.1) {
-                    signalJets->push_back(jet);
-                    signal = 1;
-                }
-            }
-        }
-        jet->auxdecor<int>("good_jet") = good;
-        jet->auxdecor<int>("selected_jet") = selected;
-        jet->auxdecor<int>("signal_jet") = signal;
-    }
-    m_store->record(goodJets, "good_jets");
-    m_store->record(selectedJets, "selected_jets");
-    m_store->record(signalJets, "signal_jets");
-}
+//     ConstDataVector<xAOD::JetContainer> *goodJets(nullptr);
+//     ConstDataVector<xAOD::JetContainer> *selectedJets(nullptr);
+//     ConstDataVector<xAOD::JetContainer> *signalJets(nullptr);
+//     goodJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
+//     selectedJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
+//     signalJets = new ConstDataVector<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
 
-void DHNLFilter::newElectronContainers(const xAOD::ElectronContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices) {
+//     for (auto jet: *input) {
+//         int good = 0;
+//         int selected = 0;
+//         int signal = 0;
+//         TLorentzVector VJet = jet->p4();
+//         float minDR = 100;
 
-    ConstDataVector<xAOD::ElectronContainer> *goodElectrons(nullptr);
-    ConstDataVector<xAOD::ElectronContainer> *selectedElectrons(nullptr);
-    goodElectrons = new ConstDataVector<xAOD::ElectronContainer>(SG::VIEW_ELEMENTS);
-    selectedElectrons = new ConstDataVector<xAOD::ElectronContainer>(SG::VIEW_ELEMENTS);
+//         for (auto elec: *electrons) {
 
-    for (auto elec: *input) {
-        int good = 0;
-        int selected = 0;
+//             if (elec->pt() < 20000) continue;
+//             if (fabs(elec->eta()) > 2.47) continue;
+//             bool passLoose = false;
+//             if (!elec->passSelection(passLoose, "Loose")) { continue; }
+//             if (!passLoose) continue;
 
-        if (elec->passSelection(m_electronLHWP.c_str()) && elec->isolation(xAOD::Iso::topoetcone20) / elec->pt() < 0.2) {
-            goodElectrons->push_back(elec);
-            good = 1;
+//             TLorentzVector VElectron = elec->p4();
+//             float DR = VElectron.DeltaR(VJet);
 
-            for (xAOD::VertexContainer::const_iterator vxIter2 = vertices->begin(); vxIter2 != vertices->end(); ++vxIter2) {
-                // Select good primary vertex
-                if ((*vxIter2)->vertexType() == xAOD::VxType::PriVtx) {
-                    const xAOD::TrackParticle *tp = elec->trackParticle(); //your input track particle from the electron
-                    float sigd0 = fabs(xAOD::TrackingHelpers::d0significance(tp, eventInfo->beamPosSigmaX(), eventInfo->beamPosSigmaY(), eventInfo->beamPosSigmaXY()));
-                    double delta_z0 = tp->z0() + tp->vz() - (*vxIter2)->z();
-                    double theta = tp->theta();
-                    float z0sintheta = fabs(delta_z0 * sin(theta));
+//             if (DR < minDR) { minDR = DR; }
+//         }
+//         if (minDR > 0.2) {
+//             goodJets->push_back(jet);
+//             good = 1;
 
-                    if ((fabs(elec->caloCluster()->etaBE(2)) > 1.37 && fabs(elec->caloCluster()->etaBE(2) < 1.52)) || fabs(elec->caloCluster()->etaBE(2)) > 2.47) continue;
+//             if (jet->pt() > 20000) {
 
-                    if ((sigd0 < 5 && z0sintheta < 0.5 && elec->pt() > m_electronPtCut)) {
-                        selectedElectrons->push_back(elec);
-                        selected = 1;
-                    }
-                }
-            }
-        }
-        elec->auxdecor<int>("good_electron") = good;
-        elec->auxdecor<int>("selected_electron") = selected;
-    }
-    m_store->record(goodElectrons, "good_electrons");
-    m_store->record(selectedElectrons, "selected_electrons");
-}
+//                 if (fabs(jet->eta()) < 2.8) {
+//                     selectedJets->push_back(jet);
+//                     selected = 1;
+//                 }
 
-void DHNLFilter::newMuonContainers(const xAOD::MuonContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices) {
+//                 if (fabs(jet->eta()) < 2.1) {
+//                     signalJets->push_back(jet);
+//                     signal = 1;
+//                 }
+//             }
+//         }
+//         jet->auxdecor<int>("good_jet") = good;
+//         jet->auxdecor<int>("selected_jet") = selected;
+//         jet->auxdecor<int>("signal_jet") = signal;
+//     }
+//     m_store->record(goodJets, "good_jets");
+//     m_store->record(selectedJets, "selected_jets");
+//     m_store->record(signalJets, "signal_jets");
+// }
 
-    ConstDataVector<xAOD::MuonContainer> *goodMuons(nullptr);
-    ConstDataVector<xAOD::MuonContainer> *selectedMuons(nullptr);
-    goodMuons = new ConstDataVector<xAOD::MuonContainer>(SG::VIEW_ELEMENTS);
-    selectedMuons = new ConstDataVector<xAOD::MuonContainer>(SG::VIEW_ELEMENTS);
+// void DHNLFilter::newElectronContainers(const xAOD::ElectronContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices) {
 
-    for (auto muon: *input) {
-        int good = 0;
-        int selected = 0;
+//     ConstDataVector<xAOD::ElectronContainer> *goodElectrons(nullptr);
+//     ConstDataVector<xAOD::ElectronContainer> *selectedElectrons(nullptr);
+//     goodElectrons = new ConstDataVector<xAOD::ElectronContainer>(SG::VIEW_ELEMENTS);
+//     selectedElectrons = new ConstDataVector<xAOD::ElectronContainer>(SG::VIEW_ELEMENTS);
 
-        if (!m_muonSelectionTool_handle->passedMuonCuts(*muon)) continue;
-        if (muon->muonType() != xAOD::Muon::Combined) continue;
-        if (muon->isolation(xAOD::Iso::topoetcone20) / muon->pt() < 0.3) {
-            goodMuons->push_back(muon);
-            good = 1;
-            for (xAOD::VertexContainer::const_iterator vxIter3 = vertices->begin(); vxIter3 != vertices->end(); ++vxIter3) {
-                // Select good primary vertex
-                if ((*vxIter3)->vertexType() == xAOD::VxType::PriVtx) {
-                    const xAOD::TrackParticle *tp = muon->primaryTrackParticle(); //your input track particle from the muon
-                    double d0sig = xAOD::TrackingHelpers::d0significance(tp, eventInfo->beamPosSigmaX(), eventInfo->beamPosSigmaY(), eventInfo->beamPosSigmaXY());
-                    float delta_z0 = tp->z0() + tp->vz() - (*vxIter3)->z();
-                    float theta = tp->theta();
-                    double z0sintheta = delta_z0 * sin(theta);
+//     for (auto elec: *input) {
+//         int good = 0;
+//         int selected = 0;
 
-                    if (muon->pt() > m_muonPtCut && fabs(muon->eta()) < 2.5 && fabs(d0sig) < 3 && fabs(z0sintheta) < 0.5) {
-                        selectedMuons->push_back(muon);
-                        selected = 1;
-                    }
-                }
-            }
-        }
-        muon->auxdecor<int>("good_muon") = good;
-        muon->auxdecor<int>("selected_muon") = selected;
-    }
-    m_store->record(goodMuons, "good_muons");
-    m_store->record(selectedMuons, "selected_muons");
-}
+//         if (elec->passSelection(m_electronLHWP.c_str()) && elec->isolation(xAOD::Iso::topoetcone20) / elec->pt() < 0.2) {
+//             goodElectrons->push_back(elec);
+//             good = 1;
+
+//             for (xAOD::VertexContainer::const_iterator vxIter2 = vertices->begin(); vxIter2 != vertices->end(); ++vxIter2) {
+//                 // Select good primary vertex
+//                 if ((*vxIter2)->vertexType() == xAOD::VxType::PriVtx) {
+//                     const xAOD::TrackParticle *tp = elec->trackParticle(); //your input track particle from the electron
+//                     float sigd0 = fabs(xAOD::TrackingHelpers::d0significance(tp, eventInfo->beamPosSigmaX(), eventInfo->beamPosSigmaY(), eventInfo->beamPosSigmaXY()));
+//                     double delta_z0 = tp->z0() + tp->vz() - (*vxIter2)->z();
+//                     double theta = tp->theta();
+//                     float z0sintheta = fabs(delta_z0 * sin(theta));
+
+//                     if ((fabs(elec->caloCluster()->etaBE(2)) > 1.37 && fabs(elec->caloCluster()->etaBE(2) < 1.52)) || fabs(elec->caloCluster()->etaBE(2)) > 2.47) continue;
+
+//                     if ((sigd0 < 5 && z0sintheta < 0.5 && elec->pt() > m_electronPtCut)) {
+//                         selectedElectrons->push_back(elec);
+//                         selected = 1;
+//                     }
+//                 }
+//             }
+//         }
+//         elec->auxdecor<int>("good_electron") = good;
+//         elec->auxdecor<int>("selected_electron") = selected;
+//     }
+//     m_store->record(goodElectrons, "good_electrons");
+//     m_store->record(selectedElectrons, "selected_electrons");
+// }
+
+// void DHNLFilter::newMuonContainers(const xAOD::MuonContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices) {
+
+//     ConstDataVector<xAOD::MuonContainer> *goodMuons(nullptr);
+//     ConstDataVector<xAOD::MuonContainer> *selectedMuons(nullptr);
+//     goodMuons = new ConstDataVector<xAOD::MuonContainer>(SG::VIEW_ELEMENTS);
+//     selectedMuons = new ConstDataVector<xAOD::MuonContainer>(SG::VIEW_ELEMENTS);
+
+//     for (auto muon: *input) {
+//         int good = 0;
+//         int selected = 0;
+
+//         if (!m_muonSelectionTool_handle->passedMuonCuts(*muon)) continue;
+//         if (muon->muonType() != xAOD::Muon::Combined) continue;
+//         if (muon->isolation(xAOD::Iso::topoetcone20) / muon->pt() < 0.3) {
+//             goodMuons->push_back(muon);
+//             good = 1;
+//             for (xAOD::VertexContainer::const_iterator vxIter3 = vertices->begin(); vxIter3 != vertices->end(); ++vxIter3) {
+//                 // Select good primary vertex
+//                 if ((*vxIter3)->vertexType() == xAOD::VxType::PriVtx) {
+//                     const xAOD::TrackParticle *tp = muon->primaryTrackParticle(); //your input track particle from the muon
+//                     double d0sig = xAOD::TrackingHelpers::d0significance(tp, eventInfo->beamPosSigmaX(), eventInfo->beamPosSigmaY(), eventInfo->beamPosSigmaXY());
+//                     float delta_z0 = tp->z0() + tp->vz() - (*vxIter3)->z();
+//                     float theta = tp->theta();
+//                     double z0sintheta = delta_z0 * sin(theta);
+
+//                     if (muon->pt() > m_muonPtCut && fabs(muon->eta()) < 2.5 && fabs(d0sig) < 3 && fabs(z0sintheta) < 0.5) {
+//                         selectedMuons->push_back(muon);
+//                         selected = 1;
+//                     }
+//                 }
+//             }
+//         }
+//         muon->auxdecor<int>("good_muon") = good;
+//         muon->auxdecor<int>("selected_muon") = selected;
+//     }
+//     m_store->record(goodMuons, "good_muons");
+//     m_store->record(selectedMuons, "selected_muons");
+// }
 // End VH4b filter implementation
 
 

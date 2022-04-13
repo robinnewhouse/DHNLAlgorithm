@@ -112,15 +112,15 @@ private:
     bool isGood(const xAOD::Muon &mu) const;
 
     // VH4b filter
-    typedef std::vector<const xAOD::TrackParticle *> Particles;
-    typedef ElementLink<xAOD::TrackParticleContainer> TrackLink;
-    typedef std::vector<TrackLink> TrackLinks;
-    asg::AnaToolHandle<CP::IMuonSelectionTool> m_muonSelectionTool_handle{"CP::MuonSelectionTool/MuonSelectionTool", this};
-    bool applyVH4bFilter();
-    void newJetContainers(const xAOD::JetContainer *input, const xAOD::ElectronContainer *electrons);
-    void newMuonContainers(const xAOD::MuonContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices);
-    void newElectronContainers(const xAOD::ElectronContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices);
-    Particles btagAssociatedTracks(const xAOD::Jet *jet, int jetIndex);
+    // typedef std::vector<const xAOD::TrackParticle *> Particles;
+    // typedef ElementLink<xAOD::TrackParticleContainer> TrackLink;
+    // typedef std::vector<TrackLink> TrackLinks;
+    // asg::AnaToolHandle<CP::IMuonSelectionTool> m_muonSelectionTool_handle{"CP::MuonSelectionTool/MuonSelectionTool", this};
+    // bool applyVH4bFilter();
+    // void newJetContainers(const xAOD::JetContainer *input, const xAOD::ElectronContainer *electrons);
+    // void newMuonContainers(const xAOD::MuonContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices);
+    // void newElectronContainers(const xAOD::ElectronContainer *input, const xAOD::EventInfo *eventInfo, const xAOD::VertexContainer *vertices);
+    // Particles btagAssociatedTracks(const xAOD::Jet *jet, int jetIndex);
     // End VH4b filter
 
 public:

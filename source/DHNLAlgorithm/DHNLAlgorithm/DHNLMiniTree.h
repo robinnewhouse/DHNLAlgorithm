@@ -112,13 +112,13 @@ public:
 
     void AddMuonsUser(const std::string &detailStr, const std::string &muonName) override;
 
-    void FillMuonsUser(const xAOD::Muon *, const std::string &muonName) override;
+    void FillMuonsUser(const xAOD::Muon *, const std::string &muonName);
 
     void ClearMuonsUser(const std::string &muonName) override;
 
     void AddElectronsUser(const std::string &detailStr, const std::string &elecName) override;
 
-    void FillElectronsUser(const xAOD::Electron *, const std::string &electronName) override;
+    void FillElectronsUser(const xAOD::Electron *, const std::string &electronName);
 
     void ClearElectronsUser(const std::string &electronName) override;
 

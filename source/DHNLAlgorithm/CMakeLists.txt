@@ -2,19 +2,19 @@
 atlas_subdir (DHNLAlgorithm)
 
 # Declare the package's dependencies:
-atlas_depends_on_subdirs( PUBLIC
-        Control/AthToolSupport/AsgTools
-        Control/xAODRootAccess
-        Event/xAOD/xAODEventInfo
-        Event/xAOD/xAODJet
-        Event/xAOD/xAODMissingET
-        PhysicsAnalysis/D3PDTools/EventLoop
-        PhysicsAnalysis/D3PDTools/RootCoreUtils
-        xAODAnaHelpers
-        DVAnalysisBase
-        PRIVATE
-        Event/xAOD/xAODEgamma
-        Event/xAOD/xAODMuon )
+#atlas_depends_on_subdirs( PUBLIC
+#        Control/AthToolSupport/AsgTools
+#        Control/xAODRootAccess
+#        Event/xAOD/xAODEventInfo
+#        Event/xAOD/xAODJet
+#        Event/xAOD/xAODMissingET
+#        PhysicsAnalysis/D3PDTools/EventLoop
+#        PhysicsAnalysis/D3PDTools/RootCoreUtils
+#        xAODAnaHelpers
+#        DVAnalysisBase
+#        PRIVATE
+#        Event/xAOD/xAODEgamma
+#        Event/xAOD/xAODMuon )
 
 
 # external dependencies
@@ -39,7 +39,10 @@ atlas_add_library( DHNLAlgorithmLib DHNLAlgorithm/*.h Root/*.h Root/*.cxx ${DHNL
         xAODJet
         xAODMissingET
         xAODMuon
-        xAODRootAccess )
+        xAODRootAccess 
+        PMGAnalysisInterfacesLib
+        PMGToolsLib
+        xAODBTagging)
 
 # Install files from the package:
 atlas_install_scripts( scripts/*.py )

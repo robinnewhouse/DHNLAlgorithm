@@ -31,7 +31,7 @@
 #include <xAODAnaHelpers/HelperFunctions.h>
 #include <xAODAnaHelpers/HelperFunctions.h>
 
-#include "FactoryTools/AlgConsts.h"
+// #include "FactoryTools/AlgConsts.h"
 
 #include <iostream>
 
@@ -269,7 +269,7 @@ bool VSITrackSelection::selectTrack_z0errCut    ( const xAOD::TrackParticle* trk
 bool VSITrackSelection::selectTrack_d0signifCut ( const xAOD::TrackParticle*     ) const { return true; }
 bool VSITrackSelection::selectTrack_z0signifCut ( const xAOD::TrackParticle*     ) const { return true; }
 bool VSITrackSelection::selectTrack_pTCut       ( const xAOD::TrackParticle* trk ) const { return trk->pt() > m_jp_TrkPtCut; }
-bool VSITrackSelection::selectTrack_chi2Cut     ( const xAOD::TrackParticle* trk ) const { return trk->chiSquared() / (trk->numberDoF()+AlgConsts::infinitesimal) < m_jp_TrkChi2Cut; }
+bool VSITrackSelection::selectTrack_chi2Cut     ( const xAOD::TrackParticle* trk ) const { return trk->chiSquared() / (trk->numberDoF()+1.e-9) < m_jp_TrkChi2Cut; }
 
 //____________________________________________________________________________________________________
 bool VSITrackSelection::selectTrack_hitPattern( const xAOD::TrackParticle* trk ) const {
@@ -349,7 +349,7 @@ bool VSITrackSelection::selectTrack_LRTR3Cut( const xAOD::TrackParticle* trk ) c
     bool geometric_cut = dTheta < 1. || std::fabs(trk->z0()) < 200. ;
 
     bool z0_cut = trk->z0() <= 500. ;
-    bool chi2_cut = (trk->chiSquared()/ (trk->numberDoF()+AlgConsts::infinitesimal)) <= 9. ;
+    bool chi2_cut = (trk->chiSquared()/ (trk->numberDoF()+1.e-9)) <= 9. ;
     bool NSiHits_cut = nSiHits >=8 ;
     bool NSCTHits_cut = nsct >= 7 ;
     bool NSCTHoles_cut = nSCTHoles <= 1;
