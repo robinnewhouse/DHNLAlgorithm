@@ -1,3 +1,4 @@
 [submodule "source/DHNLAlgorithm/deps/DVAnalysisBase"]
 	path = source/DHNLAlgorithm/deps/DVAnalysisBase
-	url = ../../../../../uehdv/DVAnalysisBase.git
+	url = https://gitlab.cern.ch/uehdv/DVAnalysisBase.git
+	branch = r22/master
