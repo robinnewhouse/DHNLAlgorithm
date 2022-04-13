@@ -29,12 +29,16 @@ acmSetup --sourcearea=../source AnalysisBase,22.2.64;
 rm -rf *
 cmake ../source/;
 make
+source x*-*gcc*-opt/setup.sh
 ```
 
 
 #### Future Sessions w/ Same Install
 
-
+```
+cd build
+source x*-*gcc*-opt/setup.sh
+```
 
 ### Running
 
@@ -47,13 +51,13 @@ The interesting ntuples are stored in `testRun/data-tree/<filename>.root`.
 echo /eos/home-d/dhnl/data/EXOT29/mc16_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.deriv.DAOD_EXOT29.e7422_e5984_a875_r11891_r11748_p4482/DAOD_EXOT29.24947839._000010.pool.root.1 > files.txt
 # source build/*/setup.sh
 xAH_run.py \
---config $WorkDir_DIR/data/DHNLAlgorithm/config_DHNLAlgorithm.py \
+--config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py \
 --inputList \
 --files files.txt \
 --submitDir testRun \
 --force \
 --isMC \
---extraOptions="--isDerivation --samplePeriod mc16e" \
+--extraOptions="--noPRW" \
 --nevents=100 \
 direct
 ```

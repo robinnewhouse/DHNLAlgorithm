@@ -29,9 +29,9 @@ if o.isDerivation:
     AugmentationVersionStrings = ["_LeptonsMod_LRTR3_1p0"]
     # VrtSecInclusive_SecondaryVertices_FixedExtroplator in SUSY15
 else:
-    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices_Leptons"]
-    secondaryVertexBranchNames = ["secVtx_VSI_Leptons"]
-    AugmentationVersionStrings = ["_Leptons"]
+    secondaryVertexContainerNames = ["VrtSecInclusive_SecondaryVertices"]
+    secondaryVertexBranchNames = ["secVtx_VSI"]
+    AugmentationVersionStrings = [""]
 
 # Good Run Lists
 # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/GoodRunListsForAnalysisRun2#Naming_scheme_and_documentation
@@ -348,17 +348,17 @@ for augstr in AugmentationVersionStrings:
         "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr,
         "m_outContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr +"_sel",
         #---------------------- Selections ---------------------------#
-        "m_do_trackTrimming"     : False,
+        # "m_do_trackTrimming"     : False,
         "m_do_matMapVeto"        : True,
-        "prop_chi2Cut"           : 5.0,
-        "prop_d0_wrtSVCut"       : 0.8,
-        "prop_z0_wrtSVCut"       : 1.2,
-        "prop_errd0_wrtSVCut"    : 999999,
-        "prop_errz0_wrtSVCut"    : 999999,
-        "prop_d0signif_wrtSVCut" : 5.0,
-        "prop_z0signif_wrtSVCut" : 5.0,
-        "prop_chi2_toSVCut"      : 5.0,
-        "prop_vtx_suffix"        : "",
+        # "prop_chi2Cut"           : 5.0,
+        # "prop_d0_wrtSVCut"       : 0.8,
+        # "prop_z0_wrtSVCut"       : 1.2,
+        # "prop_errd0_wrtSVCut"    : 999999,
+        # "prop_errz0_wrtSVCut"    : 999999,
+        # "prop_d0signif_wrtSVCut" : 5.0,
+        # "prop_z0signif_wrtSVCut" : 5.0,
+        # "prop_chi2_toSVCut"      : 5.0,
+        # "prop_vtx_suffix"        : "",
         #------------------------ Other ------------------------------#
         "m_msgLevel"             : "Info",
     }
