@@ -1,4 +1,3 @@
-# Copyright (C) 2002-2019 CERN for the benefit of the ATLAS collaboration
 #
 # This is a template for a CMakeLists.txt file that can be used in a client
 # project (work area) to set up building ATLAS packages against the configured
@@ -6,12 +5,13 @@
 #
 
 # Set the minimum required CMake version:
-cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.15 FATAL_ERROR )
 
-# Make sure that all _ROOT variables *are* used when they are set.
-if( POLICY CMP0074 )
-   cmake_policy( SET CMP0074 NEW )
-endif()
+project( WorkDir VERSION 1.0.0 ) # could add: LANGUAGES CXX Fortran
+
+#register the package_filter file as a dependent
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS $ENV{ACM_PACKAGE_FILTER_FILE} )
+set( ATLAS_PACKAGE_FILTER_FILE $ENV{ACM_PACKAGE_FILTER_FILE} )
 
 # If there's a directory called AtlasCMake in the project,
 # and the user didn't specify AtlasCMake_DIR yet, then let's
@@ -33,20 +33,23 @@ endif()
 find_package( AtlasCMake QUIET )
 
 # Find the project that we depend on:
-find_package( AnalysisBase )
+find_package( $ENV{AtlasProject} )
 
 # Set up CTest:
 atlas_ctest_setup()
 
-# Set up a work directory project:
-atlas_project( WorkDir 21.2.121
-   USE AnalysisBase 21.2.121
-    )
+# These next lines are a temporary fix for issue: ATLINFR-2388
+if( DEFINED ENV{WorkDir_PLATFORM} )
+    set( ATLAS_PLATFORM $ENV{WorkDir_PLATFORM} )
+endif()
+
+# Set up a work directory project - hack for special case of 21.2 and 21.0 needing old signature:
+atlas_project(USE $ENV{AtlasProject} $ENV{AtlasVersion})
 
 # Set up the runtime environment setup script(s):
 lcg_generate_env( SH_FILE ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh )
 install( FILES ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh
-   DESTINATION .)
+   DESTINATION . )
 
 # Set up CPack:
 atlas_cpack_setup()

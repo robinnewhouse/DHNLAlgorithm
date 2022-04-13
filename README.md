@@ -13,36 +13,28 @@ Get `DHNLAlgorithm` with:
 ```bash
 setupATLAS
 lsetup git
-git clone --recursive ssh://git@gitlab.cern.ch:7999/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git
+git clone --recursive --branch R22_test https://gitlab.cern.ch/atlas-phys/exot/ueh/EXOT-2017-19/DHNLAlgorithm.git
 cd DHNLAlgorithm
 ```
-(If you're having trouble with using ssh to clone, please see https://dguest.github.io/atlas-gitlab/02-credentials/index.html)
 
-To build the directory structure and set up `AnalysisBase`, simply run
 
-```bash
-source setup.sh
-```
+
 
 And compile
 
 ```bash
-cd $TestArea
-cmake ../source/
-make -j
-source */setup.sh  # (wildcard since os and gcc versions may differ)
+mkdir build;
+cd ../build/;
+acmSetup --sourcearea=../source AnalysisBase,22.2.64;
+rm -rf *
+cmake ../source/;
+make
 ```
 
 
 #### Future Sessions w/ Same Install
 
-Simply `cd DHNLAlgorithm` and run `source setup.sh` again, or if you prefer:
-```bash
-cd DHNLAlgorithm/build
-setupATLAS
-asetup
-source */setup.sh
-```
+
 
 ### Running
 
