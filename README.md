@@ -48,7 +48,7 @@ The interesting ntuples are stored in `testRun/data-tree/<filename>.root`.
 
 #### MC
 ```bash
-echo /eos/home-d/dhnl/data/EXOT29/mc16_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.deriv.DAOD_EXOT29.e7422_e5984_a875_r11891_r11748_p4482/DAOD_EXOT29.24947839._000010.pool.root.1 > files.txt
+echo <your input LLP1 derivation> > files.txt
 # source build/*/setup.sh
 xAH_run.py \
 --config ../source/DHNLAlgorithm/data/config_DHNLAlgorithm.py \
