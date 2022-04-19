@@ -23,11 +23,11 @@ cd DHNLAlgorithm
 And compile
 
 ```bash
-mkdir build;
-cd ../build/;
-acmSetup --sourcearea=../source AnalysisBase,22.2.64;
+mkdir build
+cd build/
+acmSetup --sourcearea=../source AnalysisBase,22.2.64
 rm -rf *
-cmake ../source/;
+cmake ../source/
 make
 source x*-*gcc*-opt/setup.sh
 ```
@@ -55,12 +55,16 @@ xAH_run.py \
 --inputList \
 --files files.txt \
 --submitDir testRun \
+--extraOptions="--samplePeriod mc20e" \
 --force \
 --isMC \
---extraOptions="--noPRW" \
 --nevents=100 \
 direct
 ```
+--extraOptions="--noPRW" \
+--extraOptions="--samplePeriod mc20e" \
+
+Everything below has not been updated to R22 yet!
 
 WARNING: `--samplePeriod mc16e` is for rtag: r11891. This must be modified accordingly for mc16a (rtag: r11915) and mc16d (rtag: r11916).
 

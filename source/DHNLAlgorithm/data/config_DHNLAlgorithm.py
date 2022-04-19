@@ -51,6 +51,7 @@ PRWList = []
 if 'mc16a' in sample_periods: PRWList.extend(prw_files.prw_files_mc16a)
 if 'mc16d' in sample_periods: PRWList.extend(prw_files.prw_files_mc16d)
 if 'mc16e' in sample_periods: PRWList.extend(prw_files.prw_files_mc16e)
+if 'mc20e' in sample_periods: PRWList.extend(prw_files.prw_files_mc20e)
 # Filter PRW list by DSID if provided
 try:
     tmp_prw_list = [prw_file for prw_file in PRWList if str(int(o.DSID)) in prw_file or 'actualMu' in prw_file]
@@ -68,7 +69,7 @@ if 'mc16a' in sample_periods:
     lumicalcList.extend(['GoodRunsLists/data15_13TeV/20170619/PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root'])
     lumicalcList.extend(['GoodRunsLists/data16_13TeV/20180129/PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root']) 
 if 'mc16d' in sample_periods: lumicalcList.extend(['GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root',])
-if 'mc16e' in sample_periods: lumicalcList.extend(['GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',]) 
+if 'mc16e' or 'mc20e' in sample_periods: lumicalcList.extend(['GoodRunsLists/data18_13TeV/20190318/ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root',]) 
 
 GRL       = ",".join(GRLList)
 PRW       = ",".join(PRWList)
@@ -105,28 +106,28 @@ basicEventSelectionDict = {
 c.algorithm("BasicEventSelection", basicEventSelectionDict)
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-DHNLFilterDict = {
-    "m_name"                    : "DHNLFilter",
-    #----------------------- Container Flow ----------------------------#
-    "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810", # not used (vh4b only)
-    "m_inMuContainerName"       : "Muons",
-    "m_inElContainerName"       : "Electrons",
-    "m_vertexContainerName"     : "PrimaryVertices",
-    "m_applyFilterCut"          : False,
-    #----------------------- Selections ----------------------------#
-    # All selections are stored in default parameters in filter.
-    # they can still be modified here. e.g.:
-    # "m_AlphaMaxCut"             : 0.03,
-    "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium", # not used (vh4b only)
-    "m_el1IDKey"                  :  "LHLoose", # if not o.isDerivation else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
-    #----------------------- Other ----------------------------#
-    "m_msgLevel"                : "Info",
-}
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DHNLFilter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# DHNLFilterDict = {
+#     "m_name"                    : "DHNLFilter",
+#     #----------------------- Container Flow ----------------------------#
+#     "m_allJetContainerName"     : "AntiKt4EMTopoJets"if not o.isDerivation else "AntiKt4EMTopoJets_BTagging201810", # not used (vh4b only)
+#     "m_inMuContainerName"       : "Muons",
+#     "m_inElContainerName"       : "Electrons",
+#     "m_vertexContainerName"     : "PrimaryVertices",
+#     "m_applyFilterCut"          : False,
+#     #----------------------- Selections ----------------------------#
+#     # All selections are stored in default parameters in filter.
+#     # they can still be modified here. e.g.:
+#     # "m_AlphaMaxCut"             : 0.03,
+#     "m_electronLHWP"              : "Medium" if not o.isDerivation else "DFCommonElectronsLHMedium", # not used (vh4b only)
+#     "m_el1IDKey"                  :  "LHLoose", # if not o.isDerivation else "DFCommonElectronsLHLoose", # if you didnt add LHLoose to the SUSy15 config you need to update the electron quality
+#     #----------------------- Other ----------------------------#
+#     "m_msgLevel"                : "Info",
+# }
 
-c.algorithm("DHNLFilter", DHNLFilterDict )
+# c.algorithm("DHNLFilter", DHNLFilterDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -174,7 +175,7 @@ MuonSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "FixedCutHighPtTrackOnly",
+    "m_IsoWPList"                 : "FCLoose,FCTight",
     #----------------------- trigger matching stuff ----------------------------#
     "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15,HLT_mu26_ivarmedium",
     #"m_minDeltaR"                 : 0.1,
@@ -262,9 +263,9 @@ ElectronSelectorDict = {
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
-    "m_IsoWPList"                 : "FCLoose,FCTight" if o.isDerivation else "Gradient",
+    "m_IsoWPList"                 : "Loose,Tight",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH,HLT_e26_lhtight_nod0_ivarloose",
+    # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH,HLT_e26_lhtight_nod0_ivarloose",
     # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",

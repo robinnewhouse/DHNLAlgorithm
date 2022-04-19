@@ -661,3 +661,8 @@ prw_files_mc16e = [
     # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/ExtendedPileupReweighting#Notes_for_users_of_MC16d
     "GoodRunsLists/data18_13TeV/20190318/physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
     ]
+
+prw_files_mc20e = [
+    "/eos/user/c/cappelt/R22_tests/R22_dHNL_test_samples_LLP1/NTUP_PILEUP/mc20_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.merge.NTUP_PILEUP.e7422_e5984_a899_r13145_r13146_p4836_p4837/NTUP_PILEUP.28648052._000001.pool.root.1",
+    "/eos/user/c/cappelt/R22_tests/R22_dHNL_test_samples_LLP1/NTUP_PILEUP/mc20_13TeV.311633.Pythia8EvtGen_A14NNPDF23LO_WmuHNL50_10G_lt10dd.merge.NTUP_PILEUP.e7422_e5984_a899_r13145_r13146_p4836_p4837/NTUP_PILEUP.28648060._000001.pool.root.1",
+]
