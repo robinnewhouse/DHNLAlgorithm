@@ -37,6 +37,8 @@ source x*-*gcc*-opt/setup.sh
 
 ```
 cd build
+setupATLAS
+asetup
 source x*-*gcc*-opt/setup.sh
 ```
 

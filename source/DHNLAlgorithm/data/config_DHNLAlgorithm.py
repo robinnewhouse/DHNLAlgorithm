@@ -93,7 +93,7 @@ basicEventSelectionDict = {
     "m_PRWFileNames"              : PRW,
     "m_lumiCalcFileNames"         : LUMICALCS,
     "m_autoconfigPRW"             : False,
-    "m_triggerSelection"          : "HLT_e24_lhmedium_L1EM20VH || HLT_e26_lhtight_nod0_ivarloose || HLT_mu26_ivarmedium || HLT_mu20_iloose_L1MU15",
+    "m_triggerSelection"          : "HLT_e24_lhmedium_L1EM20VH || HLT_e26_lhtight_nod0_ivarloose || HLT_mu26_ivarmedium",# || HLT_mu20_iloose_L1MU15",
     "m_checkDuplicatesData"       : False,
     "m_applyEventCleaningCut"     : False,
     "m_applyCoreFlagsCut"         : False,
@@ -177,7 +177,7 @@ MuonSelectorDict = {
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "FCLoose,FCTight",
     #----------------------- trigger matching stuff ----------------------------#
-    "m_singleMuTrigChains"        : "HLT_mu20_iloose_L1MU15,HLT_mu26_ivarmedium",
+    "m_singleMuTrigChains"        : "HLT_mu26_ivarmedium", #HLT_mu20_iloose_L1MU15,
     #"m_minDeltaR"                 : 0.1,
     #----------------------- Other ----------------------------#
     "m_msgLevel"                  : "Info",
@@ -206,7 +206,7 @@ MuonEfficiencyCorrectorDict = {
   "m_AllowZeroSF"               : True, # the code says to use with caution... why?
   "m_MuTrigLegs"                : "2015:HLT_mu20_iloose_L1MU15,2016:HLT_mu26_ivarmedium,2017:HLT_mu26_ivarmedium,2018:HLT_mu26_ivarmedium",
   #----------------------- Working Points ----------------------------#
-  "m_overrideCalibRelease"      : "210222_Precision_r21",
+#   "m_overrideCalibRelease"      : "210222_Precision_r21",
   "m_WorkingPointReco"          : "Medium",
   "m_WorkingPointIso"           : "FCLoose",
   #----------------------- Other ----------------------------#
@@ -249,24 +249,21 @@ ElectronSelectorDict = {
     #----------------------- PID -----------------------------------------#
     "m_doLHPIDcut"                : False,
     "m_LHOperatingPoint"          : "Medium",
+    "m_readIDFlagsFromDerivation" : True,
     #----------------------- Systematics ----------------------------#
     "m_inputAlgoSystNames"        : "ElectronCalibrator_Syst",
     "m_outputAlgoSystNames"       : "ElectronSelector_Syst",
     #----------------------- configurable cuts ----------------------------#
-    "m_pass_max"                  : -1,
-    "m_pass_min"                  : -1,
-    "m_pT_max"                    : 1e8,
     "m_pT_min"                    : 1,
     "m_eta_max"                   : 1e8,
-    "m_d0_max"                    : 1e8,
     "m_d0sig_max"                 : 1e8,
     "m_z0sintheta_max"            : 1e8,
     #----------------------- isolation stuff ----------------------------#
     "m_MinIsoWPCut"               : "",
     "m_IsoWPList"                 : "Loose,Tight",
     #----------------------- trigger matching stuff ----------------------------#
-    # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH,HLT_e26_lhtight_nod0_ivarloose",
-    # "m_singleElTrigChains"        : "HLT_e24_lhmedium_L1EM20VH, HLT_e24_lhtight_nod0_ivarloose, HLT_e26_lhtight_nod0, HLT_e26_lhtight_nod0_ivarloose, HLT_e60_lhmedium_nod0, HLT_e140_lhloose_nod0",
+    "m_singleElTrigChains"        : "HLT_e26_lhtight_nod0_ivarloose,HLT_e60_lhmedium_nod0,HLT_e140_lhloose_nod0",#HLT_e24_lhmedium_L1EM20V,HLT_e60_lhmedium,HLT_e120_lhloose,
+    "m_diElTrigChains"            : "HLT_2e17_lhvloose_nod0,HLT_2e17_lhvloose_nod0_L12EM15VHI,HLT_2e24_lhvloose_nod0",
     #----------------------- Other ----------------------------#
     # "m_IsoWPList"                 : "Gradient",
     "m_msgLevel"                  : "Info"
@@ -284,7 +281,6 @@ ElectronEfficiencyCorrectorDict = {
   "m_inContainerName"           : "Electrons_Calibrate",
   #----------------------- Systematics ----------------------------#
   "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
-  "m_writeSystToMetadata"       : True,
   "m_systNamePID"               : "All",
   "m_systValPID"                : 1.0,
   "m_systNameTrig"              : "All",
@@ -293,49 +289,19 @@ ElectronEfficiencyCorrectorDict = {
   "m_systValReco"               : 1.0,
 #  "m_systNameIso"               : "All",
 #  "m_systValIso"                : 1.0,
-  "m_correlationModel"          : "TOTAL",
+  "m_correlationModel"          : "SIMPLIFIED",
   #----------------------- Working Points ----------------------------#
-  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
-  "m_WorkingPointReco"          : "Reconstruction",
-  "m_WorkingPointPID"           : "LooseBLayer",
-  "m_WorkingPointIso"           : "Gradient",
-  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
-  #----------------------- Other ----------------------------#
-  "m_msgLevel"                  : "Info"
-}
-
-c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
-#%%%%%%%%%%%%%%%%%%%%%%% ElectronEfficiencyCorrector %%%%%%%%%%%%%%%%%%%#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#  
-ElectronEfficiencyCorrectorDict = {
-  "m_name"                      : "ElectronEfficiencyCorrector",
-  #----------------------- Container Flow ----------------------------#
-  "m_inContainerName"           : "Electrons_Calibrate",
-  #----------------------- Systematics ----------------------------#
-  "m_inputSystNamesElectrons"   : "ElectronSelector_Syst",
-  "m_writeSystToMetadata"       : True,
-  "m_systNamePID"               : "All",
-  "m_systValPID"                : 1.0,
-  "m_systNameTrig"              : "All",
-  "m_systValTrig"               : 1.0,
-  "m_systNameReco"              : "All",
-  "m_systValReco"               : 1.0,
-#  "m_systNameIso"               : "All",
-#  "m_systValIso"                : 1.0,
-  "m_correlationModel"          : "TOTAL",
-  #----------------------- Working Points ----------------------------#
-  "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
+#   "m_overrideMapFilePath"       : "$WorkDir_DIR/data/DHNLAlgorithm/electron_sf/electron_efficiency_map.txt",
   "m_WorkingPointReco"          : "Reconstruction",
   "m_WorkingPointPID"           : "Medium",
   "m_WorkingPointIso"           : "Gradient",
-  "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
+#   "m_WorkingPointTrig"          : "SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
   #----------------------- Other ----------------------------#
   "m_msgLevel"                  : "Info"
 }
 
 c.algorithm("ElectronEfficiencyCorrector", ElectronEfficiencyCorrectorDict ) 
+
 
 for augstr in AugmentationVersionStrings: 
 
@@ -344,8 +310,8 @@ for augstr in AugmentationVersionStrings:
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
     SecondaryVertexSelectorDict = {
         "m_name"                 : "SecVtxSel_VSI"+ augstr,
-        "m_mapInFile"            : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3.2_Inner.root",
-        "m_mapOutFile"           : "$WorkDir_DIR/data/FactoryTools/DV/MaterialMap_v3_Outer.root",
+        "m_mapInFile"            : "$WorkDir_DIR/data/DVAnalysisBase/MaterialMap_v3.2_Inner.root",
+        "m_mapOutFile"           : "$WorkDir_DIR/data/DVAnalysisBase/MaterialMap_v3_Outer.root",
         "m_inContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr,
         "m_outContainerName"      : "VrtSecInclusive_SecondaryVertices" + augstr +"_sel",
         #---------------------- Selections ---------------------------#
@@ -369,38 +335,38 @@ for augstr in AugmentationVersionStrings:
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
     #%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex Matching %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-    Dict_VertexMatcher = {
-        "m_name"                            : "VertexMatch"+ augstr,
-        "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
-        "m_doTruth"                         : True,
-        #------------------------ Lepton Matching ------------------------------#
-        "m_doLeptons"                       : True,
-        "m_inMuContainerName"               : "Muons",
-        "m_inElContainerName"               : "Electrons",
-         "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
-        #------------------------ Other ------------------------------#
-        "m_msgLevel"             : "Info",
-    }
-    c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
+    # Dict_VertexMatcher = {
+    #     "m_name"                            : "VertexMatch"+ augstr,
+    #     "m_inSecondaryVertexContainerName"  : "VrtSecInclusive_SecondaryVertices" + augstr,   # --> use selected vertices
+    #     "m_doTruth"                         : True,
+    #     #------------------------ Lepton Matching ------------------------------#
+    #     "m_doLeptons"                       : True,
+    #     "m_inMuContainerName"               : "Muons",
+    #     "m_inElContainerName"               : "Electrons",
+    #      "m_VSILepmatch"                    : True if "Leptons" in augstr else False,
+    #     #------------------------ Other ------------------------------#
+    #     "m_msgLevel"             : "Info",
+    # }
+    # c.algorithm ( "VertexMatcher",           Dict_VertexMatcher   )
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%% Truth Vertex Selection %%%%%%%%%%%%%%%%%%%%%%%%%%#
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-TruthVertexSelectorDict = {
-    "m_name"                      : "TruthVtxSel",
-    #----------------------- Container Flow ----------------------------#
-    "m_inContainerName"           : "TruthVertices",
-    "m_outContainerName"          : "SelectedTruthVertices",
-    "m_createSelectedContainer"   : True,
-    #---------------------- Selections ---------------------------#
-    "m_pdgIdList"               : "9900012, 50, 24, 443",
-    #------------------------ Other ------------------------------#
-    "m_msgLevel"             : "Info",
+# TruthVertexSelectorDict = {
+#     "m_name"                      : "TruthVtxSel",
+#     #----------------------- Container Flow ----------------------------#
+#     "m_inContainerName"           : "TruthVertices",
+#     "m_outContainerName"          : "SelectedTruthVertices",
+#     "m_createSelectedContainer"   : True,
+#     #---------------------- Selections ---------------------------#
+#     "m_pdgIdList"               : "9900012, 50, 24, 443",
+#     #------------------------ Other ------------------------------#
+#     "m_msgLevel"             : "Info",
 
-}
+# }
 
-if args.is_MC:
-    c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
+# if args.is_MC:
+#     c.algorithm("TruthVertexSelector", TruthVertexSelectorDict )
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -442,24 +408,13 @@ DHNLNtupleDict = {
     "m_secondaryVertexBranchNameList" : ','.join(secondaryVertexBranchNames),
     "m_AugmentationVersionStringList" : ','.join(AugmentationVersionStrings),
     "m_suppressTrackFilter"          : True, # supress VSI bonsi track filtering 
-    "m_truthVertexContainerName"     : "SelectedTruthVertices",
-    "m_truthVertexBranchName"        : "truthVtx",
-    "m_inTruthParticleContainerName" : "MuonTruthParticles",
+    # "m_truthVertexContainerName"     : "TruthVertices",
+    # "m_truthVertexBranchName"        : "truthVtx",
+    # "m_inTruthParticleContainerName" : "MuonTruthParticles",
     #----------------------- Output ----------------------------#
     "m_eventDetailStr"               : "truth pileup pileupsys", #shapeEM
-    "m_muDetailStr"                  : "kinematic clean energy truth flavorTag trackparams energyLoss \
-                                        effSF \
-                                        quality RECO_Tight RECO_Medium RECO_Loose \
-                                        isolation ISOL_FCLoose \
-                                        trigger TRIG_HLT_mu26_ivarmedium TRIG_HLT_mu20_iloose_L1MU15 \
-                                        ",
-    "m_elDetailStr"                  : "kinematic clean energy truth flavorTag trackparams \
-                                        PID PID_LHLooseBL PID_LHLoose PID_LHMedium PID_LHTight \
-                                        effSF \
-                                        PIDSF_LooseBLayer PIDSF_Medium \
-                                        isolation ISOL_Gradient \
-                                        trigger TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0 \
-                                        ",
+    "m_muDetailStr"                  : "kinematic quality RECO_Loose RECO_Medium RECO_Tight isolation ISOL_FCLoose ISOL_FCTight trigger effSF TRIG_HLT_mu20_iloose_L1MU15_OR_HLT_mu50 TRIG_HLT_mu26_ivarmedium_OR_HLT_mu50",
+    "m_elDetailStr"                  : "kinematic PID PID_LHLoose PID_LHMedium PID_LHTight isolation ISOL_Loose ISOL_Tight trigger effSF PIDSF_Medium TRIG_SINGLE_E_2015_e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose_2016_2018_e26_lhtight_nod0_ivarloose_OR_e60_lhmedium_nod0_OR_e140_lhloose_nod0",
     "m_trigDetailStr"                : "basic passTriggers",#basic menuKeys passTriggers",
     "m_secondaryVertexDetailStr"     : "tracks truth leptons", # "tracks" linked": pt-matched truth vertices. "close": distance matched truth vertices.
     "m_vertexDetailStr"              : "primary",
